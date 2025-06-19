@@ -28,10 +28,10 @@ jobs:
       run: go test -v ./...
       
     - name: Generate windows build artifacts
-      run: go build -GOOS=windows -o app.exe
+      run: env GOOS=windows go build -o app.exe
       
     - name: Generate linux build artifacts
-      run: go build -GOOS=linux -o app
+      run: env GOOS=linux go build -o app
       
     - name: Upload windows build artifacts
       uses: actions/upload-artifact@v4
