@@ -27,7 +27,7 @@ jobs:
     - name: Test
       run: go test -v ./...
       
-    - uses: actions/upload-artifact@v1
+    - uses: actions/upload-artifact@v4
       with:
         name: result.exe
         path: ./main.exe
