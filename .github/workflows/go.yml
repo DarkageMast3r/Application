@@ -36,11 +36,11 @@ jobs:
     - name: Upload windows build artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: result
+        name: app_win.exe
         path: app.exe
         
     - name: Upload linux build artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: result
+        name: app_lin
         path: app
