@@ -1,6 +1,6 @@
 Setup (waarschijnlijk weet je dit al maar just in case):
 1. Download en unzip
-2. Open de folder in een terminal (cd smartcare of openen in VSCode)
+2. Open de folder in een terminal (cd of openen in VSCode)
 3. go mod tidy
 4. go run main.go
 5. Open localhost:8080
