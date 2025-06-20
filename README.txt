@@ -8,9 +8,9 @@ Setup (waarschijnlijk weet je dit al maar just in case):
 Als Gin raar doet kan je hem ook handmatig installeren: go get github.com/gin-gonic/gin
 
 Wat al werkt:
-- Frontend van de pagina
-- Knoppen doen al daadwerkelijk calls naar een API
-- Structs en dataopslag
+- Frontend van de pagina (CSS, HTML, pagina-transities)
+- Structs
+- Sommige knoppen doen al calls naar een (lege) API
 
 Wat nog niet werkt:
 - De API zelf, hiervoor moeten de microservices (zoals een DB of message broker) nog ingesteld worden.
