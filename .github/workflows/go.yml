@@ -26,6 +26,8 @@ jobs:
       with:
         name: result
         path: .
+    - name: Data
+      run: go tool dist list
         
     - name: Build
       run: go build -v ./service-discovery/main.go
