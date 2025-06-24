@@ -49,10 +49,10 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: app_win
-        path: service_discovery.exe service_test.exe service_test2.exe
+        path: service_discovery.exe, service_test.exe, service_test2.exe
         
     - name: Upload linux build artifacts
       uses: actions/upload-artifact@v4
       with:
         name: app_linux
-        path: app_service_discovery app_service_test app_service_test2
+        path: app_service_discovery, app_service_test, app_service_test2
