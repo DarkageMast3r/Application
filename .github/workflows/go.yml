@@ -36,10 +36,10 @@ jobs:
       run: go test -v ./service-discovery/main.go
       
     - name: Generate windows build artifacts
-      run: env GOOS=windows go build -o service-discovery.exe ./service-discovery/main.go
+      run: env GOOS=windows GOARCH=amd64 go build -o service-discovery.exe ./service-discovery/main.go
       
     - name: Generate linux build artifacts
-      run: env GOOS=LINUX go build -o app_service-discovery ./service-discovery/main.go
+      run: env GOOS=LINUX GOARCH=amd64 go build -o app_service-discovery ./service-discovery/main.go
       
     - name: Upload windows build artifacts
       uses: actions/upload-artifact@v4
