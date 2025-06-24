@@ -37,7 +37,7 @@ jobs:
       run: env GOOS=windows go build -o service-discovery.exe ./service-discovery/main.go
       
     - name: Generate linux build artifacts
-      run: env GOOS=LINUX go build -o service-discovery.out ./service-discovery/main.go
+      run: env GOOS=LINUX go build -o app_service-discovery ./service-discovery/main.go
       
     - name: Upload windows build artifacts
       uses: actions/upload-artifact@v4
@@ -48,5 +48,5 @@ jobs:
     - name: Upload linux build artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: app_lin
-        path: service-discovery.out
+        name: app_linux
+        path: app_service-discovery.
