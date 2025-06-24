@@ -50,6 +50,3 @@ jobs:
       with:
         name: app_lin
         path: service-discovery.out
-
-    - name: Finish service discovery
-      run: cd ..
