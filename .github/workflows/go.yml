@@ -21,17 +21,20 @@ jobs:
       with:
         go-version: '1.22.0'
 
+    - name: Generate service discovery
+      run: cd service-discovery
+
     - name: Build
-      run: go build -v ./service-discovery/...
+      run: go build -v ./...
 
     - name: Test
-      run: go test -v ./service-discovery/...
+      run: go test -v ./...
       
     - name: Generate windows build artifacts
-      run: cd service-discovery && env GOOS=windows go build -o app.exe && cd ..
+      run: env GOOS=windows go build -o app.exe
       
     - name: Generate linux build artifacts
-      run: cd service-discovery && env GOOS=LINUX go build -o app && cd ..
+      run: env GOOS=LINUX go build -o app
       
     - name: Upload windows build artifacts
       uses: actions/upload-artifact@v4
@@ -44,3 +47,6 @@ jobs:
       with:
         name: app_lin
         path: app
+
+    - name: Finish service discovery
+      run: cd ..
