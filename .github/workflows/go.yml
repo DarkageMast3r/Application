@@ -31,19 +31,19 @@ jobs:
       run: env GOOS=windows go build -o service_discovery.exe ./service-discovery/main.go
       
     - name: Generate linux build artifacts
-      run: env GOOS=linux go build -o app_service_discovery ./service-discovery/main.go
+      run: env GOOS=linux GOARCH=arm go build -o app_service_discovery ./service-discovery/main.go
       
     - name: Generate windows build artifacts
       run: env GOOS=windows go build -o service_test.exe ./test-service/main.go
       
     - name: Generate linux build artifacts
-      run: env GOOS=linux go build -o app_service_test ./test-service/main.go
+      run: env GOOS=linux GOARCH=arm go build -o app_service_test ./test-service/main.go
       
     - name: Generate windows build artifacts
       run: env GOOS=windows go build -o service_test2.exe ./test-service-2/main.go
       
     - name: Generate linux build artifacts
-      run: env GOOS=linux go build -o app_service_test2 ./test-service-2/main.go
+      run: env GOOS=linux GOARCH=arm go build -o app_service_test2 ./test-service-2/main.go
       
     - name: Upload windows build artifacts
       uses: actions/upload-artifact@v4
