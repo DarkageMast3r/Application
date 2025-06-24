@@ -34,22 +34,22 @@ jobs:
       run: go test -v ./service-discovery/main.go
       
     - name: Generate windows build artifacts
-      run: env GOOS=windows go build ./service-discovery/main.go -o app.exe
+      run: env GOOS=windows go build -o service-discovery.exe ./service-discovery/main.go
       
     - name: Generate linux build artifacts
-      run: env GOOS=LINUX go build ./service-discovery/main.go -o app
+      run: env GOOS=LINUX go build -o service-discovery.out ./service-discovery/main.go
       
     - name: Upload windows build artifacts
       uses: actions/upload-artifact@v4
       with:
         name: app_win.exe
-        path: app.exe
+        path: service-discovery.exe
         
     - name: Upload linux build artifacts
       uses: actions/upload-artifact@v4
       with:
         name: app_lin
-        path: app
+        path: service-discovery.out
 
     - name: Finish service discovery
       run: cd ..
