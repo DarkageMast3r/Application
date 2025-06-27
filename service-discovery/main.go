@@ -5,21 +5,17 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"main/handlers"
+	"main/models"
 	"net/http"
 	"os"
 	"strconv"
-	"strings"
 )
 
 type Config struct {
 	Service_discovery_root string `json:"service_discovery_root"`
 	Service_discovery_port int    `json:"service_discovery_port"`
 	Allow_insecure         bool   `json:"allow_insecure"`
-}
-
-type Service struct {
-	Hosts      []string
-	LastServed int
 }
 
 func readConfig(path string) Config {
@@ -36,43 +32,18 @@ func readConfig(path string) Config {
 }
 
 func main() {
-	services := make(map[string]Service)
 	config := readConfig("../config.json")
+	var port_str = strconv.Itoa(config.Service_discovery_port)
+	models.Service_Init()
 
-	http.HandleFunc("/Register/{service}/{port}", func(w http.ResponseWriter, r *http.Request) {
-		serviceName := r.PathValue("service")
-		servicePort := r.PathValue("port")
-		idx := strings.LastIndex(r.RemoteAddr, ":")
-		serviceUri := r.RemoteAddr[:idx] + ":" + servicePort
+	http.HandleFunc("/Register/{service}/{port}", handlers.Service_Register)
+	http.HandleFunc("/", handlers.Service_Get_Names)
+	http.HandleFunc("/Service", handlers.Service_Get_Names)
+	http.HandleFunc("/Service/{service}", handlers.Service_Get)
 
-		service, exists := services[serviceName]
-		if !exists {
-			service.LastServed = 0
-			service.Hosts = make([]string, 0)
-		}
-		for _, current := range service.Hosts {
-			if current == serviceUri {
-				return
-			}
-		}
-		service.Hosts = append(service.Hosts, serviceUri)
-		services[serviceName] = service
-	})
-
-	http.HandleFunc("/Get/{service}", func(w http.ResponseWriter, r *http.Request) {
-		serviceName := r.PathValue("service")
-		service, exists := services[serviceName]
-		if !exists {
-			http.NotFound(w, r)
-			return
-		}
-		service.LastServed = (service.LastServed + 1) % len(service.Hosts)
-		services[serviceName] = service
-		io.WriteString(w, service.Hosts[service.LastServed])
-	})
-	fmt.Printf("Listening on %s\n", ":"+strconv.Itoa(config.Service_discovery_port))
+	fmt.Printf("Listening on %s\n", ":"+port_str)
 	err := http.ListenAndServeTLS(
-		":"+strconv.Itoa(config.Service_discovery_port),
+		":"+port_str,
 		"../server.crt",
 		"../server.key",
 		nil,
