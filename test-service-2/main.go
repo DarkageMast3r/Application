@@ -9,7 +9,7 @@ import (
 func main() {
 	service.Init()
 
-	message, err := service.Get(service.Route(service.Get_Uri("Test")))
+	message, err := service.CallGet("Test")
 	if err != nil {
 		log.Fatal(err)
 	}

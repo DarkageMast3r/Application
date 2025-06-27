@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"io"
 	"net/http"
 	"strings"
 
@@ -37,5 +36,9 @@ func Service_Get(w http.ResponseWriter, r *http.Request) {
 	}
 	service.LastServed = (service.LastServed + 1) % len(service.Hosts)
 	service.Save()
-	io.WriteString(w, service.Hosts[service.LastServed])
+	http.Redirect(w, r, service.Hosts[service.LastServed], http.StatusSeeOther)
+}
+
+func Redirect_To_App(w http.ResponseWriter, r *http.Request) {
+	http.Redirect(w, r, "/App", http.StatusSeeOther)
 }

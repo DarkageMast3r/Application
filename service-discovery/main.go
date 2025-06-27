@@ -36,10 +36,10 @@ func main() {
 	var port_str = strconv.Itoa(config.Service_discovery_port)
 	models.Service_Init()
 
+	http.HandleFunc("/", handlers.Redirect_To_App)
+	http.HandleFunc("/{service}", handlers.Service_Get)
+	http.HandleFunc("/Services", handlers.Service_Get_Names)
 	http.HandleFunc("/Register/{service}/{port}", handlers.Service_Register)
-	http.HandleFunc("/", handlers.Service_Get_Names)
-	http.HandleFunc("/Service", handlers.Service_Get_Names)
-	http.HandleFunc("/Service/{service}", handlers.Service_Get)
 
 	fmt.Printf("Listening on %s\n", ":"+port_str)
 	err := http.ListenAndServeTLS(

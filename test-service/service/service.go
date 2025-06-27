@@ -60,9 +60,10 @@ func Register(name string) int {
 	return port
 }
 
-func Route(routeValues ...string) string {
+func Route(host string, routeValues ...string) string {
 	return fmt.Sprintf(
-		"https://%s",
+		"https://%s/%s",
+		host,
 		strings.Join(routeValues, "/"),
 	)
 }
@@ -97,8 +98,16 @@ func Post(route string, contentType string, data io.Reader) (string, error) {
 	return string(body), nil
 }
 
+func CallGet(service string, routeValues ...string) (string, error) {
+	return Get(Route(Get_Uri(service), routeValues...))
+}
+
+func CallPost(contentType string, body io.Reader, service string, routeValues ...string) (string, error) {
+	return Post(Route(Get_Uri(service), routeValues...), contentType, body)
+}
+
 func reload(name string) string {
-	uri, err := Get(Route(Get_Uri(service_discovery), "Service", name))
+	uri, err := Get(Route(Get_Uri(service_discovery), name))
 	if err != nil {
 		fmt.Println("Could not get uri for service ", name)
 		log.Fatal(err)
