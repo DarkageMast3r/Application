@@ -35,9 +35,37 @@ func readConfig(path string) Config {
 	return config
 }
 
+func hostIsAlive(uri string) bool {
+	result, err := http.Get("https://" + uri + "/Category")
+	if err != nil {
+		log.Fatal(err)
+		return false
+	}
+	if result != nil {
+		result.Body.Close()
+	}
+	return true
+}
+
 func main() {
 	services := make(map[string]Service)
 	config := readConfig("../config.json")
+
+	go func() {
+		for {
+			for serviceName, service := range services {
+				for i, host := range service.Hosts {
+					if hostIsAlive(host) {
+						continue
+					}
+					fmt.Printf("Disconnecting host %s\n", host)
+					service.Hosts[i] = service.Hosts[len(service.Hosts)-1]
+					service.Hosts = service.Hosts[:len(service.Hosts)-1]
+				}
+				services[serviceName] = service
+			}
+		}
+	}()
 
 	http.HandleFunc("/Register/{service}/{port}", func(w http.ResponseWriter, r *http.Request) {
 		serviceName := r.PathValue("service")
@@ -57,6 +85,7 @@ func main() {
 		}
 		service.Hosts = append(service.Hosts, serviceUri)
 		services[serviceName] = service
+		fmt.Printf("Registered service %s at %s\n", serviceName, serviceUri)
 	})
 
 	http.HandleFunc("/Get/{service}", func(w http.ResponseWriter, r *http.Request) {
@@ -69,6 +98,20 @@ func main() {
 		service.LastServed = (service.LastServed + 1) % len(service.Hosts)
 		services[serviceName] = service
 		io.WriteString(w, service.Hosts[service.LastServed])
+	})
+	http.HandleFunc("/Get", func(w http.ResponseWriter, r *http.Request) {
+		serviceNames := make([]string, len(services))
+		i := 0
+		for name := range services {
+			serviceNames[i] = name
+			i++
+		}
+		result, err := json.Marshal(serviceNames)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		w.Write(result)
 	})
 	fmt.Printf("Listening on %s\n", ":"+strconv.Itoa(config.Service_discovery_port))
 	err := http.ListenAndServeTLS(
