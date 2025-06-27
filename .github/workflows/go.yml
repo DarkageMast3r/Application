@@ -20,27 +20,45 @@ jobs:
       uses: actions/setup-go@v4
       with:
         go-version: '1.22.0'
-
+        
     - name: Build
-      run: go build -v ./...
+      run: go build -v ./service-discovery/main.go
 
     - name: Test
-      run: go test -v ./...
+      run: go test -v ./service-discovery/main.go
       
     - name: Generate windows build artifacts
-      run: env GOOS=windows go build -o app.exe
+      run: env GOOS=windows go build -o service_discovery.exe ./service-discovery/main.go
       
     - name: Generate linux build artifacts
-      run: env GOOS=linux go build -o app
+      run: env GOOS=linux GOARCH=arm go build -o app_service_discovery ./service-discovery/main.go
+      
+    - name: Generate windows build artifacts
+      run: env GOOS=windows go build -o service_test.exe ./test-service/main.go
+      
+    - name: Generate linux build artifacts
+      run: env GOOS=linux GOARCH=arm go build -o app_service_test ./test-service/main.go
+      
+    - name: Generate windows build artifacts
+      run: env GOOS=windows go build -o service_test2.exe ./test-service-2/main.go
+      
+    - name: Generate linux build artifacts
+      run: env GOOS=linux GOARCH=arm go build -o app_service_test2 ./test-service-2/main.go
       
     - name: Upload windows build artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: app_win.exe
-        path: app.exe
+        name: app_win
+        path: |
+          service_discovery.exe
+          service_test.exe
+          service_test2.exe
         
     - name: Upload linux build artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: app_lin
-        path: app
+        name: app_linux
+        path: |
+          app_service_discovery
+          app_service_test
+          app_service_test2
