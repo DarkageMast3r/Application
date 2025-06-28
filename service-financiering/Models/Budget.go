@@ -1,7 +1,6 @@
 package models
 
-// value object
-// should the money be in floats?
+// als ik het goed begrijp dan vraag je budget aan om iets te aan te schaffen. Dus nadat datgene aangeschaft is dan moet je opnieuw een budget aanvragen voor iets nieuws? of zit ik nu fout?
 type Budget struct {
 	maxBedrag         float64
 	beschikbaarBedrag float64
@@ -9,7 +8,7 @@ type Budget struct {
 	BudgetStatus      BudgetStatus
 }
 
-func (b *Budget) BugdetConstructor(max float64) {
+func (b *Budget) NieuwBudget(max float64) {
 	b.maxBedrag = max
 	b.beschikbaarBedrag = max
 	b.gebruiktBedrag = 0
@@ -20,6 +19,10 @@ func (b *Budget) BugdetConstructor(max float64) {
 func (b *Budget) UpdateBudget(bedrag float64) {
 	b.gebruiktBedrag += bedrag
 	b.beschikbaarBedrag -= bedrag
+}
+
+func (b *Budget) BudgetGoedgekeurd() {
+	b.BudgetStatus = b.BudgetStatus.GetStatus("Goedgekeurd")
 }
 
 func (b *Budget) BudgetAfgewezen() {
