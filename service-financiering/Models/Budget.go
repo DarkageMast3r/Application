@@ -9,15 +9,19 @@ type Budget struct {
 	BudgetStatus      BudgetStatus
 }
 
-func (b Budget) Constructor(max float64) Budget {
+func (b *Budget) BugdetConstructor(max float64) {
 	b.maxBedrag = max
 	b.beschikbaarBedrag = max
 	b.gebruiktBedrag = 0
 	b.BudgetStatus = b.BudgetStatus.GetStatus("Aangevraagd")
-	return b
 }
 
-func (b Budget) UpdateBudget(bedrag float64) {
+// is deze überhaupt nodig? fucking business logic
+func (b *Budget) UpdateBudget(bedrag float64) {
 	b.gebruiktBedrag += bedrag
 	b.beschikbaarBedrag -= bedrag
+}
+
+func (b *Budget) BudgetAfgewezen() {
+	b.BudgetStatus = b.BudgetStatus.GetStatus("Afgewezen")
 }
