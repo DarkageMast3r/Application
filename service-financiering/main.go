@@ -9,6 +9,6 @@ func main() {
 	fmt.Println("shut up golang")
 	var FD m.FinancieringsDossier
 	FD.VraagBudgetAan(10)
-	fmt.Println(FD.BedragAangevraagd)
-	return
+	fmt.Println(FD.Budget)
+	fmt.Println(FD.Budget.BudgetStatus)
 }

@@ -3,18 +3,21 @@ package models
 // value object
 // should the money be in floats?
 type Budget struct {
-	maxBedrag         float32
-	beschikbaarBedrag float32
-	gebruiktBedrag    float32
+	maxBedrag         float64
+	beschikbaarBedrag float64
+	gebruiktBedrag    float64
+	BudgetStatus      BudgetStatus
 }
 
-func (b Budget) constructor(max float32, beschikbaar float32, gebruikt float32) {
+func (b Budget) Constructor(max float64) Budget {
 	b.maxBedrag = max
-	b.beschikbaarBedrag = beschikbaar
-	b.gebruiktBedrag = gebruikt
+	b.beschikbaarBedrag = max
+	b.gebruiktBedrag = 0
+	b.BudgetStatus = b.BudgetStatus.GetStatus("Aangevraagd")
+	return b
 }
 
-func (b Budget) updateBudget(bedrag float32) {
+func (b Budget) UpdateBudget(bedrag float64) {
 	b.gebruiktBedrag += bedrag
 	b.beschikbaarBedrag -= bedrag
 }
