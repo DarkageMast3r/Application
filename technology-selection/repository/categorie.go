@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"service/models"
+	"time"
 )
 
 func category_read(rows *sql.Rows) []models.Category {
@@ -43,5 +44,34 @@ func Category_Get_By_Id(id int) *models.Category {
 	if len(categories) > 0 {
 		return &categories[0]
 	}
+	return nil
+}
+
+func Category_Save(category *models.Category) error {
+	db := Database_Get()
+	if category.Id == 0 {
+		result, err := db.Exec("insert into Category () values ()")
+		if err != nil {
+			return err
+		}
+		id, err := result.LastInsertId()
+		if err != nil {
+			return err
+		}
+		category.GegenereerdOp = time.Now()
+		category.Id = int(id)
+		fmt.Println("Created new category with id = ", id)
+	}
+	_, err := db.Exec(
+		"update Category set `Name` = ?, `Description` = ?, `GeneratedOn` = ? where `Id` = ? ",
+		category.Naam,
+		category.Beschrijving,
+		category.GegenereerdOp,
+		category.Id,
+	)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
