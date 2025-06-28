@@ -16,6 +16,9 @@ func main() {
 	http.HandleFunc("/Category", handlers.Category_Get_All)
 	http.HandleFunc("/Category/{id}", handlers.Category_Get_By_Id)
 	http.HandleFunc("/Category/Create", handlers.Category_Create)
+	http.HandleFunc("/Need", handlers.Need_Get_All)
+	http.HandleFunc("/Need/{id}", handlers.Need_Get_By_Id)
+	http.HandleFunc("/Need/Create", handlers.Need_Create)
 
 	port := service.Register("technology-selection")
 

@@ -12,7 +12,7 @@ func category_read(rows *sql.Rows) []models.Category {
 
 	for rows.Next() {
 		var cat models.Category
-		if err := rows.Scan(&cat.Id, &cat.Naam, &cat.Beschrijving, &cat.GegenereerdOp); err != nil {
+		if err := rows.Scan(&cat.Id, &cat.Name, &cat.Description, &cat.GeneratedOn); err != nil {
 			fmt.Print(err)
 			continue
 		}
@@ -58,20 +58,15 @@ func Category_Save(category *models.Category) error {
 		if err != nil {
 			return err
 		}
-		category.GegenereerdOp = time.Now()
+		category.GeneratedOn = time.Now()
 		category.Id = int(id)
-		fmt.Println("Created new category with id = ", id)
 	}
 	_, err := db.Exec(
 		"update Category set `Name` = ?, `Description` = ?, `GeneratedOn` = ? where `Id` = ? ",
-		category.Naam,
-		category.Beschrijving,
-		category.GegenereerdOp,
+		category.Name,
+		category.Description,
+		category.GeneratedOn,
 		category.Id,
 	)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }

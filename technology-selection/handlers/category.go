@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"reflect"
 	"service/models"
 	"service/repository"
+	"service/util"
 	"strconv"
 )
 
@@ -36,33 +38,20 @@ func Category_Get_By_Id(w http.ResponseWriter, r *http.Request) {
 	w.Write(result)
 }
 
-func Category_Create_View(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("<html><head><title>Title</title></head><body>"))
-	w.Write([]byte("<form action=\"/Category/Create\" method=\"post\">"))
-	w.Write([]byte("<label>Name<input type=\"text\" name=\"name\"/></label>"))
-	w.Write([]byte("<label>Description<input type=\"text\" name=\"description\"/></label>"))
-	w.Write([]byte("<input type=\"submit\"/>"))
-	w.Write([]byte("</form>"))
-	w.Write([]byte("</body>"))
-	w.Header().Add("content-type", "text/html")
-	w.WriteHeader(http.StatusOK)
-}
-
 func Category_Create(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
-		Category_Create_View(w, r)
+		var category models.Category
+		util.Crud_View_Create(w, reflect.TypeOf(category), "/Category/Create")
 		return
 	}
 	r.ParseForm()
-	fmt.Print(r.Form, r.Form.Has("name"), r.Form.Has("description"))
-	if !r.Form.Has("name") || !r.Form.Has("description") {
+	var category models.Category
+	err := util.Fill_Fields_From_Form(&category, r)
+	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	var category models.Category
-	category.Naam = r.Form.Get("name")
-	category.Beschrijving = r.Form.Get("description")
-	err := repository.Category_Save(&category)
+	err = repository.Category_Save(&category)
 	if err != nil {
 		fmt.Println(err)
 	}

@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"net"
 	"net/http"
 	"os"
 	"strconv"
@@ -33,11 +32,12 @@ func readConfig(path string) Config {
 }
 
 func getLocalPort() int {
-	conn, err := net.Dial("udp", "0.0.0.0:80")
-	if err != nil {
-		log.Fatal(err)
-	}
-	return conn.LocalAddr().(*net.UDPAddr).Port
+	// conn, err := net.Dial("udp", "0.0.0.0:80")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// return conn.LocalAddr().(*net.UDPAddr).Port
+	return 61694
 }
 
 var config Config
