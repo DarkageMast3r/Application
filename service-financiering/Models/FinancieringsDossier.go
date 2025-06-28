@@ -3,19 +3,22 @@ package models
 import "fmt"
 
 type FinancieringsDossier struct {
-	DossierID         int
-	ClientID          int
-	ZorgTechID        int
-	BedragGoedgekeurd float64
-	AanvraagDatum     float64 //no datetime type afaik
-	Facturen          []Factuur
-	Budget            Budget
+	DossierID     int
+	ClientID      int
+	ZorgTechID    int
+	AanvraagDatum float64 //no datetime type afaik
+	Facturen      []Factuur
+	Budget        Budget
 }
 
-// func (f FinancieringsDossier) Constructor(dossierID int, clientID int, zorgtechID int, budgetStatus BudgetStatus, bedragAangevraagd float64, bedragGoedgekeurd float64)
+func (f *FinancieringsDossier) Constructor(dossierID int, clientID int, zorgtechID int) {
+	f.DossierID = dossierID
+	f.ClientID = clientID
+	f.ZorgTechID = zorgtechID
+}
 
 func (f *FinancieringsDossier) VraagBudgetAan(bedrag float64) {
-	f.Budget = f.Budget.Constructor(bedrag)
+	f.Budget.BugdetConstructor(bedrag)
 }
 
 func (f *FinancieringsDossier) VerwerkGoedkeuring(bedrag float64) {
