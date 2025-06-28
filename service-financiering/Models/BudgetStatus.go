@@ -10,14 +10,14 @@ const (
 	Gefactureerd
 )
 
-var statusNaam = map[BudgetStatus]string{
-	Aangevraagd:  "Aangevraagd",
-	Goedgekeurd:  "Goedgekeurd",
-	Afgewezen:    "Afgewezen",
-	Gereserveerd: "Gereserveerd",
-	Gefactureerd: "Gefactureerd",
+var statusNaam = map[string]BudgetStatus{
+	"Aangevraagd":  Aangevraagd,
+	"Goedgekeurd":  Goedgekeurd,
+	"Afgewezen":    Afgewezen,
+	"Gereserveerd": Gereserveerd,
+	"Gefactureerd": Gefactureerd,
 }
 
-func (status BudgetStatus) GetStatus() string {
-	return statusNaam[status]
+func (status BudgetStatus) GetStatus(naam string) BudgetStatus {
+	return BudgetStatus(statusNaam[naam])
 }
