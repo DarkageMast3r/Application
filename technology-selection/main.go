@@ -5,13 +5,14 @@ import (
 	"log"
 	"net/http"
 	"service/handlers"
+	"service/repository"
 	"service/service"
 	"strconv"
 )
 
 func main() {
 	service.Init()
-
+	repository.Database_Get()
 	http.HandleFunc("/Category", handlers.Category_Get_All)
 	http.HandleFunc("/Category/{id}", handlers.Category_Get_By_Id)
 

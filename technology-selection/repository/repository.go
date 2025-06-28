@@ -8,7 +8,7 @@ import (
 	"log"
 	"os"
 
-	_ "github.com/microsoft/go-mssqldb"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 type Config struct {
@@ -37,10 +37,14 @@ func Database_Get() *sql.DB {
 
 	config := readConfig("config.json")
 
-	db, err := sql.Open("mssql", config.Connection_String)
+	db, err := sql.Open("mysql", config.Connection_String)
 	if err != nil {
 		log.Fatal(err)
 	}
 	database = db
+	err = db.Ping()
+	if err != nil {
+		log.Fatal(err)
+	}
 	return db
 }

@@ -22,7 +22,7 @@ func category_read(rows *sql.Rows) []models.Category {
 
 func Category_Get_All() []models.Category {
 	db := Database_Get()
-	rows, err := db.Query("SELECT [Id], [Name], [Description], [GeneratedOn] FROM Category")
+	rows, err := db.Query("SELECT `Id`, `Name`, `Description`, `GeneratedOn` FROM Category")
 	if err != nil {
 		return nil
 	}
@@ -33,7 +33,7 @@ func Category_Get_All() []models.Category {
 
 func Category_Get_By_Id(id int) *models.Category {
 	db := Database_Get()
-	rows, err := db.Query("SELECT [Id], [Name], [Description], [GeneratedOn] FROM Category WHERE Id = ?", id)
+	rows, err := db.Query("SELECT `Id`, `Name`, `Description`, `GeneratedOn` FROM Category WHERE Id = ?", id)
 	if err != nil {
 		fmt.Println(err)
 		return nil
