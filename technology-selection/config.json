@@ -1,0 +1,6 @@
+{
+    "service_discovery_root": "localhost",
+    "service_discovery_port": 443,
+    "allow_insecure": true,
+    "connection_string": "data source=FILEAN-LAPTOP;initial catalog=technology_selection;trusted_connection=true"
+}
