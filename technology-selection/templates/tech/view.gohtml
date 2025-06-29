@@ -1,0 +1,32 @@
+{{define "tech/view"}}
+<html>
+	<head>
+		<title>
+			Title
+		</title>
+	</head>
+	<body>
+		<a href="/View/Tech/Create">Create new tech</a>
+		<br/>
+		{{ range .}}
+			<div style="border: 1px solid black; padding: 0.5rem 1rem; border-radius: 1rem; margin: 1rem 0">
+				Name: {{ .Name }}
+				<br/>
+				Category: {{ .Category.Name }}
+				<br/>
+				<details>
+					<summary>Click to view needs</summary>
+					<ul>
+						{{ range .Needs}}
+							<li>
+								{{ .Description}}
+							</li>
+						{{ end }}
+					</ul>
+				</details>
+				<a href="/View/Tech/{{ .Id }}/Update">Edit</a>
+			</div>
+		{{ end }}
+	</body>
+</html>
+{{end}}

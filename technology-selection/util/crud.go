@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"reflect"
+	"strconv"
 )
 
 func Fill_Fields_From_Form[k any](object *k, r *http.Request) error {
@@ -25,12 +26,19 @@ func Fill_Fields_From_Form[k any](object *k, r *http.Request) error {
 
 		val := objValue.Field(i)
 		formVal := r.Form.Get(jsonName)
+		if !val.CanSet() {
+			fmt.Println("Cannot set field ", objType.Name(), "/", field.Name)
+			continue
+		}
 		if val.Kind() == reflect.String {
-			if val.CanSet() {
-				val.SetString(formVal)
-			} else {
-				fmt.Println("Cannot set field ", objType.Name(), "/", field.Name)
+			val.SetString(formVal)
+		}
+		if val.Kind() == reflect.Int {
+			intFormVal, err := strconv.Atoi(formVal)
+			if err != nil {
+				return http.ErrBodyNotAllowed
 			}
+			val.SetInt(int64(intFormVal))
 		}
 	}
 	return nil
@@ -40,7 +48,7 @@ func Crud_View_Create(w http.ResponseWriter, objType reflect.Type, action string
 	w.WriteHeader(http.StatusOK)
 	w.Header().Add("content-type", "text/html")
 	w.Write([]byte("<html><head><title>Create</title></head><body>"))
-	w.Write([]byte(fmt.Sprintf("<form action=\"%s\" method=\"post\">", action)))
+	fmt.Fprintf(w, "<form action=\"%s\" method=\"post\">", action)
 	w.Write([]byte("<div style=\"display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 1rem\">"))
 
 	fieldCount := objType.NumField()

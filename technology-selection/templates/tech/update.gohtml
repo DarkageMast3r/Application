@@ -1,0 +1,87 @@
+{{define "tech/update"}}
+{{$tech := .Tech}}
+<html>
+	<head>
+		<title>
+			Title
+		</title>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+	</head>
+	<body>
+		<form action="/Tech/{{$tech.Id}}/Update" method="POST">
+			<label for="name">Name</label>
+			<input value="{{ $tech.Name }}" name="name" type="text"/>
+			<br/>
+			<label for="category_id">Category</label>
+			<select name="category_id">
+				{{ range .Categories }}
+					<option {{ if eq $tech.CategoryId .Id  }} selected {{ end }} value="{{.Id}}">{{.Name}}</option>
+				{{end}}
+			</select>
+			<br/>
+			<details>
+				<summary>Needs</summary>
+				<ul id="newNeedSpot">
+
+				</ul>
+				<select id="selectedNeed">
+				</select>
+				<button type="button" id="btnAddNeed">Add need</button>
+			</details>
+			<br/>
+			<input type="submit"/>
+			<div id="inputs_needs">
+				
+			</div>
+		</form>
+		<script>
+			const needs = [
+				{{ range .Needs }}
+					{id: {{.Id}}, description: "{{.Description}}", selected: false},
+				{{end}}
+			]
+			
+			function seekById(haystack, id) {
+				for (item of haystack) {
+					if (item.id === id) {
+						return item
+					}
+				}
+				return {}
+			}
+
+			function rebuildNeeds() {				
+				$(newNeedSpot).html(
+					needs
+						.filter(need => need.selected)
+						.map(need => `<li>${need.description}<button data-delete-need="${need.id}" type="button">Delete</button></li>`)
+				)
+				$(inputs_needs).html(
+					needs
+						.filter(need => need.selected)
+						.map((need, i) => `<input type="hidden" name="needs.${i}.Id" value="${need.id}"/>`)
+				)
+				$(selectedNeed).html(
+					needs
+						.filter(need => !need.selected)
+						.map(need => `<option value="${need.id}">${need.description}</option>`)
+				)
+				$("[data-delete-need]").on("click", function() {
+					console.log(seekById(needs, +$(this).data("delete-need")))
+					seekById(needs, +$(this).data("delete-need")).selected = false
+					rebuildNeeds()
+				})
+			}
+
+			$(btnAddNeed).on("click", function() {
+				seekById(needs, +$(selectedNeed).val()).selected = true
+				rebuildNeeds()
+			})
+			{{range $tech.Needs}}
+				seekById(needs, {{.Id}}).selected = true
+			{{end}}
+			rebuildNeeds()
+		</script>
+	</body>
+</html>
+{{end}}

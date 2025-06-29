@@ -11,7 +11,7 @@ func need_read(rows *sql.Rows) []models.Need {
 
 	for rows.Next() {
 		var need models.Need
-		if err := rows.Scan(&need.Id, &need.Name, &need.Source); err != nil {
+		if err := rows.Scan(&need.Id, &need.Description); err != nil {
 			fmt.Print(err)
 			continue
 		}
@@ -22,7 +22,7 @@ func need_read(rows *sql.Rows) []models.Need {
 
 func Need_Get_All() []models.Need {
 	db := Database_Get()
-	rows, err := db.Query("SELECT `Id`, `Name`, `Source` FROM Need")
+	rows, err := db.Query("SELECT `Id`, `Description` FROM Need")
 	if err != nil {
 		return nil
 	}
@@ -33,7 +33,7 @@ func Need_Get_All() []models.Need {
 
 func Need_Get_By_Id(id int) *models.Need {
 	db := Database_Get()
-	rows, err := db.Query("SELECT `Id`, `Name`, `Source` FROM Need WHERE Id = ?", id)
+	rows, err := db.Query("SELECT `Id`, `Description` FROM Need WHERE Id = ?", id)
 	if err != nil {
 		fmt.Println(err)
 		return nil
@@ -46,10 +46,21 @@ func Need_Get_By_Id(id int) *models.Need {
 	return nil
 }
 
+func Need_Get_All_By_TechId(id int) []models.Need {
+	db := Database_Get()
+	rows, err := db.Query("select `Id`, `Description` from Need where Id in (select NeedId from TechNeed where TechId = ?)", id)
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+	defer rows.Close()
+	return need_read(rows)
+}
+
 func Need_Save(need *models.Need) error {
 	db := Database_Get()
 	if need.Id == 0 {
-		result, err := db.Exec("insert into Need () values ()")
+		result, err := db.Exec("insert into TechNeed () values ()")
 		if err != nil {
 			return err
 		}
@@ -59,10 +70,10 @@ func Need_Save(need *models.Need) error {
 		}
 		need.Id = int(id)
 	}
+	// Do not allow to change tech the need is linked to
 	_, err := db.Exec(
-		"update Need set `Name` = ?, `Source` = ? where `Id` = ?",
-		need.Name,
-		need.Source,
+		"update TechNeed set `Description` = ? where `Id` = ?",
+		need.Description,
 		need.Id,
 	)
 	return err

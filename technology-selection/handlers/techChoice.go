@@ -11,48 +11,47 @@ import (
 	"strconv"
 )
 
-func Need_Get_All(w http.ResponseWriter, r *http.Request) {
-	result, err := json.Marshal(repository.Need_Get_All())
+func TechChoice_Get_All(w http.ResponseWriter, r *http.Request) {
+	result, err := json.Marshal(repository.TechChoice_Get_All())
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 	w.Write(result)
 }
 
-func Need_Get_By_Id(w http.ResponseWriter, r *http.Request) {
+func TechChoice_Get_By_Id(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	need := repository.Need_Get_By_Id(id)
-	if need == nil {
+	techChoice := repository.TechChoice_Get_By_Id(id)
+	if techChoice == nil {
 		w.WriteHeader(http.StatusNotFound)
 		w.Write([]byte("{}"))
 	}
 
-	result, err := json.Marshal(need)
+	result, err := json.Marshal(techChoice)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 	w.Write(result)
 }
-
-func Need_Create(w http.ResponseWriter, r *http.Request) {
+func TechChoice_Create(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
-		var need models.Need
-		util.Crud_View_Create(w, reflect.TypeOf(need), "/Need/Create")
+		var need models.TechChoice
+		util.Crud_View_Create(w, reflect.TypeOf(need), "/TechChoice/Create")
 		return
 	}
 	r.ParseForm()
 
-	var need models.Need
-	err := util.Fill_Fields_From_Form(&need, r)
+	var techChoice models.TechChoice
+	err := util.Fill_Fields_From_Form(&techChoice, r)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	err = repository.Need_Save(&need)
+	err = repository.TechChoice_Save(&techChoice)
 	if err != nil {
 		fmt.Println(err)
 	}
