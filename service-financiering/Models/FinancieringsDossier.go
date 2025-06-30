@@ -26,17 +26,20 @@ func (f *FinancieringsDossier) VraagBudgetAan(bedrag float64) {
 	f.AanvraagDatum.Year, f.AanvraagDatum.Month, f.AanvraagDatum.Day = t.Date()
 }
 
-func (f *FinancieringsDossier) VerwerkGoedkeuring(bedrag float64) {
-	// On recieving approval do stuff(idk what)
+func (f *FinancieringsDossier) VerwerkGoedkeuring(Goedgekeurd bool) {
+	if Goedgekeurd {
+		f.Budget.BudgetGoedgekeurd()
+	} else {
+		f.Budget.BudgetAfgewezen()
+	}
 }
 
 func (f *FinancieringsDossier) ReserveerBudget() {
-	// Finalise the budget
+	f.Budget.BudgetStatus = f.Budget.BudgetStatus.GetStatus("Gereserveerd")
 }
 
 func (f *FinancieringsDossier) VerwerkFactuur(factuur Factuur) {
-	// Stuur de factuur/betaal or something, idk the business logic
-	// make the factuur turn over a bool i think
-	// does this need to be a method like this?
+	f.Budget.UpdateBudget(factuur.Bedrag)
 	fmt.Println(factuur)
+	fmt.Println(f.Facturen)
 }
