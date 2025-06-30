@@ -1,4 +1,4 @@
-{{define "tech/view"}}
+{{define "category/view"}}
 <html>
 	<head>
 		<title>
@@ -13,26 +13,23 @@
 				<thead>
 					<tr>
 						<td>Name</td>
-						<td>Category</td>
-						<td>Needs</td>
+						<td>Description</td>
 						<td></td>
 					</tr>
 				</thead>
 				<tbody>
-
 					{{range .}}
 						<tr>
 							<td>{{.Name}}</td>
-							<td>{{.Category.Name}}</td>
-							<td>{{range .Needs}}{{.Description}},{{end}}</td>
-							<td><a href="/View/Tech/{{.Id}}/Update">Edit</a></td>
-							<td><button type="submit" formmethod="POST" formaction="/Tech/{{.Id}}/Delete">Delete</a></td>
+							<td>{{.Description}}</td>
+							<td><a href="/View/Category/{{.Id}}/Update">Edit</a></td>
+							<td><button type="submit" formmethod="POST" formaction="/Category/{{.Id}}/Delete">Delete</a></td>
 						</tr>
 					{{end}}
 				</tbody>
 			</table>
 			<br/>
-			<a href="/View/Tech/Create">Create new tech</a>
+			<a href="/View/Category/Create">Create new category</a>
 		</form>
 	</body>
 </html>

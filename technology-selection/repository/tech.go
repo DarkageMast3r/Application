@@ -12,7 +12,7 @@ func tech_read(rows *sql.Rows) []models.Tech {
 	for rows.Next() {
 		var tech models.Tech
 		if err := rows.Scan(&tech.Id, &tech.CategoryId, &tech.Name); err != nil {
-			fmt.Print(err)
+			fmt.Println(err)
 			continue
 		}
 		tech.Category = Category_Get_By_Id(tech.CategoryId)
@@ -83,4 +83,14 @@ func Tech_Save(tech *models.Tech) error {
 	}
 
 	return nil
+}
+
+func Tech_Delete(id int) error {
+	db := Database_Get()
+	_, err := db.Exec("delete from TechNeed where `TechId` = ?", id)
+	if err != nil {
+		return err
+	}
+	_, err = db.Exec("delete from Tech where `Id` = ?", id)
+	return err
 }

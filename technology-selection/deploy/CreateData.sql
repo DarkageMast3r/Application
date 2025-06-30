@@ -10,7 +10,6 @@ create table Category (
 	Id int auto_increment,
 	`Name` varchar(256),
 	`Description` varchar(256),
-	GeneratedOn DateTime,
     primary key (Id)
 );
 
@@ -41,9 +40,9 @@ create table TechNeed (
     foreign key (NeedId) references Need(Id)
 );
 
-insert into Category (`Name`, `Description`, GeneratedOn) values ('Strains', 'For all strainst', '2025-6-27');
-insert into Category (`Name`, `Description`, GeneratedOn) values ('Injuries', 'For all injuries', '2025-6-27');
-insert into Category (`Name`, `Description`, GeneratedOn) values ('Bones', 'For all issues regarding bones', '2025-6-27');
+insert into Category (`Name`, `Description`) values ('Strains', 'For all strainst');
+insert into Category (`Name`, `Description`) values ('Injuries', 'For all injuries');
+insert into Category (`Name`, `Description`) values ('Bones', 'For all issues regarding bones');
 
 insert into Tech (`Name`, `CategoryId`) values ('Rolstoel', 3);
 insert into Tech (`Name`, `CategoryId`) values ('Rijstoel', 3);
@@ -58,5 +57,3 @@ insert into Need (`Description`) values ('Pijnstiller');
 insert into TechNeed (`TechId`, `NeedId`) values (1, 1);
 insert into TechNeed (`TechId`, `NeedId`) values (2, 1);
 insert into TechNeed (`TechId`, `NeedId`) values (1, 2);
-
-select * from Tech;

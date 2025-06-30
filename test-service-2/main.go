@@ -13,5 +13,5 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Print(message)
+	fmt.Println(message)
 }

@@ -12,7 +12,7 @@ func need_read(rows *sql.Rows) []models.Need {
 	for rows.Next() {
 		var need models.Need
 		if err := rows.Scan(&need.Id, &need.Description); err != nil {
-			fmt.Print(err)
+			fmt.Println(err)
 			continue
 		}
 		needs = append(needs, need)
@@ -60,7 +60,7 @@ func Need_Get_All_By_TechId(id int) []models.Need {
 func Need_Save(need *models.Need) error {
 	db := Database_Get()
 	if need.Id == 0 {
-		result, err := db.Exec("insert into TechNeed () values ()")
+		result, err := db.Exec("insert into Need () values ()")
 		if err != nil {
 			return err
 		}
@@ -72,9 +72,19 @@ func Need_Save(need *models.Need) error {
 	}
 	// Do not allow to change tech the need is linked to
 	_, err := db.Exec(
-		"update TechNeed set `Description` = ? where `Id` = ?",
+		"update Need set `Description` = ? where `Id` = ?",
 		need.Description,
 		need.Id,
 	)
+	return err
+}
+
+func Need_Delete(id int) error {
+	db := Database_Get()
+	_, err := db.Exec("delete from TechNeed where `NeedId` = ?", id)
+	if err != nil {
+		return err
+	}
+	_, err = db.Exec("delete from Need where `Id` = ?", id)
 	return err
 }

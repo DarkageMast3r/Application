@@ -74,6 +74,16 @@ func Tech_Create(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/View/Tech", http.StatusSeeOther)
 }
 
+func Tech_Delete(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	repository.Tech_Delete(id)
+	http.Redirect(w, r, "/View/Tech", http.StatusSeeOther)
+}
+
 func Tech_View(w http.ResponseWriter, r *http.Request) {
 	err := Template_View(w, repository.Tech_Get_All(), "tech/view", "templates/tech/view.gohtml")
 	if err != nil {
@@ -88,7 +98,6 @@ func Tech_View_Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println("Getting tech by id ", id)
 	var view viewModels.TechUpdate
 	view.Tech = repository.Tech_Get_By_Id(id)
 	view.Categories = repository.Category_Get_All()

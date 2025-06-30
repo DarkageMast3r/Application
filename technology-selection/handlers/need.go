@@ -4,10 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"reflect"
 	"service/models"
 	"service/repository"
-	"service/util"
+	"service/viewModels"
 	"strconv"
 )
 
@@ -38,16 +37,11 @@ func Need_Get_By_Id(w http.ResponseWriter, r *http.Request) {
 	w.Write(result)
 }
 
-func Need_Create(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" {
-		var need models.Need
-		util.Crud_View_Create(w, reflect.TypeOf(need), "/Need/Create")
-		return
-	}
+func Need_Update(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 
 	var need models.Need
-	err := util.Fill_Fields_From_Form(&need, r)
+	err := decoder.Decode(&need, r.Form)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -56,5 +50,64 @@ func Need_Create(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	w.WriteHeader(http.StatusOK)
+	http.Redirect(w, r, "/View/Need", http.StatusSeeOther)
+}
+
+func Need_Create(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+
+	var need models.Need
+	err := decoder.Decode(&need, r.Form)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	err = repository.Need_Save(&need)
+	if err != nil {
+		fmt.Println(err)
+	}
+	http.Redirect(w, r, "/View/Need", http.StatusSeeOther)
+}
+func Need_Delete(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	repository.Need_Delete(id)
+	http.Redirect(w, r, "/View/Need", http.StatusSeeOther)
+}
+
+func Need_View(w http.ResponseWriter, r *http.Request) {
+	err := Template_View(w, repository.Need_Get_All(), "need/view", "templates/need/view.gohtml")
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+}
+
+func Need_View_Create(w http.ResponseWriter, r *http.Request) {
+	var view viewModels.NeedCreate
+	view.Technologies = repository.Tech_Get_All()
+
+	err := Template_View(w, view, "need/create", "templates/need/create.gohtml")
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+}
+
+func Need_View_Update(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	var view viewModels.NeedUpdate
+	view.Need = repository.Need_Get_By_Id(id)
+	view.Technologies = repository.Tech_Get_All()
+
+	err = Template_View(w, view, "need/update", "templates/need/update.gohtml")
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
 }

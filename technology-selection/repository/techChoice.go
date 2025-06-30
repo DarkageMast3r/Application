@@ -12,7 +12,7 @@ func techChoice_read(rows *sql.Rows) []models.TechChoice {
 	for rows.Next() {
 		var techChoice models.TechChoice
 		if err := rows.Scan(&techChoice.Id, &techChoice.TechId, &techChoice.ClientId); err != nil {
-			fmt.Print(err)
+			fmt.Println(err)
 			continue
 		}
 		techChoice.Tech = Tech_Get_By_Id(techChoice.TechId)

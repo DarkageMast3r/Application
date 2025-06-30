@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"service/models"
-	"time"
 )
 
 func category_read(rows *sql.Rows) []models.Category {
@@ -12,8 +11,8 @@ func category_read(rows *sql.Rows) []models.Category {
 
 	for rows.Next() {
 		var cat models.Category
-		if err := rows.Scan(&cat.Id, &cat.Name, &cat.Description, &cat.GeneratedOn); err != nil {
-			fmt.Print(err)
+		if err := rows.Scan(&cat.Id, &cat.Name, &cat.Description); err != nil {
+			fmt.Println(err)
 			continue
 		}
 		categories = append(categories, cat)
@@ -23,7 +22,7 @@ func category_read(rows *sql.Rows) []models.Category {
 
 func Category_Get_All() []models.Category {
 	db := Database_Get()
-	rows, err := db.Query("SELECT `Id`, `Name`, `Description`, `GeneratedOn` FROM Category")
+	rows, err := db.Query("SELECT `Id`, `Name`, `Description` FROM Category")
 	if err != nil {
 		return nil
 	}
@@ -34,7 +33,7 @@ func Category_Get_All() []models.Category {
 
 func Category_Get_By_Id(id int) *models.Category {
 	db := Database_Get()
-	rows, err := db.Query("SELECT `Id`, `Name`, `Description`, `GeneratedOn` FROM Category WHERE Id = ?", id)
+	rows, err := db.Query("SELECT `Id`, `Name`, `Description` FROM Category WHERE Id = ?", id)
 	if err != nil {
 		fmt.Println(err)
 		return nil
@@ -58,15 +57,19 @@ func Category_Save(category *models.Category) error {
 		if err != nil {
 			return err
 		}
-		category.GeneratedOn = time.Now()
 		category.Id = int(id)
 	}
 	_, err := db.Exec(
-		"update Category set `Name` = ?, `Description` = ?, `GeneratedOn` = ? where `Id` = ? ",
+		"update Category set `Name` = ?, `Description` = ? where `Id` = ? ",
 		category.Name,
 		category.Description,
-		category.GeneratedOn,
 		category.Id,
 	)
+	return err
+}
+
+func Category_Delete(id int) error {
+	db := Database_Get()
+	_, err := db.Exec("delete from Category where `Id` = ?", id)
 	return err
 }

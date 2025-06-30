@@ -1,0 +1,20 @@
+{{define "need/create"}}
+<html>
+	<head>
+		<title>
+			Title
+		</title>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+		{{template "common/style"}}
+	</head>
+	<body>
+		{{template "common/header"}}
+		<form style="margin: 1rem" action="/Need/Create" method="POST">
+			<label for="description">Description</label>
+			<input name="description" type="text"/>
+			<br/>
+			<input type="submit"/>
+		</form>
+	</body>
+</html>
+{{end}}

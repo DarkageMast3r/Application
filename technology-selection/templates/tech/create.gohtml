@@ -5,9 +5,11 @@
 			Title
 		</title>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+		{{template "common/style"}}
 	</head>
 	<body>
-		<form action="/Tech/Create" method="POST">
+		{{template "common/header"}}
+		<form style="margin:1rem" action="/Tech/Create" method="POST">
 			<label for="name">Name</label>
 			<input name="name" type="text"/>
 			<br/>
