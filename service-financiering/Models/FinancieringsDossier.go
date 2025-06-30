@@ -40,6 +40,7 @@ func (f *FinancieringsDossier) ReserveerBudget() {
 
 func (f *FinancieringsDossier) VerwerkFactuur(factuur Factuur) {
 	f.Budget.UpdateBudget(factuur.Bedrag)
+	f.Budget.BudgetStatus = f.Budget.BudgetStatus.GetStatus("Gefactureerd")
 	fmt.Println(factuur)
 	fmt.Println(f.Facturen)
 }
