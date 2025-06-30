@@ -1,13 +1,13 @@
 package models
 
 type Factuur struct {
-	factuurID int
-	productID int
-	bedrag    float64
-	betaald   bool
+	FactuurID int
+	ProductID int
+	Bedrag    float64
+	Betaald   bool
 }
 
-func (f Factuur) factuurBetaald() {
-	// open recieving the paying, mark it as paid(maybe some checks? idk)
-	f.betaald = true
+func (f *Factuur) FactuurBetaald() {
+	// open recieving the payment, mark it as paid(maybe some checks? idk)
+	f.Betaald = true
 }
