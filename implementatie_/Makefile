@@ -38,10 +38,10 @@ test:
 	go test -v ./... -race -cover
 
 clean:
-	docker stop go-rest-api-template
+	docker stop ZorgTechImplementatie
 	docker stop dockerPostgres
-	docker rm go-rest-api-template
+	docker rm ZorgTechImplementatie
 	docker rm dockerPostgres
 	docker rm dockerRedis
-	docker image rm golang-rest-api-template-backend
+	docker image rm ZorgTechImplementatie-backend
 	rm -rf .dbdata
