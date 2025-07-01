@@ -1,15 +1,19 @@
 package main
 
 import (
-	m "Financiering/models"
+	h "Financiering/Handlers"
 	"fmt"
+	"net/http"
 )
 
 func main() {
-	fmt.Println("shut up golang")
-	var FD m.FinancieringsDossier
-	FD.NieuwDossier(1, 2, 3)
-	FD.VraagBudgetAan(10)
-	fmt.Println(FD.Budget)
-	fmt.Println(FD.Budget.BudgetStatus)
+	s := &http.Server{
+		Addr:    ":8080",
+		Handler: http.DefaultServeMux,
+	}
+
+	http.HandleFunc("GET /", h.HomeHandler)
+
+	fmt.Println("o7")
+	s.ListenAndServe()
 }
