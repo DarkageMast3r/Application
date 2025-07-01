@@ -1,3 +1,3 @@
-module service-discovery
+module main
 
 go 1.22.0
