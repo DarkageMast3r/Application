@@ -1,0 +1,21 @@
+{{define "need/update"}}
+<html>
+	<head>
+		<title>
+			Title
+		</title>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+		{{template "common/style"}}
+	</head>
+	<body>
+		{{template "common/header"}}
+		<form style="margin: 1rem" action="/Need/{{.Need.Id}}/Update" method="POST">
+			<input name="id" type="hidden" value="{{.Need.Id}}"/>
+			<label for="description">Description</label>
+			<input value="{{.Need.Description}}" name="description" type="text"/>
+			<br/>
+			<input type="submit"/>
+		</form>
+	</body>
+</html>
+{{end}}

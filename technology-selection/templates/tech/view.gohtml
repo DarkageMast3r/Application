@@ -1,0 +1,41 @@
+{{define "tech/view"}}
+<html>
+	<head>
+		<title>
+			Title
+		</title>
+		{{template "common/style"}}
+	</head>
+	<body>
+		{{template "common/header"}}
+		<form>
+			<table style="border-spacing: 1rem 0.5rem;">
+				<thead>
+					<tr>
+						<td>Name</td>
+						<td>Category</td>
+						<td>Price</td>
+						<td>Needs</td>
+						<td></td>
+					</tr>
+				</thead>
+				<tbody>
+
+					{{range .}}
+						<tr>
+							<td>{{.Name}}</td>
+							<td>{{.Category.Name}}</td>
+							<td>{{.Cost}}</td>
+							<td>{{range .Needs}}{{.Description}},{{end}}</td>
+							<td><a href="/View/Tech/{{.Id}}/Update">Edit</a></td>
+							<td><button type="submit" formmethod="POST" formaction="/Tech/{{.Id}}/Delete">Delete</a></td>
+						</tr>
+					{{end}}
+				</tbody>
+			</table>
+			<br/>
+			<a href="/View/Tech/Create">Create new tech</a>
+		</form>
+	</body>
+</html>
+{{end}}

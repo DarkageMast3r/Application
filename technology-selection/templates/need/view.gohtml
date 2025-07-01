@@ -1,0 +1,34 @@
+{{define "need/view"}}
+<html>
+	<head>
+		<title>
+			Title
+		</title>
+		{{template "common/style"}}
+	</head>
+	<body>
+		{{template "common/header"}}
+		<form>
+			<table style="border-spacing: 1rem 0.5rem;">
+				<thead>
+					<tr>
+						<td>Need</td>
+						<td></td>
+					</tr>
+				</thead>
+				<tbody>
+					{{range .}}
+						<tr>
+							<td>{{.Description}}</td>
+							<td><a href="/View/Need/{{.Id}}/Update">Edit</a></td>
+							<td><button type="submit" formmethod="POST" formaction="/Need/{{.Id}}/Delete">Delete</a></td>
+						</tr>
+					{{end}}
+				</tbody>
+			</table>
+			<br/>
+			<a href="/View/Need/Create">Create new need</a>
+		</form>
+	</body>
+</html>
+{{end}}
