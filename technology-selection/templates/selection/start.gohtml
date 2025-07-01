@@ -1,0 +1,51 @@
+{{define "selection/start"}}
+{{$model := .}}
+<html>
+	<head>
+		<title>
+			Title
+		</title>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+		{{template "common/style"}}
+		{{template "common/styleFront"}}
+		<style>
+			.search {
+				padding: 1rem;
+				background-color:rgb(255, 247, 216);
+				box-shadow: 0 0 5px rgb(174, 168, 147);
+				display: flex;
+				flex-direction: column;
+				width: fit-content;
+				height: fit-content;
+				position: absolute;
+				margin: auto;
+				top: 0;
+				right: 0;
+				bottom: 0;
+				left: 0;
+			}
+			.page {
+				background-color: rgb(255, 252, 241);
+				height: 100%;
+				margin: 0;
+			}
+		</style>
+	</head>
+	<body>
+		<form class="page" method="POST">
+			<div class="search">
+				<label for="case_id">Client</label>
+				<select class="input-white" id="case_id" name="case.id">
+					{{range .Cases}}
+						<option value="{{.Id}}">{{.Name}}</option>
+					{{end}}
+				</select>
+				<input formaction="/Select" style="margin-top: 1rem;" class="w-100 btn-primary" type="submit" value="Search"/>
+				<input formaction="/Shortlist" style="margin-top: 1rem;" class="w-100 btn-primary" type="submit" value="View shortlist"/>
+				<div style="height: 1rem"></div>
+				<a href="/View/Tech">Backoffice</a>
+			</div>
+		</form>
+	</body>
+</html>
+{{end}}

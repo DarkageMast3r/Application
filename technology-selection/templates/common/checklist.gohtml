@@ -1,0 +1,11 @@
+{{define "common/checklist"}}
+{{$prefix := .Prefix}}
+{{range $key, $value := .Options}}
+    <label>
+        <input name="{{$prefix}}.options.{{$key}}.selected" {{if $value.Selected}}checked{{end}} type="checkbox"/>
+        <input name="{{$prefix}}.options.{{$key}}.name" type="hidden" value="{{$value.Name}}"/>
+        {{$value.Description}}
+    </label>
+    <br/>
+    {{end}}
+{{end}}
