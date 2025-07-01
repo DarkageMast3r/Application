@@ -5,14 +5,14 @@ type Budget struct {
 	maxBedrag         float64
 	beschikbaarBedrag float64
 	gebruiktBedrag    float64
-	BudgetStatus      BudgetStatus
+	BudgetStatus      string
 }
 
 func (b *Budget) NieuwBudget(max float64) {
 	b.maxBedrag = max
 	b.beschikbaarBedrag = max
 	b.gebruiktBedrag = 0
-	b.BudgetStatus = b.BudgetStatus.GetStatus("Aangevraagd")
+	b.BudgetStatus = "Aangevraagd"
 }
 
 // is deze überhaupt nodig? fucking business logic
@@ -22,9 +22,9 @@ func (b *Budget) UpdateBudget(bedrag float64) {
 }
 
 func (b *Budget) BudgetGoedgekeurd() {
-	b.BudgetStatus = b.BudgetStatus.GetStatus("Goedgekeurd")
+	b.BudgetStatus = "Goedgekeurd"
 }
 
 func (b *Budget) BudgetAfgewezen() {
-	b.BudgetStatus = b.BudgetStatus.GetStatus("Afgewezen")
+	b.BudgetStatus = "Afgewezen"
 }
