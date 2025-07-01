@@ -1,0 +1,53 @@
+services:
+  backend:
+    container_name: ZorgTechCatalogus
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8501:8501
+    depends_on:
+      - db
+      - mongo
+    environment:
+      REDIS_HOST: redis
+      POSTGRES_DB: go_app_dev1
+      POSTGRES_HOST: dockerPostgres
+      POSTGRES_USER: docker
+      POSTGRES_PASSWORD: password
+      POSTGRES_PORT: 5433
+      JWT_SECRET_KEY: ObL89O3nOSSEj6tbdHako0cXtPErzBUfq8l8o/3KD9g=INSECURE
+      API_SECRET_KEY: cJGZ8L1sDcPezjOy1zacPJZxzZxrPObm2Ggs1U0V+fE=INSECURE
+      
+
+  db:
+    image: postgres:14.1-alpine
+    restart: always
+    container_name: dockerPostgres1
+    volumes:
+      - .dbdata:/var/lib/postgres
+    ports:
+      - "5433:5433"
+    environment:
+      - POSTGRES_DB=go_app_dev1
+      - POSTGRES_USER=docker
+      - POSTGRES_PASSWORD=password
+    command: -p 5433
+
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6380:6380"
+    container_name: dockerRedis1
+
+  mongo:
+    image: mongo
+    container_name: dockerMongo1
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - "27018:27018"
+    restart: always
+
+volumes:
+  mongo_data: # Declare the volume for MongoDB data
