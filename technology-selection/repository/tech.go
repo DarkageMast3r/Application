@@ -11,7 +11,7 @@ func tech_read(rows *sql.Rows) []models.Tech {
 
 	for rows.Next() {
 		var tech models.Tech
-		if err := rows.Scan(&tech.Id, &tech.CategoryId, &tech.Name); err != nil {
+		if err := rows.Scan(&tech.Id, &tech.CategoryId, &tech.Name, &tech.Cost); err != nil {
 			fmt.Println(err)
 			continue
 		}
@@ -24,7 +24,7 @@ func tech_read(rows *sql.Rows) []models.Tech {
 
 func Tech_Get_All() []models.Tech {
 	db := Database_Get()
-	rows, err := db.Query("SELECT `Id`, `CategoryId`, `Name` FROM Tech")
+	rows, err := db.Query("SELECT `Id`, `CategoryId`, `Name`, `Cost` FROM Tech")
 	if err != nil {
 		return nil
 	}
@@ -35,7 +35,7 @@ func Tech_Get_All() []models.Tech {
 
 func Tech_Get_By_Id(id int) *models.Tech {
 	db := Database_Get()
-	rows, err := db.Query("SELECT `Id`, `CategoryId`, `Name` FROM Tech WHERE Id = ?", id)
+	rows, err := db.Query("SELECT `Id`, `CategoryId`, `Name`, `Cost` FROM Tech WHERE Id = ?", id)
 	if err != nil {
 		fmt.Println(err)
 		return nil
@@ -46,6 +46,17 @@ func Tech_Get_By_Id(id int) *models.Tech {
 		return &techs[0]
 	}
 	return nil
+}
+
+func Tech_Get_All_By_Category(id int) []models.Tech {
+	db := Database_Get()
+	rows, err := db.Query("SELECT `Id`, `CategoryId`, `Name`, `Cost` FROM Tech WHERE CategoryId = ?", id)
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+	defer rows.Close()
+	return tech_read(rows)
 }
 
 func Tech_Save(tech *models.Tech) error {
@@ -63,9 +74,10 @@ func Tech_Save(tech *models.Tech) error {
 	}
 
 	_, err := db.Exec(
-		"update Tech set `Name` = ?, `CategoryId` = ? where `Id` = ?",
+		"update Tech set `Name` = ?, `CategoryId` = ?, `Cost` = ? where `Id` = ?",
 		tech.Name,
 		tech.CategoryId,
+		tech.Cost,
 		tech.Id,
 	)
 	if err != nil {

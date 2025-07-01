@@ -14,6 +14,7 @@
 					<tr>
 						<td>Name</td>
 						<td>Category</td>
+						<td>Price</td>
 						<td>Needs</td>
 						<td></td>
 					</tr>
@@ -24,6 +25,7 @@
 						<tr>
 							<td>{{.Name}}</td>
 							<td>{{.Category.Name}}</td>
+							<td>{{.Cost}}</td>
 							<td>{{range .Needs}}{{.Description}},{{end}}</td>
 							<td><a href="/View/Tech/{{.Id}}/Update">Edit</a></td>
 							<td><button type="submit" formmethod="POST" formaction="/Tech/{{.Id}}/Delete">Delete</a></td>

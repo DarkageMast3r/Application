@@ -40,9 +40,16 @@ func main() {
 	http.HandleFunc("/View/Tech/{id}/Update", handlers.Tech_View_Update)
 	http.HandleFunc("/View/Tech/Create", handlers.Tech_View_Create)
 
+	http.HandleFunc("/Tech/{id}/Shortlist", handlers.Tech_Shortlist)
+	http.HandleFunc("/TechChoice/{id}/Choose", handlers.TechChoice_Choose)
+	http.HandleFunc("/TechChoice/{id}/Reject", handlers.TechChoice_Reject)
+
 	http.HandleFunc("/TechChoice", handlers.TechChoice_Get_All)
 	http.HandleFunc("/TechChoice/{id}", handlers.TechChoice_Get_By_Id)
-	http.HandleFunc("/TechChoice/Create", handlers.TechChoice_Create)
+
+	http.HandleFunc("/", handlers.Start_View)
+	http.HandleFunc("/Select", handlers.Selection_View)
+	http.HandleFunc("/Shortlist", handlers.Shortlist_View)
 
 	port := service.Register("technology-selection")
 

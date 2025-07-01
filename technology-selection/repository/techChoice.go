@@ -11,7 +11,7 @@ func techChoice_read(rows *sql.Rows) []models.TechChoice {
 
 	for rows.Next() {
 		var techChoice models.TechChoice
-		if err := rows.Scan(&techChoice.Id, &techChoice.TechId, &techChoice.ClientId); err != nil {
+		if err := rows.Scan(&techChoice.Id, &techChoice.TechId, &techChoice.CaseId, &techChoice.Status, &techChoice.Reasoning); err != nil {
 			fmt.Println(err)
 			continue
 		}
@@ -23,8 +23,20 @@ func techChoice_read(rows *sql.Rows) []models.TechChoice {
 
 func TechChoice_Get_All() []models.TechChoice {
 	db := Database_Get()
-	rows, err := db.Query("SELECT `Id`, `TechId`, `ClientId`, `Status` FROM TechChoice")
+	rows, err := db.Query("SELECT `Id`, `TechId`, `CaseId`, `Status`, `Reasoning` FROM TechChoice")
 	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+	defer rows.Close()
+	return techChoice_read(rows)
+}
+
+func TechChoice_Get_All_By_Case(caseId int) []models.TechChoice {
+	db := Database_Get()
+	rows, err := db.Query("SELECT `Id`, `TechId`, `CaseId`, `Status`, `Reasoning` FROM TechChoice where CaseId = ?", caseId)
+	if err != nil {
+		fmt.Println(err)
 		return nil
 	}
 	defer rows.Close()
@@ -34,7 +46,7 @@ func TechChoice_Get_All() []models.TechChoice {
 
 func TechChoice_Get_By_Id(id int) *models.TechChoice {
 	db := Database_Get()
-	rows, err := db.Query("SELECT `Id`, `TechId`, `ClientId`, `Status` FROM TechChoice WHERE Id = ?", id)
+	rows, err := db.Query("SELECT `Id`, `TechId`, `CaseId`, `Status`, `Reasoning` FROM TechChoice WHERE Id = ?", id)
 	if err != nil {
 		fmt.Println(err)
 		return nil
@@ -50,7 +62,7 @@ func TechChoice_Get_By_Id(id int) *models.TechChoice {
 func TechChoice_Save(techChoice *models.TechChoice) error {
 	db := Database_Get()
 	if techChoice.Id == 0 {
-		result, err := db.Exec("insert into TechChoice (TechId, ClientId) values (?, ?)", techChoice.TechId, techChoice.ClientId)
+		result, err := db.Exec("insert into TechChoice (TechId, CaseId) values (?, ?)", techChoice.TechId, techChoice.CaseId)
 		if err != nil {
 			return err
 		}
@@ -61,8 +73,9 @@ func TechChoice_Save(techChoice *models.TechChoice) error {
 		techChoice.Id = int(id)
 	}
 	_, err := db.Exec(
-		"update TechChoice set `Status` = ? where `Id` = ?",
+		"update TechChoice set `Status` = ?, `Reasoning` = ? where `Id` = ?",
 		techChoice.Status,
+		techChoice.Reasoning.String,
 		techChoice.Id,
 	)
 	return err

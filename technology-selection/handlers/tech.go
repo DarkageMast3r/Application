@@ -119,3 +119,37 @@ func Tech_View_Create(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 }
+
+func Tech_Shortlist(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	if repository.Tech_Get_By_Id(id) == nil {
+		fmt.Println("No such tech found!")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+
+	}
+
+	r.ParseForm()
+	var selectForm viewModels.SelectTechnology
+	err = decoder.Decode(&selectForm, r.Form)
+
+	var techChoice models.TechChoice
+	techChoice.TechId = id
+	techChoice.CaseId = selectForm.Case.Id
+	techChoice.Status = models.SelectionStatus_Shortlist
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	err = repository.TechChoice_Save(&techChoice)
+	if err != nil {
+		fmt.Println(err)
+	}
+	Selection_View(w, r)
+}

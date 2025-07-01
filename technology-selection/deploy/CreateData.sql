@@ -17,14 +17,16 @@ create table Tech (
 	Id int primary key auto_increment,
     `Name` varchar(256),
     CategoryId int,
+    Cost decimal,
 	constraint fk_Category foreign key (CategoryId) references Category(Id)
 );
 
 create table TechChoice (
 	Id int primary key auto_increment,
     TechId int,
-	ClientId varchar(256),
+	CaseId int,
     `Status` int,
+    `Reasoning` varchar(256),
     foreign key (TechId) references Tech(Id)
 );
 
@@ -44,10 +46,10 @@ insert into Category (`Name`, `Description`) values ('Strains', 'For all strains
 insert into Category (`Name`, `Description`) values ('Injuries', 'For all injuries');
 insert into Category (`Name`, `Description`) values ('Bones', 'For all issues regarding bones');
 
-insert into Tech (`Name`, `CategoryId`) values ('Rolstoel', 3);
-insert into Tech (`Name`, `CategoryId`) values ('Rijstoel', 3);
-insert into Tech (`Name`, `CategoryId`) values ('Pleister', 2);
-insert into Tech (`Name`, `CategoryId`) values ('Aspirine', 2);
+insert into Tech (`Name`, `CategoryId`, `Cost`) values ('Rolstoel', 3, 100);
+insert into Tech (`Name`, `CategoryId`, `Cost`) values ('Rijstoel', 3, 2000);
+insert into Tech (`Name`, `CategoryId`, `Cost`) values ('Pleister', 2, 2500.13);
+insert into Tech (`Name`, `CategoryId`, `Cost`) values ('Aspirine', 2, 503);
 
 insert into Need (`Description`) values ('Wandelondersteuning');
 insert into Need (`Description`) values ('Comfort');
@@ -57,3 +59,5 @@ insert into Need (`Description`) values ('Pijnstiller');
 insert into TechNeed (`TechId`, `NeedId`) values (1, 1);
 insert into TechNeed (`TechId`, `NeedId`) values (2, 1);
 insert into TechNeed (`TechId`, `NeedId`) values (1, 2);
+
+select * from TechChoice

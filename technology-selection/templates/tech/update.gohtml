@@ -15,6 +15,9 @@
 			<label for="name">Name</label>
 			<input value="{{ $tech.Name }}" name="name" type="text"/>
 			<br/>
+			<label for="cost">Name</label>
+			<input value="{{ $tech.Cost }}" name="Cost" type="number" step="0.01"/>
+			<br/>
 			<label for="category_id">Category</label>
 			<select name="category_id">
 				{{ range .Categories }}

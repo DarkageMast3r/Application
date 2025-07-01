@@ -9,6 +9,8 @@ func Template_View(w http.ResponseWriter, data any, templateName string, files .
 	commonFiles := []string{
 		"templates/common/header.gohtml",
 		"templates/common/style.gohtml",
+		"templates/common/styleFront.gohtml",
+		"templates/common/checklist.gohtml",
 	}
 	files = append(files, commonFiles...)
 	tmpl, err := template.New(templateName).ParseFiles(files...)

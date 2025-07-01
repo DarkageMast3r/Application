@@ -13,6 +13,9 @@
 			<label for="name">Name</label>
 			<input name="name" type="text"/>
 			<br/>
+			<label for="cost">Price</label>
+			<input name="cost" type="number" step="0.01"/>
+			<br/>
 			<label for="category_id">Category</label>
 			<select name="category_id">
 				{{ range .Categories }}

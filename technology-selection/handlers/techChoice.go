@@ -4,10 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"reflect"
 	"service/models"
 	"service/repository"
-	"service/util"
 	"strconv"
 )
 
@@ -37,23 +35,48 @@ func TechChoice_Get_By_Id(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Write(result)
 }
-func TechChoice_Create(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" {
-		var need models.TechChoice
-		util.Crud_View_Create(w, reflect.TypeOf(need), "/TechChoice/Create")
-		return
-	}
-	r.ParseForm()
 
-	var techChoice models.TechChoice
-	err := util.Fill_Fields_From_Form(&techChoice, r)
+func TechChoice_Choose(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
+		fmt.Println(err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	err = repository.TechChoice_Save(&techChoice)
+	techChoice := repository.TechChoice_Get_By_Id(id)
+	if techChoice == nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	r.ParseForm()
+	techChoice.Reasoning.String = r.Form.Get("reasoning")
+	techChoice.Status = models.SelectionStatus_Chosen
+	err = repository.TechChoice_Save(techChoice)
 	if err != nil {
 		fmt.Println(err)
 	}
-	w.WriteHeader(http.StatusOK)
+
+	Shortlist_View(w, r)
+}
+
+func TechChoice_Reject(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	techChoice := repository.TechChoice_Get_By_Id(id)
+	if techChoice == nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	r.ParseForm()
+	techChoice.Reasoning.String = r.Form.Get("reasoning")
+	techChoice.Status = models.SelectionStatus_Rejected
+	err = repository.TechChoice_Save(techChoice)
+	if err != nil {
+		fmt.Println(err)
+	}
+	Shortlist_View(w, r)
 }
