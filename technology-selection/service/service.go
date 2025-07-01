@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
@@ -11,6 +12,9 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
+
+	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 type Config struct {
@@ -44,6 +48,109 @@ var config Config
 var services map[string]string
 
 const service_discovery string = "service_discovery"
+
+var rabbitmq_connection *amqp.Connection
+
+func get_rabbitmq_connection() (*amqp.Connection, error) {
+	if rabbitmq_connection != nil {
+		return rabbitmq_connection, nil
+	}
+	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+	if err != nil {
+		return nil, err
+	}
+	rabbitmq_connection = conn
+	return rabbitmq_connection, nil
+}
+
+func Queue_Write(name string, body []byte, contentType string) error {
+	conn, err := get_rabbitmq_connection()
+	if err != nil {
+		return err
+	}
+
+	channel, err := conn.Channel()
+	if err != nil {
+		return err
+	}
+	defer channel.Close()
+	queue, err := channel.QueueDeclare(
+		name,  // name
+		false, // durable
+		false, // delete when unused
+		false, // exclusive
+		false, // no-wait
+		nil,   // arguments
+	)
+	if err != nil {
+		return err
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	err = channel.PublishWithContext(ctx,
+		"",         // exchange
+		queue.Name, // routing key
+		false,      // mandatory
+		false,      // immediate
+		amqp.Publishing{
+			ContentType: contentType,
+			Body:        body,
+		},
+	)
+
+	log.Printf(" [x] Queue %s Sent %s\n", queue.Name, body)
+	return err
+}
+
+func Queue_Listen(name string, handler func(amqp.Delivery)) error {
+	conn, err := get_rabbitmq_connection()
+	if err != nil {
+		return err
+	}
+
+	channel, err := conn.Channel()
+	if err != nil {
+		return err
+	}
+
+	queue, err := channel.QueueDeclare(
+		name,  // name
+		false, // durable
+		false, // delete when unused
+		false, // exclusive
+		false, // no-wait
+		nil,   // arguments
+	)
+	if err != nil {
+		channel.Close()
+		return err
+	}
+	msgs, err := channel.Consume(
+		queue.Name, // queue
+		"",         // consumer
+		true,       // auto-ack
+		false,      // exclusive
+		false,      // no-local
+		false,      // no-wait
+		nil,        // args
+	)
+	if err != nil {
+		channel.Close()
+		return err
+	}
+
+	log.Printf(" [x] Queue %s Listening\n", queue.Name)
+	go func() {
+		for d := range msgs {
+			log.Println(string(d.Body))
+			handler(d)
+
+		}
+	}()
+	return nil
+}
 
 func Init() {
 	config = readConfig("config.json")
