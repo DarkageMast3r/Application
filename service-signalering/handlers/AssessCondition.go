@@ -1,17 +1,17 @@
 package handlers
 
 import (
-	"net/http"
-	"service-signalering/models"
-	"time"
-
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"log"
+	"net/http"
+	"service-signalering/database"
+	"service-signalering/models"
+	"time"
 )
 
 func AssessCondition(c *gin.Context) {
 	clientIDStr := c.Param("id")
-
 	clientID, err := uuid.Parse(clientIDStr)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, models.ErrorResponse{
@@ -30,12 +30,37 @@ func AssessCondition(c *gin.Context) {
 		return
 	}
 
+	// Create assessment with current timestamp
+	assessmentTime := time.Now()
 	assessment := models.Beoordeling{
 		Conclusie:       request.Conclusie,
 		Urgentie:        request.Urgentie,
 		GevalideerdDoor: request.GevalideerdDoor,
-		Tijdstip:        time.Now(),
+		Tijdstip:        assessmentTime,
 	}
+
+	// Save assessment to database
+	query := `
+        INSERT INTO assessments (client_id, conclusie, urgentie, gevalideerd_door, tijdstip) 
+        VALUES ($1, $2, $3, $4, $5)`
+
+	_, err = database.DB.Exec(query,
+		clientID,
+		assessment.Conclusie,
+		assessment.Urgentie,
+		assessment.GevalideerdDoor,
+		assessment.Tijdstip)
+
+	if err != nil {
+		log.Printf("Error saving assessment: %v", err)
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{
+			Code:    "DATABASE_ERROR",
+			Message: "Failed to save assessment",
+		})
+		return
+	}
+
+	log.Printf("Successfully saved assessment for client %s by %s", clientID, assessment.GevalideerdDoor)
 
 	response := models.BeoordelingResponse{
 		ClientID:         clientID,

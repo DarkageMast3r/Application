@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"service-signalering/database"
 	"service-signalering/handlers"
 
 	"github.com/gin-gonic/gin"
@@ -10,7 +11,11 @@ import (
 )
 
 func main() {
-	fmt.Println("=== Test Client UUIDs ===")
+
+	database.Init()
+
+	// Maak nep-UUIDs voor makkelijk testen
+	fmt.Println("=== Test UUIDs ===")
 	for i := 1; i <= 10; i++ {
 		testUUID := uuid.New()
 		fmt.Printf("Client %d: %s\n", i, testUUID.String())
@@ -28,7 +33,7 @@ func main() {
 		})
 	})
 
-	// Routes voor de API
+	// Daadwerkelijke endpoints
 	v1 := r.Group("/api/v1")
 	{
 		// Client monitoring endpoints
