@@ -1,86 +1,42 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"log"
-	"time"
+	"net/http"
+	"service-signalering/handlers"
 
-	"service-signalering/models"
-
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
 
 func main() {
-	fmt.Println("Testing ZorgSignalering Models...")
+	fmt.Println("=== Test Client UUIDs ===")
+	for i := 1; i <= 10; i++ {
+		testUUID := uuid.New()
+		fmt.Printf("Client %d: %s\n", i, testUUID.String())
+	}
+	fmt.Println("=========================")
+	fmt.Println()
 
-	// Test Signaal
-	signaal := models.Signaal{
-		Type:     "bloeddruk",
-		Waarde:   140.5,
-		Tijdstip: time.Now(),
-		Bron:     "sensor_001",
+	r := gin.Default()
+
+	// Check of de API werkt
+	r.GET("/health", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"status":  "ok",
+			"message": "Ik ben er! Geen zorgen!",
+		})
+	})
+
+	// Routes voor de API
+	v1 := r.Group("/api/v1")
+	{
+		// Client monitoring endpoints
+		v1.GET("/clients/:id/condition", handlers.GetClientCondition)
+		v1.POST("/clients/:id/signals", handlers.AddSignals)
+		v1.POST("/clients/:id/classify", handlers.ClassifyCondition)
+		v1.POST("/clients/:id/assess", handlers.AssessCondition)
 	}
 
-	// Test ToestandClassificatie
-	classificatie := models.ToestandClassificatie{
-		Categorie: "Cardiovasculair risico",
-		Ernst:     "matig",
-		Motivatie: "Bloeddruk verhoogd",
-	}
-
-	// Test Beoordeling
-	beoordeling := models.Beoordeling{
-		Conclusie:       "Monitoring verhogen",
-		Urgentie:        "laag",
-		GevalideerdDoor: "verpleegkundige.jansen",
-		Tijdstip:        time.Now(),
-	}
-
-	// Test ClientToestand
-	clientID := uuid.New()
-	toestand := models.ClientToestand{
-		ToestandID:          uuid.New(),
-		ClientID:            clientID,
-		Signalen:            []models.Signaal{signaal},
-		Classificatie:       &classificatie,
-		Beoordeling:         &beoordeling,
-		Status:              "beoordeeld",
-		TijdstipRegistratie: time.Now(),
-	}
-
-	// Test JSON serialization
-	jsonData, err := json.MarshalIndent(toestand, "", "  ")
-	if err != nil {
-		log.Fatal("Error marshaling JSON:", err)
-	}
-
-	fmt.Println("\nClientToestand as JSON:")
-	fmt.Println(string(jsonData))
-
-	// Test Request structs
-	req := models.RegistreerAchteruitgangRequest{
-		Signalen: []models.Signaal{signaal},
-	}
-
-	reqJSON, _ := json.MarshalIndent(req, "", "  ")
-	fmt.Println("\nRegistreerAchteruitgangRequest as JSON:")
-	fmt.Println(string(reqJSON))
-
-	// Test Response structs
-	response := models.ToestandResponse{
-		ToestandID:          toestand.ToestandID,
-		ClientID:            toestand.ClientID,
-		Status:              toestand.Status,
-		TijdstipRegistratie: toestand.TijdstipRegistratie,
-		Signalen:            toestand.Signalen,
-		Classificatie:       toestand.Classificatie,
-		Beoordeling:         toestand.Beoordeling,
-	}
-
-	respJSON, _ := json.MarshalIndent(response, "", "  ")
-	fmt.Println("\nToestandResponse as JSON:")
-	fmt.Println(string(respJSON))
-
-	fmt.Println("Woohoo het werkt")
+	r.Run(":8080")
 }
