@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Title}} - SmartCare Assist</title>
+    <link rel="stylesheet" href="/static/main.css">
+    {{block "head" .}}{{end}}
+</head>
+<body>
+    <div class="container">
+        {{template "header.html" .}}
+        {{template "nav.html" .}}
+        
+<main id="main-content">
+    {{block "content" .}}
+        {{if eq .CurrentPage "dashboard"}}
+            {{template "dashboard.html" .}}
+        {{else}}
+            {{template "dashboard.html" .}}
+        {{end}}
+    {{end}}
+</main>
+    </div>
+
+    <script src="/static/main.js"></script>
+    
+    {{block "scripts" .}}{{end}}
+    
+    <script>
+        window.SmartCare = window.SmartCare || {};
+        SmartCare.currentPage = '{{.CurrentPage}}';
+        SmartCare.csrfToken = '{{.CSRFToken}}';
+        SmartCare.init();
+    </script>
+</body>
+</html>

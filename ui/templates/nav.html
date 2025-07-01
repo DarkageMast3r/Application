@@ -1,0 +1,9 @@
+{{define "nav.html"}}
+<div class="nav-tabs">
+    <button class="nav-tab {{if eq .CurrentPage "dashboard"}}active{{end}}" data-page="dashboard">📊 Dashboard</button>
+    <button class="nav-tab {{if eq .CurrentPage "signalen"}}active{{end}}" data-page="signalen">🚨 Signalen</button>
+    <button class="nav-tab {{if eq .CurrentPage "zorgtechnologie"}}active{{end}}" data-page="zorgtechnologie">⚙️ Zorgtechnologie</button>
+    <button class="nav-tab {{if eq .CurrentPage "financiering"}}active{{end}}" data-page="financiering">💰 Financiering</button>
+    <button class="nav-tab {{if eq .CurrentPage "rapportage"}}active{{end}}" data-page="rapportage">📈 Rapportage</button>
+</div>
+{{end}}
