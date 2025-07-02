@@ -6,6 +6,6 @@ import (
 )
 
 func HomeHandler(wr http.ResponseWriter, rq *http.Request) {
-	LoadTemplate(wr, "Templates/Home.gohtml", r.ReadTable())
+	LoadTemplate(wr, "Templates/Home.gohtml", r.GetDossiers())
 	// maybe load some extra data, for now it works
 }

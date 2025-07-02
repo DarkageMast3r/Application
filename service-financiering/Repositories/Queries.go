@@ -5,12 +5,12 @@ import (
 	"fmt"
 )
 
-func ReadTable() []m.FinancieringsDossier {
+func GetDossiers() []m.FinancieringsDossier {
 	var Dossiers []m.FinancieringsDossier
 	db := Database_Get()
 	val, err := db.Query("SELECT financieringsdossier.DossierID, financieringsdossier.ClientID, financieringsdossier.ZorgTechID, financieringsdossier.AanvraagDatum, budget.ID, budget.MaxBedrag, budget.BeschikbaarBedrag, budget.GebruiktBedrag, budget.BudgetStatus FROM financieringsdossier INNER JOIN budget on financieringsdossier.BudgetID=budget.ID;")
 	if err != nil {
-		fmt.Println("ReadTable:", err)
+		fmt.Println(err)
 		return Dossiers
 	}
 	for val.Next() {
@@ -27,7 +27,7 @@ func ReadTable() []m.FinancieringsDossier {
 			&Dossier.Budget.BudgetStatus,
 		)
 		if err != nil {
-			fmt.Println("ReadTable: ", err)
+			fmt.Println(err)
 			continue
 		}
 		Dossiers = append(Dossiers, Dossier)
