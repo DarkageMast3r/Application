@@ -8,14 +8,14 @@ import (
 func GetDossiers() []m.FinancieringsDossier {
 	var Dossiers []m.FinancieringsDossier
 	db := Database_Get()
-	val, err := db.Query("SELECT financieringsdossier.DossierID, financieringsdossier.ClientID, financieringsdossier.ZorgTechID, financieringsdossier.AanvraagDatum, budget.ID, budget.MaxBedrag, budget.BeschikbaarBedrag, budget.GebruiktBedrag, budget.BudgetStatus FROM financieringsdossier INNER JOIN budget on financieringsdossier.BudgetID=budget.ID;")
+	innerJoins, err := db.Query("SELECT financieringsdossier.DossierID, financieringsdossier.ClientID, financieringsdossier.ZorgTechID, financieringsdossier.AanvraagDatum, budget.ID, budget.MaxBedrag, budget.BeschikbaarBedrag, budget.GebruiktBedrag, budget.BudgetStatus FROM financieringsdossier INNER JOIN budget on financieringsdossier.BudgetID=budget.ID;")
 	if err != nil {
 		fmt.Println(err)
 		return Dossiers
 	}
-	for val.Next() {
+	for innerJoins.Next() {
 		var Dossier m.FinancieringsDossier
-		err := val.Scan(
+		err := innerJoins.Scan(
 			&Dossier.DossierID,
 			&Dossier.ClientID,
 			&Dossier.ZorgTechID,
@@ -31,6 +31,30 @@ func GetDossiers() []m.FinancieringsDossier {
 			continue
 		}
 		Dossiers = append(Dossiers, Dossier)
+	}
+
+	remaining, err := db.Query("SELECT financieringsdossier.DossierID, financieringsdossier.ClientID, financieringsdossier.ZorgTechID FROM financieringsdossier WHERE BudgetID is null;")
+	if err != nil {
+		fmt.Println(err)
+		return Dossiers
+	}
+	for remaining.Next() {
+		var Dossier m.FinancieringsDossier
+		err := remaining.Scan(
+			&Dossier.DossierID,
+			&Dossier.ClientID,
+			&Dossier.ZorgTechID,
+		)
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+		Dossiers = append(Dossiers, Dossier)
+	}
+	for i, val := range Dossiers {
+		if val.Budget.BudgetStatus == "" {
+			Dossiers[i].Budget.BudgetStatus = "Niet aangevraagd"
+		}
 	}
 	return Dossiers
 }

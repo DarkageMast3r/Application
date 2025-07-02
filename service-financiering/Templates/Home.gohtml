@@ -12,7 +12,7 @@
     <p>putting data here i guess</p>
     {{ range . }}
     <ul>
-        <li> DossierID: {{ .DossierID}} </li> 
+        <a href="/Finance/{{.DossierID}}"> DossierID: {{ .DossierID}} </a> 
         <li> ClientID: {{ .ClientID}} </li>
         <li> ZorgTechID: {{ .ZorgTechID}} </li>
         <li> AanvraagDatum: {{ .AanvraagDatum}} </li>

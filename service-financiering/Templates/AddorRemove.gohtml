@@ -1,0 +1,29 @@
+{{ define "Home" }}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AddorRemove</title>
+</head>
+<body>
+    <h1>Adding or Removing</h1>
+    {{ range . }}
+    {{ end }}
+    <p>New Dossier</p>
+    <form action="/Finance/Add" method="post">
+        <label>
+            <p>ClientID</p>
+            <input type="number" name="ClientID">
+        </label>
+        <br>
+        <label>
+            <p>ZorgTechID</p>
+            <input type="number" name="ZorgTechID">
+        </label>
+        <br>
+        <input type="submit">
+    </form>
+</body>
+</html>
+{{ end }}
