@@ -1,30 +1,30 @@
 package models
 
-// als ik het goed begrijp dan vraag je budget aan om iets te aan te schaffen. Dus nadat datgene aangeschaft is dan moet je opnieuw een budget aanvragen voor iets nieuws? of zit ik nu fout?
 type Budget struct {
-	maxBedrag         float64
-	beschikbaarBedrag float64
-	gebruiktBedrag    float64
-	BudgetStatus      BudgetStatus
+	ID                int
+	MaxBedrag         float64
+	BeschikbaarBedrag float64
+	GebruiktBedrag    float64
+	BudgetStatus      string
 }
 
 func (b *Budget) NieuwBudget(max float64) {
-	b.maxBedrag = max
-	b.beschikbaarBedrag = max
-	b.gebruiktBedrag = 0
-	b.BudgetStatus = b.BudgetStatus.GetStatus("Aangevraagd")
+	b.MaxBedrag = max
+	b.BeschikbaarBedrag = max
+	b.GebruiktBedrag = 0
+	b.BudgetStatus = "Aangevraagd"
 }
 
 // is deze überhaupt nodig? fucking business logic
 func (b *Budget) UpdateBudget(bedrag float64) {
-	b.gebruiktBedrag += bedrag
-	b.beschikbaarBedrag -= bedrag
+	b.GebruiktBedrag += bedrag
+	b.BeschikbaarBedrag -= bedrag
 }
 
-func (b *Budget) BudgetGoedgekeurd() {
-	b.BudgetStatus = b.BudgetStatus.GetStatus("Goedgekeurd")
-}
+// func (b *Budget) budgetGoedgekeurd() {
+// 	b.BudgetStatus = "Goedgekeurd"
+// }
 
-func (b *Budget) BudgetAfgewezen() {
-	b.BudgetStatus = b.BudgetStatus.GetStatus("Afgewezen")
-}
+// func (b *Budget) budgetAfgewezen() {
+// 	b.BudgetStatus = "Afgewezen"
+// }
