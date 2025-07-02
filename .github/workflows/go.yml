@@ -24,40 +24,40 @@ jobs:
       run: |
         cd service-discovery
         env GOOS=windows
-        go build -o ../service_discovery.exe
+        go build -o service_discovery.exe
         env GOOS=linux GOARCH=arm 
-        go build -o ../app_service_discovery
+        go build -o app_service_discovery
       
     - name: Build service signaling
       run: |
         cd service-signalering
         env GOOS=windows
-        go build -o ../service-signalering.exe
+        go build -o service-signalering.exe
         env GOOS=linux GOARCH=arm
-        go build -o ../app_service_signalering
+        go build -o app_service_signalering
       
     - name: Build technology selection
       run: |
         cd technology-selection
         env GOOS=windows
-        go build -o ../service-technology.exe
+        go build -o service-technology.exe
         env GOOS=linux GOARCH=arm
-        go build -o ../app_service_technology
+        go build -o app_service_technology
       
     - name: Upload windows build artifacts
       uses: actions/upload-artifact@v4
       with:
         name: app_win
         path: |
-          service_discovery.exe
-          service_signalering.exe
-          service-technology.exe
+          service-discovery/service_discovery.exe
+          sservice-signalering/ervice_signalering.exe
+          technology-selection/service-technology.exe
         
     - name: Upload linux build artifacts
       uses: actions/upload-artifact@v4
       with:
         name: app_linux
         path: |
-          app_service_discovery
-          app_service_signalering
-          app_service_technology
+          service-discovery/app_service_discovery
+          service-signalering/app_service_signalering
+          technology-selection/app_service_technology
