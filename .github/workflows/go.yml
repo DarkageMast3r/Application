@@ -28,17 +28,21 @@ jobs:
         env GOOS=linux GOARCH=arm 
         go build -o app_service_discovery
       
-    - name: Generate windows build artifacts
-      run: env GOOS=windows go build -o service-financiering.exe ./service-financiering/main.go
+    - name: Build service financing
+      run: |
+        cd service-financiering
+        env GOOS=windows
+        go build -o service-financiering.exe
+        env GOOS=linux GOARCH=arm
+        go build -o app_service_financiering
       
-    - name: Generate linux build artifacts
-      run: env GOOS=linux GOARCH=arm go build -o app_service_financiering ./service-financiering/main.go
-      
-    - name: Generate windows build artifacts
-      run: env GOOS=windows go build -o service-signalering.exe ./service-signalering/main.go
-      
-    - name: Generate linux build artifacts
-      run: env GOOS=linux GOARCH=arm go build -o app_service_signalering ./service-signalering/main.go
+    - name: Build service signaling
+      run: |
+        cd service-signalering
+        env GOOS=windows
+        go build -o service-signalering.exe
+        env GOOS=linux GOARCH=arm
+        go build -o app_service_signalering
       
     - name: Upload windows build artifacts
       uses: actions/upload-artifact@v4
