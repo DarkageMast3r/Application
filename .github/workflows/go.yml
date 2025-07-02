@@ -28,14 +28,6 @@ jobs:
         env GOOS=linux GOARCH=arm 
         go build -o app_service_discovery
       
-    - name: Build service financing
-      run: |
-        cd service-financiering
-        env GOOS=windows
-        go build -o service-financiering.exe
-        env GOOS=linux GOARCH=arm
-        go build -o app_service_financiering
-      
     - name: Build service signaling
       run: |
         cd service-signalering
@@ -50,7 +42,6 @@ jobs:
         name: app_win
         path: |
           service_discovery.exe
-          service_financiering.exe
           service_signalering.exe
         
     - name: Upload linux build artifacts
@@ -59,5 +50,4 @@ jobs:
         name: app_linux
         path: |
           app_service_discovery
-          app_service_financiering
           app_service_signalering
