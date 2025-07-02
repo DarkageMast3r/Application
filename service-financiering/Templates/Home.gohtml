@@ -10,7 +10,14 @@
     <h1>Financierings prototype</h1>
     <p>stuff i guess idk still building this</p>
     <p>putting data here i guess</p>
-    {{ . }}
+    {{ range . }}
+        <li> DossierID: {{ .DossierID}} </li> 
+        <li> ClientID: {{ .ClientID}} </li>
+        <li> ZorgTechID: {{ .ZorgTechID}} </li>
+        <li> AanvraagDatum: {{ .AanvraagDatum}} </li>
+        <li> Budget: {{ .Budget}}
+        <p></p>
+    {{ end }}
 </body>
 </html>
 {{ end }}

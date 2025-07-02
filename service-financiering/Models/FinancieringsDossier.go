@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 )
 
@@ -9,9 +10,9 @@ type FinancieringsDossier struct {
 	DossierID     int
 	ClientID      int
 	ZorgTechID    int
-	AanvraagDatum Date
-	Facturen      []Factuur
+	AanvraagDatum string
 	Budget        Budget
+	Facturen      []Factuur
 }
 
 func (f *FinancieringsDossier) NieuwDossier(dossierID int, clientID int, zorgtechID int) {
@@ -23,7 +24,8 @@ func (f *FinancieringsDossier) NieuwDossier(dossierID int, clientID int, zorgtec
 func (f *FinancieringsDossier) VraagBudgetAan(bedrag float64) {
 	f.Budget.NieuwBudget(bedrag)
 	t := new(time.Time)
-	f.AanvraagDatum.Year, f.AanvraagDatum.Month, f.AanvraagDatum.Day = t.Date()
+	year, month, day := t.Date()
+	f.AanvraagDatum = strconv.Itoa(year) + "-" + strconv.Itoa(int(month)) + "-" + strconv.Itoa(day)
 }
 
 func (f *FinancieringsDossier) VerwerkGoedkeuring(Goedgekeurd bool) {
@@ -35,12 +37,12 @@ func (f *FinancieringsDossier) VerwerkGoedkeuring(Goedgekeurd bool) {
 }
 
 func (f *FinancieringsDossier) ReserveerBudget() {
-	f.Budget.BudgetStatus = f.Budget.BudgetStatus.GetStatus("Gereserveerd")
+	f.Budget.BudgetStatus = "Gereserveerd"
 }
 
 func (f *FinancieringsDossier) VerwerkFactuur(factuur Factuur) {
 	f.Budget.UpdateBudget(factuur.Bedrag)
-	f.Budget.BudgetStatus = f.Budget.BudgetStatus.GetStatus("Gefactureerd")
+	f.Budget.BudgetStatus = "Gefactureerd"
 	fmt.Println(factuur)
 	fmt.Println(f.Facturen)
 }
