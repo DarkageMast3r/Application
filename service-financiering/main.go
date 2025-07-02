@@ -16,7 +16,7 @@ func main() {
 
 	http.HandleFunc("GET /Finance", h.HomePageHandler)
 	http.HandleFunc("GET /Finance/Add", h.AddorRemovePageHandler)
-	http.HandleFunc("Get /Finance/{dossierID}", h.HomePageHandler) //non existed handler(for now)
+	http.HandleFunc("GET /Finance/{dossierID}", h.DossierPageHandler) //non existed handler(for now)
 
 	http.HandleFunc("POST /Finance/Add", h.AddDossier)
 
