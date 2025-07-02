@@ -36,6 +36,14 @@ jobs:
         env GOOS=linux GOARCH=arm
         go build -o ../app_service_signalering
       
+    - name: Build technology selection
+      run: |
+        cd technology-selection
+        env GOOS=windows
+        go build -o ../service-technology.exe
+        env GOOS=linux GOARCH=arm
+        go build -o ../app_service_technology
+      
     - name: Upload windows build artifacts
       uses: actions/upload-artifact@v4
       with:
@@ -43,6 +51,7 @@ jobs:
         path: |
           service_discovery.exe
           service_signalering.exe
+          service-technology.exe
         
     - name: Upload linux build artifacts
       uses: actions/upload-artifact@v4
@@ -51,3 +60,4 @@ jobs:
         path: |
           app_service_discovery
           app_service_signalering
+          app_service_technology
