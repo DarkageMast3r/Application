@@ -3,8 +3,8 @@ package handlers
 import (
 	"log"
 	"net/http"
-	"service-signalering/database"
 	"service-signalering/models"
+	"service-signalering/pkg/database"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"

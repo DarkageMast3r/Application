@@ -3,8 +3,9 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"service-signalering/database"
 	"service-signalering/handlers"
+	"service-signalering/pkg/auth"
+	"service-signalering/pkg/database"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -23,6 +24,9 @@ func main() {
 	fmt.Println("=========================")
 	fmt.Println()
 
+	// Print API key info
+	auth.PrintKeys()
+
 	r := gin.Default()
 
 	// Check of de API werkt
@@ -33,8 +37,9 @@ func main() {
 		})
 	})
 
-	// Daadwerkelijke endpoints
+	// Daadwerkelijke endpoints met auth
 	v1 := r.Group("/api/v1")
+	v1.Use(auth.AuthenticateKey())
 	{
 		// Client monitoring endpoints
 		v1.GET("/clients/:id/condition", handlers.GetClientCondition)

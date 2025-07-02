@@ -6,8 +6,8 @@ import (
 	"github.com/google/uuid"
 	"log"
 	"net/http"
-	"service-signalering/database"
 	"service-signalering/models"
+	"service-signalering/pkg/database"
 	"time"
 )
 
