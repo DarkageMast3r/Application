@@ -19,18 +19,14 @@ jobs:
       uses: actions/setup-go@v4
       with:
         go-version: '1.22.0'
-        
-    - name: Build
-      run: go build -v ./service-discovery/main.go
-
-    - name: Test
-      run: go test -v ./service-discovery/main.go
-      
-    - name: Generate windows build artifacts
-      run: env GOOS=windows cd service-discovery go build -o service_discovery.exe
-      
-    - name: Generate linux build artifacts
-      run: env GOOS=linux GOARCH=arm cd service-discovery go build -o app_service_discovery
+     
+    - name: Build service discovery
+      run:
+        cd service-discovery
+        env GOOS=windows
+        go build -o service_discovery.exe
+        env GOOS=linux GOARCH=arm 
+        go build -o app_service_discovery
       
     - name: Generate windows build artifacts
       run: env GOOS=windows go build -o service-financiering.exe ./service-financiering/main.go
