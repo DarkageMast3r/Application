@@ -2,3 +2,5 @@
 */*.exe
 server.crt
 server.key
+config.json
+*/config.json

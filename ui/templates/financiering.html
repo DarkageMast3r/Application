@@ -1,0 +1,70 @@
+{{define "financiering.html"}}
+<div class="card">
+    <h3>📊 Budget Status</h3>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">€25.5k</div>
+            <div class="stat-label">Beschikbaar</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">€24.5k</div>
+            <div class="stat-label">Gebruikt</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">2</div>
+            <div class="stat-label">Openstaande Aanvragen</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">€570</div>
+            <div class="stat-label">In Behandeling</div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <h3>📋 Te Beoordelen</h3>
+    <div class="client-list">
+        <div class="client-card">
+            <div class="signal-header">
+                <strong>Cliënt C008</strong>
+                <span class="status-badge status-nieuw">Nieuw</span>
+            </div>
+            <div>GPS Tracker - €120</div>
+            <div class="signal-timestamp">Aangevraagd: 2 dagen geleden</div>
+            <button class="btn btn-secondary signal-btn">✅ Beoordelen</button>
+        </div>
+        <div class="client-card">
+            <div class="signal-header">
+                <strong>Cliënt C015</strong>
+                <span class="status-badge status-beoordeling">In Behandeling</span>
+            </div>
+            <div>Medicijndispenser - €450</div>
+            <div class="signal-timestamp">Aangevraagd: vandaag 09:30</div>
+            <button class="btn btn-secondary signal-btn">✅ Beoordelen</button>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <h3>💰 Nieuwe Aanvraag</h3>
+    <form action="/api/finance/request" method="POST">
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Cliënt ID</label>
+                <input type="text" name="client_id" placeholder="bijv. C001" required>
+            </div>
+            <div class="form-group">
+                <label>Technologie</label>
+                <select name="technology" required>
+                    <option value="">Selecteer...</option>
+                    <option value="valdetector">Valdetector - €299</option>
+                    <option value="smartwatch">Smartwatch - €180</option>
+                    <option value="gps-tracker">GPS Tracker - €120</option>
+                    <option value="medicijndispenser">Medicijndispenser - €450</option>
+                </select>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">📝 Aanvragen</button>
+    </form>
+</div>
+{{end}}

@@ -1,0 +1,80 @@
+{{define "rapportage.html"}}
+<div class="card">
+    <h3>📈 Key Metrics</h3>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">156</div>
+            <div class="stat-label">Totaal Signalen</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">89%</div>
+            <div class="stat-label">Succesvolle Interventies</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">34</div>
+            <div class="stat-label">Actieve Technologieën</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">4.2</div>
+            <div class="stat-label">Gem. Tevredenheidsscore</div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <h3>📊 Trends & Inzichten</h3>
+    <div class="client-list">
+        <div class="client-card">
+            <div class="signal-header">
+                <strong>Valdetectie Trend</strong>
+                <span class="status-badge" style="background: #fbd38d; color: #c05621;">Oplopend</span>
+            </div>
+            <div>15% toename in valdetectie signalen deze maand</div>
+            <div class="signal-timestamp">Laatste analyse: vandaag 08:00</div>
+        </div>
+        <div class="client-card">
+            <div class="signal-header">
+                <strong>Medicatie Compliance</strong>
+                <span class="status-badge" style="background: #c6f6d5; color: #276749;">Stabiel</span>
+            </div>
+            <div>94% medicatie compliance rate - binnen normen</div>
+            <div class="signal-timestamp">Laatste analyse: gisteren 18:00</div>
+        </div>
+        <div class="client-card">
+            <div class="signal-header">
+                <strong>Responstijd</strong>
+                <span class="status-badge" style="background: #c6f6d5; color: #276749;">Verbeterd</span>
+            </div>
+            <div>Gemiddelde responstijd: 2.4u (was 3.1u)</div>
+            <div class="signal-timestamp">Laatste analyse: vandaag 06:00</div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <h3>📋 Rapport Genereren</h3>
+    <form action="/api/reports/generate" method="POST">
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Rapporttype</label>
+                <select name="report_type" required>
+                    <option value="">Selecteer type...</option>
+                    <option value="care_time">Zorgtijd Overzicht</option>
+                    <option value="technology_usage">Technologie Gebruik</option>
+                    <option value="signal_analysis">Signaal Analyse</option>
+                    <option value="budget_overview">Budget Overzicht</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Periode</label>
+                <select name="period">
+                    <option value="last_month">Laatste maand</option>
+                    <option value="last_quarter">Laatste kwartaal</option>
+                    <option value="this_year">Dit jaar</option>
+                </select>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">📊 Rapport Genereren</button>
+    </form>
+</div>
+{{end}}

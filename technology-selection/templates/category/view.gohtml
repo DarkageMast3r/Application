@@ -1,0 +1,36 @@
+{{define "category/view"}}
+<html>
+	<head>
+		<title>
+			Title
+		</title>
+		{{template "common/style"}}
+	</head>
+	<body>
+		{{template "common/header"}}
+		<form>
+			<table style="border-spacing: 1rem 0.5rem;">
+				<thead>
+					<tr>
+						<td>Name</td>
+						<td>Description</td>
+						<td></td>
+					</tr>
+				</thead>
+				<tbody>
+					{{range .}}
+						<tr>
+							<td>{{.Name}}</td>
+							<td>{{.Description}}</td>
+							<td><a href="/View/Category/{{.Id}}/Update">Edit</a></td>
+							<td><button type="submit" formmethod="POST" formaction="/Category/{{.Id}}/Delete">Delete</a></td>
+						</tr>
+					{{end}}
+				</tbody>
+			</table>
+			<br/>
+			<a href="/View/Category/Create">Create new category</a>
+		</form>
+	</body>
+</html>
+{{end}}

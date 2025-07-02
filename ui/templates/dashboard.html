@@ -1,0 +1,32 @@
+{{define "dashboard.html"}}
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-number">{{.Stats.ActiveClients}}</div>
+        <div class="stat-label">Actieve Cliënten</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">{{.Stats.PendingSignals}}</div>
+        <div class="stat-label">Openstaande Signalen</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">{{.Stats.ActiveTech}}</div>
+        <div class="stat-label">Actieve Technologieën</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">{{formatCurrency .Stats.BudgetUsed}}</div>
+        <div class="stat-label">Budget Gebruikt</div>
+    </div>
+</div>
+
+<div class="card">
+    <h3>📋 Recente Activiteiten</h3>
+    <div class="timeline">
+        {{range .Activities}}
+        <div class="timeline-item">
+            <strong>{{if .ClientID}}Cliënt #{{.ClientID}}{{else}}Systeem{{end}}</strong> - {{.Description}}
+            <div class="signal-timestamp">{{formatTimeAgo .Timestamp}}</div>
+        </div>
+        {{end}}
+    </div>
+</div>
+{{end}}
