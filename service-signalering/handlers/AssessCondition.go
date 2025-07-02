@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"service-signalering/models"
 	"service-signalering/pkg/database"
+	"service-signalering/pkg/validation"
 	"time"
 )
 
@@ -30,7 +31,18 @@ func AssessCondition(c *gin.Context) {
 		return
 	}
 
-	// Create assessment with current timestamp
+	validationErrors := validation.ValidateBeoordelingRequest(request)
+	if len(validationErrors) > 0 {
+		log.Printf("Assessment validation failed for client %s: %v", clientID, validationErrors)
+
+		c.JSON(http.StatusBadRequest, models.ErrorResponse{
+			Code:    "VALIDATION_FAILED",
+			Message: "Beoordeling validatie gefaald",
+			Details: validationErrors,
+		})
+		return
+	}
+
 	assessmentTime := time.Now()
 	assessment := models.Beoordeling{
 		Conclusie:       request.Conclusie,
@@ -39,7 +51,6 @@ func AssessCondition(c *gin.Context) {
 		Tijdstip:        assessmentTime,
 	}
 
-	// Save assessment to database
 	query := `
         INSERT INTO assessments (client_id, conclusie, urgentie, gevalideerd_door, tijdstip) 
         VALUES ($1, $2, $3, $4, $5)`

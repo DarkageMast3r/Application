@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"service-signalering/models"
 	"service-signalering/pkg/database"
+	"service-signalering/pkg/validation"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -26,6 +27,18 @@ func AddSignals(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, models.ErrorResponse{
 			Code:    "INVALID_REQUEST",
 			Message: "Invalid request format",
+		})
+		return
+	}
+
+	validationErrors := validation.ValidateSignalenRequest(request)
+	if len(validationErrors) > 0 {
+		log.Printf("Validation failed for client %s: %v", clientID, validationErrors)
+
+		c.JSON(http.StatusBadRequest, models.ErrorResponse{
+			Code:    "VALIDATION_FAILED",
+			Message: "Signaal validatie gefaald",
+			Details: validationErrors,
 		})
 		return
 	}

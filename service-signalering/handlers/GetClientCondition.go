@@ -12,6 +12,8 @@ import (
 )
 
 func GetClientCondition(c *gin.Context) {
+	// Dit is een read-only functie, dus geen validatie nodig
+
 	clientIDStr := c.Param("id")
 	clientID, err := uuid.Parse(clientIDStr)
 	if err != nil {
@@ -22,7 +24,6 @@ func GetClientCondition(c *gin.Context) {
 		return
 	}
 
-	// Get latest signals for this client
 	signalsQuery := `
         SELECT type, waarde, tijdstip, bron 
         FROM signals 
@@ -52,7 +53,6 @@ func GetClientCondition(c *gin.Context) {
 		signalen = append(signalen, signaal)
 	}
 
-	// Get latest classification for this client
 	var classificatie *models.ToestandClassificatie
 	classificationQuery := `
         SELECT categorie, ernst, motivatie 
@@ -73,7 +73,6 @@ func GetClientCondition(c *gin.Context) {
 		}
 	}
 
-	// Get latest assessment for this client
 	var beoordeling *models.Beoordeling
 	assessmentQuery := `
         SELECT conclusie, urgentie, gevalideerd_door, tijdstip 
@@ -96,7 +95,6 @@ func GetClientCondition(c *gin.Context) {
 		}
 	}
 
-	// Create response with real data from database
 	response := models.ToestandResponse{
 		ToestandID:          uuid.New(), // Generate new UUID for this request
 		ClientID:            clientID,

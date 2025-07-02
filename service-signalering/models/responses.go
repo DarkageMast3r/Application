@@ -22,7 +22,14 @@ type BeoordelingResponse struct {
 	Aanbevelingen    []string     `json:"aanbevelingen"`
 }
 
-type ErrorResponse struct {
+type SimpleErrorResponse struct {
 	Code    string `json:"code"`
 	Message string `json:"message"`
+}
+
+// Gedetailleerde errors voor validatie
+type ErrorResponse struct {
+	Code    string   `json:"code"`
+	Message string   `json:"message"`
+	Details []string `json:"details,omitempty"`
 }

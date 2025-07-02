@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"service-signalering/models"
 	"service-signalering/pkg/database"
+	"service-signalering/pkg/validation"
 )
 
 func ClassifyCondition(c *gin.Context) {
@@ -29,7 +30,18 @@ func ClassifyCondition(c *gin.Context) {
 		return
 	}
 
-	// Save classification to database
+	validationErrors := validation.ValidateClassificatie(request.Classificatie)
+	if len(validationErrors) > 0 {
+		log.Printf("Classification validation failed for client %s: %v", clientID, validationErrors)
+
+		c.JSON(http.StatusBadRequest, models.ErrorResponse{
+			Code:    "VALIDATION_FAILED",
+			Message: "Classificatie validatie gefaald",
+			Details: validationErrors,
+		})
+		return
+	}
+
 	query := `
         INSERT INTO classifications (client_id, categorie, ernst, motivatie) 
         VALUES ($1, $2, $3, $4)`
