@@ -30,7 +30,7 @@ jobs:
       
     - name: Build service financing
       run: |
-        cd ../service-financiering
+        cd service-financiering
         env GOOS=windows
         go build -o service-financiering.exe
         env GOOS=linux GOARCH=arm
@@ -38,7 +38,7 @@ jobs:
       
     - name: Build service signaling
       run: |
-        cd ../service-signalering
+        cd service-signalering
         env GOOS=windows
         go build -o service-signalering.exe
         env GOOS=linux GOARCH=arm
