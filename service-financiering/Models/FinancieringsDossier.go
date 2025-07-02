@@ -15,10 +15,11 @@ type FinancieringsDossier struct {
 	Facturen      []Factuur
 }
 
-func (f *FinancieringsDossier) NieuwDossier(dossierID int, clientID int, zorgtechID int) {
-	f.DossierID = dossierID
-	f.ClientID = clientID
-	f.ZorgTechID = zorgtechID
+func (f *FinancieringsDossier) NieuwDossier(clientID int, zorgtechID int) {
+	// f.DossierID = dossierID
+	// f.ClientID = clientID
+	// f.ZorgTechID = zorgtechID
+	// primary key should be skipable
 }
 
 func (f *FinancieringsDossier) VraagBudgetAan(bedrag float64) {
@@ -30,9 +31,9 @@ func (f *FinancieringsDossier) VraagBudgetAan(bedrag float64) {
 
 func (f *FinancieringsDossier) VerwerkGoedkeuring(Goedgekeurd bool) {
 	if Goedgekeurd {
-		f.Budget.BudgetGoedgekeurd()
+		f.Budget.BudgetStatus = "Goedgekeurd"
 	} else {
-		f.Budget.BudgetAfgewezen()
+		f.Budget.BudgetStatus = "Afgewezen"
 	}
 }
 

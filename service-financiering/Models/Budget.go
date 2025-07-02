@@ -1,6 +1,5 @@
 package models
 
-// als ik het goed begrijp dan vraag je budget aan om iets te aan te schaffen. Dus nadat datgene aangeschaft is dan moet je opnieuw een budget aanvragen voor iets nieuws? of zit ik nu fout?
 type Budget struct {
 	ID                int
 	MaxBedrag         float64
@@ -22,10 +21,10 @@ func (b *Budget) UpdateBudget(bedrag float64) {
 	b.BeschikbaarBedrag -= bedrag
 }
 
-func (b *Budget) BudgetGoedgekeurd() {
-	b.BudgetStatus = "Goedgekeurd"
-}
+// func (b *Budget) budgetGoedgekeurd() {
+// 	b.BudgetStatus = "Goedgekeurd"
+// }
 
-func (b *Budget) BudgetAfgewezen() {
-	b.BudgetStatus = "Afgewezen"
-}
+// func (b *Budget) budgetAfgewezen() {
+// 	b.BudgetStatus = "Afgewezen"
+// }
