@@ -10,7 +10,6 @@ on:
     branches: [ "master" ]
 
 jobs:
-
   build:
     runs-on: ubuntu-latest
     steps:
@@ -34,16 +33,16 @@ jobs:
       run: env GOOS=linux GOARCH=arm go build -o app_service_discovery ./service-discovery/main.go
       
     - name: Generate windows build artifacts
-      run: env GOOS=windows go build -o service_test.exe ./test-service/main.go
+      run: env GOOS=windows go build -o service-financiering.exe ./service-financiering/main.go
       
     - name: Generate linux build artifacts
-      run: env GOOS=linux GOARCH=arm go build -o app_service_test ./test-service/main.go
+      run: env GOOS=linux GOARCH=arm go build -o app_service_financiering ./service-financiering/main.go
       
     - name: Generate windows build artifacts
-      run: env GOOS=windows go build -o service_test2.exe ./test-service-2/main.go
+      run: env GOOS=windows go build -o service-signalering.exe ./service-signalering/main.go
       
     - name: Generate linux build artifacts
-      run: env GOOS=linux GOARCH=arm go build -o app_service_test2 ./test-service-2/main.go
+      run: env GOOS=linux GOARCH=arm go build -o app_service_signalering ./service-signalering/main.go
       
     - name: Upload windows build artifacts
       uses: actions/upload-artifact@v4
@@ -51,8 +50,8 @@ jobs:
         name: app_win
         path: |
           service_discovery.exe
-          service_test.exe
-          service_test2.exe
+          service_financiering.exe
+          service_signalering.exe
         
     - name: Upload linux build artifacts
       uses: actions/upload-artifact@v4
@@ -60,5 +59,5 @@ jobs:
         name: app_linux
         path: |
           app_service_discovery
-          app_service_test
-          app_service_test2
+          app_service_financiering
+          app_service_signalering
