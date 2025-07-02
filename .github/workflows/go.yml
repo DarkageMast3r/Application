@@ -52,6 +52,8 @@ jobs:
           service-discovery/service_discovery.exe
           sservice-signalering/ervice_signalering.exe
           technology-selection/service-technology.exe
+          technology-selection/deploy
+          technology-selection/config.json
         
     - name: Upload linux build artifacts
       uses: actions/upload-artifact@v4
@@ -61,3 +63,5 @@ jobs:
           service-discovery/app_service_discovery
           service-signalering/app_service_signalering
           technology-selection/app_service_technology
+          technology-selection/deploy
+          technology-selection/config.json
