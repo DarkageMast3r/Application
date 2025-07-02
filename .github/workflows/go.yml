@@ -24,17 +24,17 @@ jobs:
       run: |
         cd service-discovery
         env GOOS=windows
-        go build -o service_discovery.exe
+        go build -o ../service_discovery.exe
         env GOOS=linux GOARCH=arm 
-        go build -o app_service_discovery
+        go build -o ../app_service_discovery
       
     - name: Build service signaling
       run: |
         cd service-signalering
         env GOOS=windows
-        go build -o service-signalering.exe
+        go build -o ../service-signalering.exe
         env GOOS=linux GOARCH=arm
-        go build -o app_service_signalering
+        go build -o ../app_service_signalering
       
     - name: Upload windows build artifacts
       uses: actions/upload-artifact@v4
