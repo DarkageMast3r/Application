@@ -21,7 +21,7 @@ jobs:
         go-version: '1.22.0'
      
     - name: Build service discovery
-      run:
+      run: |
         cd service-discovery
         env GOOS=windows
         go build -o service_discovery.exe
