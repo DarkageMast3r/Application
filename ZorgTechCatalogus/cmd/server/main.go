@@ -4,8 +4,11 @@ import (
 	"ZorgTechCatalogus/pkg/api"
 	"ZorgTechCatalogus/pkg/cache"
 	"ZorgTechCatalogus/pkg/database"
+	"ZorgTechCatalogus/service"
 	"context"
 	"log"
+	"net/http"
+	"strconv"
 
 	"github.com/joho/godotenv"
 
@@ -54,7 +57,15 @@ func main() {
 
 	r := api.NewRouter(logger, mongo, dbWrapper, redisClient, &ctx)
 
-	if err := r.Run(":8501"); err != nil {
-		log.Fatal(err)
-	}
+	service.Init()
+	port := service.Register("catalog", func(w http.ResponseWriter, req *http.Request) {
+		r.ServeHTTP(w, req)
+	})
+	log.Println("Listening on port", port)
+	http.ListenAndServeTLS(
+		":"+strconv.Itoa(port),
+		"../server.crt",
+		"../server.key",
+		r,
+	)
 }

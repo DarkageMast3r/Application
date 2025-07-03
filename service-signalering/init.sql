@@ -1,3 +1,6 @@
+create database if not exists signalering;
+use database signalering;
+
 CREATE TABLE IF NOT EXISTS signals (
     id SERIAL PRIMARY KEY,
     client_id UUID NOT NULL,

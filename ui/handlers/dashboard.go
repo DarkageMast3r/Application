@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -32,6 +33,7 @@ type Activity struct {
 }
 
 func Dashboard(c *gin.Context) {
+	fmt.Println("Dashboard")
 	data := DashboardData{
 		Title:       "Dashboard",
 		CurrentPage: "dashboard",

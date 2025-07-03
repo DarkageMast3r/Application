@@ -4,8 +4,11 @@ import (
 	"ZorgTechImplementatie/pkg/api"
 	"ZorgTechImplementatie/pkg/cache"
 	"ZorgTechImplementatie/pkg/database"
+	"ZorgTechImplementatie/service"
 	"context"
 	"log"
+	"net/http"
+	"strconv"
 
 	"go.uber.org/zap"
 
@@ -51,7 +54,15 @@ func main() {
 
 	r := api.NewRouter(logger, mongo, dbWrapper, redisClient, &ctx)
 
-	if err := r.Run(":8500"); err != nil {
-		log.Fatal(err)
-	}
+	service.Init()
+	port := service.Register("implementation", func(w http.ResponseWriter, req *http.Request) {
+		r.ServeHTTP(w, req)
+	})
+	log.Println("Listening on port", port)
+	http.ListenAndServeTLS(
+		":"+strconv.Itoa(port),
+		"../server.crt",
+		"../server.key",
+		r,
+	)
 }

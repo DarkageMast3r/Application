@@ -9,7 +9,7 @@
 	</head>
 	<body>
 		{{template "common/header"}}
-		<form style="margin: 1rem" action="/Need/{{.Need.Id}}/Update" method="POST">
+		<form style="margin: 1rem" action="/Selection/Need/{{.Need.Id}}/Update" method="POST">
 			<input name="id" type="hidden" value="{{.Need.Id}}"/>
 			<label for="description">Description</label>
 			<input value="{{.Need.Description}}" name="description" type="text"/>

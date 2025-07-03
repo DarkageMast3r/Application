@@ -20,14 +20,14 @@
 					{{range .}}
 						<tr>
 							<td>{{.Description}}</td>
-							<td><a href="/View/Need/{{.Id}}/Update">Edit</a></td>
-							<td><button type="submit" formmethod="POST" formaction="/Need/{{.Id}}/Delete">Delete</a></td>
+							<td><a href="/Selection/View/Need/{{.Id}}/Update">Edit</a></td>
+							<td><button type="submit" formmethod="POST" formaction="/Selection/Need/{{.Id}}/Delete">Delete</a></td>
 						</tr>
 					{{end}}
 				</tbody>
 			</table>
 			<br/>
-			<a href="/View/Need/Create">Create new need</a>
+			<a href="/Selection/View/Need/Create">Create new need</a>
 		</form>
 	</body>
 </html>
