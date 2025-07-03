@@ -45,6 +45,9 @@ test:
 
 clean:
 	docker stop ZorgTechCatalogus
+	docker stop dockerPostgres
 	docker rm ZorgTechCatalogus
+	docker rm dockerPostgres
+	docker rm dockerRedis
 	docker image rm ZorgTechCatalogus-backend
-
+	rm -rf .dbdata
