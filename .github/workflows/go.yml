@@ -62,14 +62,13 @@ jobs:
         name: app_win
         path: |
           implementatie/service_implementation.exe
-          service_discovery/service_discovery.exe
-          service_financiering/service_financing.exe
-          service_signalering/service-signalering.exe
+          service-discovery/service_discovery.exe
+          service-financiering/service_financing.exe
+          service-signalering/service-signalering.exe
           technology-selection/service-technology.exe
           ui/service-ui.exe
           technology-selection/deploy
           technology-selection/config.json
-          .
         
     - name: Upload linux build artifacts
       uses: actions/upload-artifact@v4
@@ -77,9 +76,9 @@ jobs:
         name: app_linux
         path: |
           implementatie/app_service_implementation
-          service_discovery/app_service_discovery
-          service_financiering/app_service_financing
-          service_signalering/app_service_signalering
+          service-discovery/app_service_discovery
+          service-financiering/app_service_financing
+          service-signalering/app_service_signalering
           technology-selection/app_service_technology
           ui/app_service_ui
           technology-selection/deploy
