@@ -19,36 +19,54 @@ jobs:
       uses: actions/setup-go@v4
       with:
         go-version: '1.22.0'
+        
+    - name: Build service implementation
+      run: |
+        cd implementatie/cmd/server
+        env GOOS=windows go build -o ../../service_implementation.exe
+        env GOOS=linux GOARCH=arm go build -o app_service_implementation
      
     - name: Build service discovery
       run: |
         cd service-discovery
         env GOOS=windows go build -o service_discovery.exe
         env GOOS=linux GOARCH=arm go build -o app_service_discovery
-        
+     
+    - name: Build service financing
+      run: |
+        cd service-financiering
+        env GOOS=windows go build -o service_financing.exe
+        env GOOS=linux GOARCH=arm go build -o app_service_financing
       
     - name: Build service signaling
       run: |
         cd service-signalering
         env GOOS=windows go build -o service-signalering.exe
         env GOOS=linux GOARCH=arm go build -o app_service_signalering
-        
       
-    - name: Build technology selection
+    - name: Build service selection
       run: |
         cd technology-selection
         env GOOS=windows go build -o service-technology.exe
         env GOOS=linux GOARCH=arm go build -o app_service_technology
-        
+      
+    - name: Build service ui
+      run: |
+        cd ui
+        env GOOS=windows go build -o service-ui.exe
+        env GOOS=linux GOARCH=arm go build -o app_service_ui
       
     - name: Upload windows build artifacts
       uses: actions/upload-artifact@v4
       with:
         name: app_win
         path: |
-          service-discovery/service_discovery.exe
-          sservice-signalering/ervice_signalering.exe
+          implementatie/service_implementation.exe
+          service_discovery/service_discovery.exe
+          service_financiering/service_financing.exe
+          service_signalering/service-signalering.exe
           technology-selection/service-technology.exe
+          ui/service-ui.exe
           technology-selection/deploy
           technology-selection/config.json
         
@@ -57,8 +75,11 @@ jobs:
       with:
         name: app_linux
         path: |
-          service-discovery/app_service_discovery
-          service-signalering/app_service_signalering
+          implementatie/app_service_implementation
+          service_discovery/app_service_discovery
+          service_financiering/app_service_financing
+          service_signalering/app_service_signalering
           technology-selection/app_service_technology
+          ui/app_service_ui
           technology-selection/deploy
           technology-selection/config.json
