@@ -16,10 +16,8 @@ type FinancieringsDossier struct {
 }
 
 func (f *FinancieringsDossier) NieuwDossier(clientID int, zorgtechID int) {
-	// f.DossierID = dossierID
-	// f.ClientID = clientID
-	// f.ZorgTechID = zorgtechID
-	// primary key should be skipable
+	f.ClientID = clientID
+	f.ZorgTechID = zorgtechID
 }
 
 func (f *FinancieringsDossier) VraagBudgetAan(bedrag float64) {
