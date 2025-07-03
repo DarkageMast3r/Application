@@ -10,6 +10,7 @@ import (
 	"math/rand"
 	"net"
 	"net/http"
+	"net/url"
 	"os"
 	"strconv"
 	"strings"
@@ -124,7 +125,6 @@ func Queue_Respond(d amqp.Delivery, body []byte, contentType string) error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-
 	err = channel.PublishWithContext(ctx,
 		"",        // exchange
 		d.ReplyTo, // routing key
@@ -239,7 +239,51 @@ func Init() {
 	services[service_discovery] = config.Service_discovery_root + ":" + strconv.Itoa(config.Service_discovery_port)
 }
 
-func Register(name string) int {
+type Request struct {
+	Url    string
+	Method string
+	Body   []byte
+	Header http.Header
+}
+
+type Response struct {
+	MimeType string
+	Body     []byte
+}
+
+func Register(name string, handler func(http.ResponseWriter, *http.Request)) int {
+	err := Queue_Listen(name, func(d amqp.Delivery) {
+		var messageRequest Request
+		err := json.Unmarshal(d.Body, &messageRequest)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		writer := NewServiceResponseWriter()
+		request := new(http.Request)
+		request.Method = messageRequest.Method
+		request.URL = new(url.URL)
+		request.URL.Path = messageRequest.Url
+		request.Body = io.NopCloser(strings.NewReader(string(messageRequest.Body)))
+		request.Header = messageRequest.Header
+		handler(writer, request)
+		messageResponse := Response{
+			MimeType: writer.Header().Get("content-type"),
+			Body:     writer.body,
+		}
+		body, err := json.Marshal(&messageResponse)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		err = Queue_Respond(d, body, "text/html")
+		if err != nil {
+			fmt.Println(err)
+		}
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
 	return getLocalPort()
 }
 

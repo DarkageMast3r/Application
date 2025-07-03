@@ -52,8 +52,8 @@ func main() {
 	}
 
 	service.Init()
-	port := service.Register("signaling")
-	err := http.ListenAndServeTLS(":"+strconv.Itoa(port), "../server.crt", "../server.key", r.Handler())
+	port := service.Register("signaling", r.ServeHTTP)
+	err := http.ListenAndServeTLS(":"+strconv.Itoa(port), "../server.crt", "../server.key", r)
 	if err != nil {
 		log.Println(err)
 	}

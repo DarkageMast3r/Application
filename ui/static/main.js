@@ -43,7 +43,7 @@ window.SmartCare = {
 
     async loadPage(page) {
         try {
-            const response = await fetch(`/pages/${page}`, {
+            const response = await fetch(`/App/pages/${page}`, {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
                 }

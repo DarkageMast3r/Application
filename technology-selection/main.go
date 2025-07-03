@@ -52,7 +52,7 @@ func main() {
 	http.HandleFunc("/Select", handlers.Selection_View)
 	http.HandleFunc("/Shortlist", handlers.Shortlist_View)
 
-	port := service.Register("selection")
+	port := service.Register("selection", http.DefaultServeMux.ServeHTTP)
 	fmt.Printf("Listening on %s\n", ":"+strconv.Itoa(port))
 	err := http.ListenAndServeTLS(":"+strconv.Itoa(port), "../server.crt", "../server.key", nil)
 	if err != nil {

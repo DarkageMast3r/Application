@@ -17,6 +17,7 @@ func main() {
 
 	service.Queue_Listen("Result", handlers.Message_Respond)
 	http.HandleFunc("/{queue}/", handlers.Send_Message)
+	http.HandleFunc("/", handlers.Redirect_To_UI)
 
 	fmt.Printf("Listening on %s\n", ":"+port_str)
 	err := http.ListenAndServeTLS(":"+port_str, "../server.crt", "../server.key", nil)

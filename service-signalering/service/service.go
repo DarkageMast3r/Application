@@ -239,13 +239,13 @@ func Init() {
 	services[service_discovery] = config.Service_discovery_root + ":" + strconv.Itoa(config.Service_discovery_port)
 }
 
-func Register(name string) int {
+func Register(name string, handler func(http.ResponseWriter, *http.Request)) int {
 	err := Queue_Listen("selection", func(d amqp.Delivery) {
 		writer := NewServiceResponseWriter()
 		request := new(http.Request)
 		request.URL = new(url.URL)
 		request.URL.Path = string(d.Body)
-		http.DefaultServeMux.ServeHTTP(writer, request)
+		handler(writer, request)
 		err := Queue_Respond(d, writer.body, "text/html")
 		if err != nil {
 			fmt.Println(err)

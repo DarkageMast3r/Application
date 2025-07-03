@@ -29,7 +29,9 @@ func main() {
 	setupRoutes(r)
 
 	service.Init()
-	port := service.Register("ui")
+	port := service.Register("app", func(w http.ResponseWriter, req *http.Request) {
+		r.ServeHTTP(w, req)
+	})
 	log.Println("SmartCare Assist server starting on :", port)
 	http.ListenAndServeTLS(
 		":"+strconv.Itoa(port),
