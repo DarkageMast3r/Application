@@ -4,7 +4,7 @@ import (
 	"os"
 )
 
-func FindDir() error {
+func findDir() error {
 	for {
 		entries, err := os.ReadDir(".")
 		if err != nil {
