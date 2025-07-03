@@ -1,6 +1,7 @@
 package handlers_test
 
 import (
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -10,7 +11,10 @@ import (
 
 // TestAddDossierMissingParams tests the case where parameters are missing
 func Test_AddDossierMissingParams(t *testing.T) {
-	U.StartTest()
+	err := U.FindDir()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// Setup
 	req := httptest.NewRequest(http.MethodPost, "/add-dossier", nil)
