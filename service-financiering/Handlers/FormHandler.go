@@ -16,7 +16,7 @@ func AddDossier(wr http.ResponseWriter, rq *http.Request) {
 	_, err := db.Query("INSERT INTO financieringsdossier(ClientID, ZorgTechID) VALUES(?,?)", clientid, zorgtechid)
 	if err != nil {
 		fmt.Println("AddDossier: ", err)
-		wr.WriteHeader(http.StatusBadRequest)
+		wr.WriteHeader(http.StatusInternalServerError)
 	}
 	//return to homepage
 	HomePageHandler(wr, rq)

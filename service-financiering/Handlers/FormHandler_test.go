@@ -24,7 +24,7 @@ func Test_AddDossierMissingParams(t *testing.T) {
 	h.AddDossier(rr, req)
 
 	// Assert
-	if status := rr.Code; status != http.StatusBadRequest {
-		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusBadRequest)
+	if status := rr.Code; status != http.StatusInternalServerError {
+		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusInternalServerError)
 	}
 }
