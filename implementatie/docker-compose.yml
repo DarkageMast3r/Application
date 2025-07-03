@@ -1,0 +1,25 @@
+services:
+   backend:
+    container_name: ZorgTechImplementatie
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8501:8501
+
+    environment:
+      REDIS_HOST: redis.arjanslab.nl
+      REDIS_PORT: 6379
+      REDIS_DB: 1
+      POSTGRES_DB: implementatie
+      POSTGRES_HOST: postgresdb.arjanslab.nl
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: bw4f2LYrDbDzcSYk
+      POSTGRES_PORT: 5432
+      MONGODB_USERNAME: mongodb
+      MONGODB_PASSWORD: dESTS7HRtyp23rbm
+      MONGODB_HOST: mongodb.arjanslab.nl
+      MONGODB_PORT: 27017
+      MONGODB_DB: implementatie
+      JWT_SECRET_KEY: ObL89O3nOSSEj6tbdHako0cXtPErzBUfq8l8o/3KD9g=INSECURE
+      API_SECRET_KEY: cJGZ8L1sDcPezjOy1zacPJZxzZxrPObm2Ggs1U0V+fE=INSECU
