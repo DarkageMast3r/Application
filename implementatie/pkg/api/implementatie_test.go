@@ -1,12 +1,12 @@
 package api
 
 import (
-	"bytes"
-	"context"
-	"encoding/json"
 	"ZorgTechImplementatie/pkg/cache"
 	"ZorgTechImplementatie/pkg/database"
 	"ZorgTechImplementatie/pkg/models"
+	"bytes"
+	"context"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -233,11 +233,11 @@ func TestPersonaliseerProduct(t *testing.T) {
 	instellingen := models.PersonalisatieInstellingen{
 		VolumeNiveau: 5,
 		MeldingsType: "visueel",
-		Schema:      "dag",
-		Taal:        "nl",
+		Schema:       "dag",
+		Taal:         "nl",
 	}
 	input := models.PersonaliseerProductCommand{
-		ClientID:    clientID,
+		ClientID:     clientID,
 		Instellingen: instellingen,
 	}
 	requestBody, _ := json.Marshal(input)
@@ -343,8 +343,8 @@ func TestGetProductInformatie(t *testing.T) {
 	zorgtechID := uuid.New()
 	product := models.ZorgTechProduct{
 		ZorgtechID: zorgtechID,
-		Name:      "Test Product",
-		Category:  "valpreventie",
+		Name:       "Test Product",
+		Category:   "valpreventie",
 	}
 
 	// Mock cache get
@@ -396,8 +396,8 @@ func TestGetImplementatieStatus(t *testing.T) {
 	clientID := uuid.New()
 	dossier := models.ImplementatieDossier{
 		ImplementatieID: uuid.New(),
-		ClientID:       clientID,
-		Status:         models.StatusGeinstalleerd,
+		ClientID:        clientID,
+		Status:          models.StatusGeinstalleerd,
 	}
 
 	// Mock cache get
@@ -431,30 +431,3 @@ func TestGetImplementatieStatus(t *testing.T) {
 	assert.Equal(t, clientID, response.Data.ClientID)
 	assert.Equal(t, models.StatusGeinstalleerd, response.Data.Status)
 }
-
-// Mock voor de ImplementatieRepository interface
-type MockImplementatieRepository struct {
-	ctrl     *gomock.Controller
-	recorder *MockImplementatieRepositoryMockRecorder
-}
-
-func NewMockImplementatieRepository(ctrl *gomock.Controller) *MockImplementatieRepository {
-	mock := &MockImplementatieRepository{ctrl: ctrl}
-	mock.recorder = &MockImplementatieRepositoryMockRecorder{mock}
-	return mock
-}
-
-func (m *MockImplementatieRepository) EXPECT() *MockImplementatieRepositoryMockRecorder {
-	return m.recorder
-}
-
-type MockImplementatieRepositoryMockRecorder struct {
-	mock *MockImplementatieRepository
-}
-
-func (m *MockImplementatieRepositoryMockRecorder) Healthcheck(c interface{}) *gomock.Call {
-	return m.mock.ctrl.RecordCallWithMethodType(m.mock, "Healthcheck", reflect.TypeOf((*ImplementatieRepository)(nil).Elem(), c)
-}
-
-// Voeg hier de andere methoden toe voor de volledige interface implementatie
-// ...

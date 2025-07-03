@@ -1,10 +1,10 @@
 package main
 
 import (
-	"context"
 	"ZorgTechImplementatie/pkg/api"
 	"ZorgTechImplementatie/pkg/cache"
 	"ZorgTechImplementatie/pkg/database"
+	"context"
 	"log"
 
 	"go.uber.org/zap"
