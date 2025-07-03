@@ -9,17 +9,23 @@ build-docker:
 	docker compose build --no-cache
 
 run-local:
-	docker start dockerPostgres
-	docker start dockerRedis
-	docker start dockerMongo
-	export REDIS_HOST=localhost
-	export POSTGRES_HOST=localhost
-	export POSTGRES_DB=go_app_dev
-	export POSTGRES_USER=docker
-	export POSTGRES_PASSWORD=password
-	export POSTGRES_PORT=5433
+	export POSTGRES_DB=catalogus
+	export POSTGRES_HOST=postgresdb.arjanslab.nl
+	export POSTGRES_USER=postgres
+	export POSTGRES_PASSWORD=bw4f2LYrDbDzcSYk
+	export POSTGRES_PORT=5432
+	export MONGODB_USERNAME=mongodb
+	export MONGODB_PASSWORD=dESTS7HRtyp23rbm
+	export MONGODB_HOST=mongodb.arjanslab.nl
+	export MONGODB_PORT=27017
+	export MONGODB_DB=ZorgTechCatalogus
+	export REDIS_HOST=redis.arjanslab.nl
+	export REDIS_PORT=6379
+	export REDIS_DB=2
+	export REDIS_PASSWORD=KDJD37EzSGzWTKyw
 	export JWT_SECRET_KEY=ObL89O3nOSSEj6tbdHako0cXtPErzBUfq8l8o/3KD9g=INSECURE
 	export API_SECRET_KEY=cJGZ8L1sDcPezjOy1zacPJZxzZxrPObm2Ggs1U0V+fE=INSECURE
+      
 	go run cmd/server/main.go
 
 up:

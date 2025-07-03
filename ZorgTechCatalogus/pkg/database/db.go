@@ -8,6 +8,8 @@ import (
 
 	zorgtechproduct "ZorgTechCatalogus/pkg/models"
 
+	"github.com/joho/godotenv"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -53,7 +55,7 @@ func (db *GormDatabase) Save(value interface{}) Database {
 func NewDatabase() *gorm.DB {
 	var database *gorm.DB
 	var err error
-
+	_ = godotenv.Load()
 	db_hostname := os.Getenv("POSTGRES_HOST")
 	db_name := os.Getenv("POSTGRES_DB")
 	db_user := os.Getenv("POSTGRES_USER")
