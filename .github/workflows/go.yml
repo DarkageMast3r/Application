@@ -69,6 +69,7 @@ jobs:
           ui/service-ui.exe
           technology-selection/deploy
           technology-selection/config.json
+          .
         
     - name: Upload linux build artifacts
       uses: actions/upload-artifact@v4
