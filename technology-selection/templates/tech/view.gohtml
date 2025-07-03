@@ -28,13 +28,13 @@
 							<td>{{.Cost}}</td>
 							<td>{{range .Needs}}{{.Description}},{{end}}</td>
 							<td><a href="/View/Tech/{{.Id}}/Update">Edit</a></td>
-							<td><button type="submit" formmethod="POST" formaction="/Tech/{{.Id}}/Delete">Delete</a></td>
+							<td><button type="submit" formmethod="POST" formaction="/Selection/Tech/{{.Id}}/Delete">Delete</a></td>
 						</tr>
 					{{end}}
 				</tbody>
 			</table>
 			<br/>
-			<a href="/View/Tech/Create">Create new tech</a>
+			<a href="/Selection/View/Tech/Create">Create new tech</a>
 		</form>
 	</body>
 </html>

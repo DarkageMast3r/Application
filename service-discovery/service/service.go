@@ -10,7 +10,6 @@ import (
 	"math/rand"
 	"net"
 	"net/http"
-	"net/url"
 	"os"
 	"strconv"
 	"strings"
@@ -125,6 +124,7 @@ func Queue_Respond(d amqp.Delivery, body []byte, contentType string) error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
+
 	err = channel.PublishWithContext(ctx,
 		"",        // exchange
 		d.ReplyTo, // routing key
@@ -240,20 +240,6 @@ func Init() {
 }
 
 func Register(name string) int {
-	err := Queue_Listen("selection", func(d amqp.Delivery) {
-		writer := NewServiceResponseWriter()
-		request := new(http.Request)
-		request.URL = new(url.URL)
-		request.URL.Path = string(d.Body)
-		http.DefaultServeMux.ServeHTTP(writer, request)
-		err := Queue_Respond(d, writer.body, "text/html")
-		if err != nil {
-			fmt.Println(err)
-		}
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
 	return getLocalPort()
 }
 

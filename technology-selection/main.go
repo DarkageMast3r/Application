@@ -8,19 +8,10 @@ import (
 	"service/repository"
 	"service/service"
 	"strconv"
-
-	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 func main() {
 	service.Init()
-
-	err := service.Queue_Listen("test", func(d amqp.Delivery) {
-		fmt.Println(string(d.Body))
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	repository.Database_Get()
 	http.HandleFunc("/Category", handlers.Category_Get_All)
@@ -61,15 +52,9 @@ func main() {
 	http.HandleFunc("/Select", handlers.Selection_View)
 	http.HandleFunc("/Shortlist", handlers.Shortlist_View)
 
-	port := service.Register("technology-selection")
-
+	port := service.Register("selection")
 	fmt.Printf("Listening on %s\n", ":"+strconv.Itoa(port))
-	err = http.ListenAndServeTLS(
-		":"+strconv.Itoa(port),
-		"../server.crt",
-		"../server.key",
-		nil,
-	)
+	err := http.ListenAndServeTLS(":"+strconv.Itoa(port), "../server.crt", "../server.key", nil)
 	if err != nil {
 		log.Println(err)
 	}

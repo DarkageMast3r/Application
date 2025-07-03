@@ -1,44 +1,44 @@
 package handlers
 
 import (
-	"encoding/json"
 	"net/http"
+	"slices"
 	"strings"
 
-	"main/models"
+	"main/global"
+	"main/service"
+
+	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-type Service struct {
-	Hosts      []string
-	LastServed int
+var channels map[string]chan []byte = make(map[string]chan []byte)
+
+func Message_Respond(d amqp.Delivery) {
+	channel, exists := channels[d.CorrelationId]
+	if exists {
+		channel <- d.Body
+	}
 }
 
-func Service_Register(w http.ResponseWriter, r *http.Request) {
-	idx := strings.LastIndex(r.RemoteAddr, ":")
-	serviceUri := r.RemoteAddr[:idx] + ":" + r.PathValue("port")
-	models.Service_Create(r.PathValue("service"), serviceUri)
-}
-
-func Service_Get_Names(w http.ResponseWriter, r *http.Request) {
-	json, err := json.Marshal(models.Service_Get_Names())
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+func Send_Message(w http.ResponseWriter, r *http.Request) {
+	queue := strings.ToLower(r.PathValue("queue"))
+	if !slices.Contains(global.Config.Queues, queue) {
+		http.Redirect(w, r, "/App", http.StatusSeeOther)
 		return
 	}
-	w.Write(json)
-}
 
-func Service_Get(w http.ResponseWriter, r *http.Request) {
-	service, exists := models.Service_Get_By_Name(r.PathValue("service"))
-	if !exists {
+	path := r.URL.Path[len(queue)+1:]
+	corrId, err := service.Queue_Call(queue, []byte(path), "plain/text")
+	if err != nil {
 		http.NotFound(w, r)
 		return
 	}
-	service.LastServed = (service.LastServed + 1) % len(service.Hosts)
-	service.Save()
-	w.Write([]byte(service.Hosts[service.LastServed]))
-}
 
-func Redirect_To_App(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, "/App", http.StatusSeeOther)
+	channel := make(chan []byte)
+	channels[corrId] = channel
+	body := <-channels[corrId]
+	channels[corrId] = nil
+	w.Write(body)
+	w.Header().Set("content-type", "text/html")
+	w.WriteHeader(http.StatusOK)
 }
