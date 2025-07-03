@@ -9,17 +9,23 @@ build-docker:
 	docker compose build --no-cache
 
 run-local:
-	docker start dockerPostgres
-	docker start dockerRedis
-	docker start dockerMongo
-	export REDIS_HOST=localhost
-	export POSTGRES_HOST=localhost
-	export POSTGRES_DB=go_app_dev
-	export POSTGRES_USER=docker
-	export POSTGRES_PASSWORD=password
+	export POSTGRES_DB=ZorgTechCatalogus
+	export POSTGRES_HOST=postgresdb.arjanslab.nl
+	export POSTGRES_USER=ZorgTechCatalogus
+	export POSTGRES_PASSWORD=cfePWtexxxDE
 	export POSTGRES_PORT=5433
+	export MONGODB_USERNAME=mongodb
+	export MONGODB_PASSWORD=dESTS7HRtyp23rbm
+	export MONGODB_HOST=mongodb.arjanslab.nl
+	export MONGODB_PORT=27017
+	export MONGODB_DB=ZorgTechCatalogus
+	export REDIS_HOST=redis.arjanslab.nl
+	export REDIS_PORT=6379
+	export REDIS_DB=2
+	export REDIS_PASSWORD=KDJD37EzSGzWTKyw
 	export JWT_SECRET_KEY=ObL89O3nOSSEj6tbdHako0cXtPErzBUfq8l8o/3KD9g=INSECURE
 	export API_SECRET_KEY=cJGZ8L1sDcPezjOy1zacPJZxzZxrPObm2Ggs1U0V+fE=INSECURE
+      
 	go run cmd/server/main.go
 
 up:
@@ -38,10 +44,7 @@ test:
 	go test -v ./... -race -cover
 
 clean:
-	docker stop go-rest-api-template
-	docker stop dockerPostgres
-	docker rm go-rest-api-template
-	docker rm dockerPostgres
-	docker rm dockerRedis
-	docker image rm golang-rest-api-template-backend
-	rm -rf .dbdata
+	docker stop ZorgTechCatalogus
+	docker rm ZorgTechCatalogus
+	docker image rm ZorgTechCatalogus-backend
+

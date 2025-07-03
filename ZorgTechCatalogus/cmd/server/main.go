@@ -7,6 +7,8 @@ import (
 	"context"
 	"log"
 
+	"github.com/joho/godotenv"
+
 	"go.uber.org/zap"
 
 	"github.com/gin-gonic/gin"
@@ -38,6 +40,7 @@ import (
 // @externalDocs.description  OpenAPI
 // @externalDocs.url          https://swagger.io/resources/open-api/
 func main() {
+	_ = godotenv.Load()
 	redisClient := cache.NewRedisClient()
 	db := database.NewDatabase()
 	dbWrapper := &database.GormDatabase{DB: db}

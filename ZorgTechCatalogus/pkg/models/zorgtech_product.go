@@ -1,4 +1,4 @@
-package zorgtechproduct
+package models
 
 import (
 	"time"
