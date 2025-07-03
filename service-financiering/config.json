@@ -1,0 +1,7 @@
+{
+    "service_discovery_root": "localhost",
+    "service_discovery_port": 443,
+    "allow_insecure": true,
+    "connection_string": "Juggernaught5920:DaploDav15@tcp(127.0.0.1:3306)/financiering?charset=utf8mb4&parseTime=True&loc=Local"
+}
+

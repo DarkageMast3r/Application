@@ -1,0 +1,32 @@
+{{ define "Home" }}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HomePage</title>
+</head>
+<body>
+    <h1>Financierings prototype</h1>
+    <p>stuff i guess idk still building this</p>
+    <p>putting data here i guess</p>
+    {{ range . }}
+    <ul>
+        <a href="/Finance/{{.DossierID}}"> DossierID: {{ .DossierID}} </a> 
+        <li> ClientID: {{ .ClientID}} </li>
+        <li> ZorgTechID: {{ .ZorgTechID}} </li>
+        <li> AanvraagDatum: {{ .AanvraagDatum}} </li>
+        <li> Budget: </li>
+        <ul>
+            <li>    ID: {{ .Budget.ID}} </li>
+            <li>    Max: {{ .Budget.MaxBedrag}} </li>
+            <li>    Beschikbaar: {{ .Budget.BeschikbaarBedrag}} </li>
+            <li>    Gebruikt: {{ .Budget.GebruiktBedrag}} </li>
+            <li>    Status: {{ .Budget.BudgetStatus}} </li>
+        </ul>
+        <p></p>
+    </ul>
+    {{ end }}
+</body>
+</html>
+{{ end }}
