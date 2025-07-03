@@ -1,4 +1,4 @@
-package zorgtechproduct
+package api
 
 import (
 	"bytes"
@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"ZorgTechCatalogus/pkg/cache"
 	"ZorgTechCatalogus/pkg/database"
+	"ZorgTechCatalogus/pkg/zorgtechproduct"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -65,13 +66,13 @@ func TestMaakZorgTechProduct(t *testing.T) {
 	mockCache := cache.NewMockCache(ctrl)
 	ctx := context.Background()
 
-	repo := NewZorgTechProductRepository(mockDB, mockCache, &ctx)
+	repo := zorgtechproduct.NewZorgTechProductRepository(mockDB, mockCache, &ctx)
 
 	gin.SetMode(gin.TestMode)
 	r := gin.Default()
 	r.POST("/catalogus/product", repo.MaakZorgTechProduct)
 
-	input := MaakZorgTechProductCommand{
+	input := zorgtechproduct.MaakZorgTechProductCommand{
 		Naam:         "Test Product",
 		Beschrijving: "Test Beschrijving",
 		Categorie:    "valpreventie",

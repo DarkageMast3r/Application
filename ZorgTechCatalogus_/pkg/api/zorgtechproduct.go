@@ -3,6 +3,7 @@ package api
 import (
 	"ZorgTechCatalogus/pkg/cache"
 	"ZorgTechCatalogus/pkg/database"
+	zorgtechproduct "ZorgTechCatalogus/pkg/models"
 	"context"
 	"encoding/json"
 	"net/http"
@@ -65,14 +66,14 @@ func (r *zorgTechProductRepository) Healthcheck(c *gin.Context) {
 // @Failure 400 {string} string "Bad Request"
 // @Router /catalogus/product [post]
 func (r *zorgTechProductRepository) MaakZorgTechProduct(c *gin.Context) {
-	var input MaakZorgTechProductCommand
+	var input zorgtechproduct.MaakZorgTechProductCommand
 
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	product, err := NewZorgTechProduct(input)
+	product, err := zorgtechproduct.NewZorgTechProduct(input)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Kon product niet aanmaken"})
 		return
@@ -103,8 +104,8 @@ func (r *zorgTechProductRepository) MaakZorgTechProduct(c *gin.Context) {
 // @Failure 404 {string} string "Product niet gevonden"
 // @Router /catalogus/product [put]
 func (r *zorgTechProductRepository) WijzigZorgTechProduct(c *gin.Context) {
-	var input WijzigZorgTechProductCommand
-	var product ZorgTechProduct
+	var input zorgtechproduct.WijzigZorgTechProductCommand
+	var product zorgtechproduct.ZorgTechProduct
 
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -147,8 +148,8 @@ func (r *zorgTechProductRepository) WijzigZorgTechProduct(c *gin.Context) {
 // @Failure 404 {string} string "Product niet gevonden"
 // @Router /catalogus/product [delete]
 func (r *zorgTechProductRepository) VerwijderZorgTechProduct(c *gin.Context) {
-	var input VerwijderZorgTechProductCommand
-	var product ZorgTechProduct
+	var input zorgtechproduct.VerwijderZorgTechProductCommand
+	var product zorgtechproduct.ZorgTechProduct
 
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -188,8 +189,8 @@ func (r *zorgTechProductRepository) VerwijderZorgTechProduct(c *gin.Context) {
 // @Failure 404 {string} string "Product niet gevonden"
 // @Router /catalogus/product/technisch-detail [post]
 func (r *zorgTechProductRepository) VoegTechnischDetailToe(c *gin.Context) {
-	var input VoegTechnischDetailToeCommand
-	var product ZorgTechProduct
+	var input zorgtechproduct.VoegTechnischDetailToeCommand
+	var product zorgtechproduct.ZorgTechProduct
 
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -227,8 +228,8 @@ func (r *zorgTechProductRepository) VoegTechnischDetailToe(c *gin.Context) {
 // @Failure 404 {string} string "Product of detail niet gevonden"
 // @Router /catalogus/product/technisch-detail [delete]
 func (r *zorgTechProductRepository) VerwijderTechnischDetail(c *gin.Context) {
-	var input VerwijderTechnischDetailCommand
-	var product ZorgTechProduct
+	var input zorgtechproduct.VerwijderTechnischDetailCommand
+	var product zorgtechproduct.ZorgTechProduct
 
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -267,14 +268,14 @@ func (r *zorgTechProductRepository) VerwijderTechnischDetail(c *gin.Context) {
 // @Failure 404 {string} string "Product niet gevonden"
 // @Router /catalogus/product/{zorgtechId} [get]
 func (r *zorgTechProductRepository) GetProductById(c *gin.Context) {
-	var product ZorgTechProduct
+	var product zorgtechproduct.ZorgTechProduct
 	zorgtechID := c.Param("zorgtechId")
 
 	// Probeer eerst cache
 	cacheKey := "product_" + zorgtechID
 	cachedProduct, err := r.RedisClient.Get(*r.Ctx, cacheKey).Result()
 	if err == nil {
-		var cached ZorgTechProduct
+		var cached zorgtechproduct.ZorgTechProduct
 		if err := json.Unmarshal([]byte(cachedProduct), &cached); err == nil {
 			c.JSON(http.StatusOK, gin.H{"data": cached})
 			return
@@ -306,14 +307,14 @@ func (r *zorgTechProductRepository) GetProductById(c *gin.Context) {
 // @Success 200 {array} ZorgTechProduct "Successfully retrieved products"
 // @Router /catalogus/categorie/{categorie} [get]
 func (r *zorgTechProductRepository) FindByCategorie(c *gin.Context) {
-	var producten []ZorgTechProduct
+	var producten []zorgtechproduct.ZorgTechProduct
 	categorie := c.Param("categorie")
 
 	// Probeer eerst cache
 	cacheKey := "categorie_" + categorie
 	cachedProducts, err := r.RedisClient.Get(*r.Ctx, cacheKey).Result()
 	if err == nil {
-		var cached []ZorgTechProduct
+		var cached []zorgtechproduct.ZorgTechProduct
 		if err := json.Unmarshal([]byte(cachedProducts), &cached); err == nil {
 			c.JSON(http.StatusOK, gin.H{"data": cached})
 			return
@@ -344,13 +345,13 @@ func (r *zorgTechProductRepository) FindByCategorie(c *gin.Context) {
 // @Success 200 {array} ZorgTechProduct "Successfully retrieved products"
 // @Router /catalogus/producten [get]
 func (r *zorgTechProductRepository) ListAlleProducten(c *gin.Context) {
-	var producten []ZorgTechProduct
+	var producten []zorgtechproduct.ZorgTechProduct
 
 	// Probeer eerst cache
 	cacheKey := "alle_producten"
 	cachedProducts, err := r.RedisClient.Get(*r.Ctx, cacheKey).Result()
 	if err == nil {
-		var cached []ZorgTechProduct
+		var cached []zorgtechproduct.ZorgTechProduct
 		if err := json.Unmarshal([]byte(cachedProducts), &cached); err == nil {
 			c.JSON(http.StatusOK, gin.H{"data": cached})
 			return
@@ -382,7 +383,7 @@ func (r *zorgTechProductRepository) ListAlleProducten(c *gin.Context) {
 // @Success 200 {array} ZorgTechProduct "Successfully retrieved products"
 // @Router /catalogus/zoek [get]
 func (r *zorgTechProductRepository) ZoekOpNaam(c *gin.Context) {
-	var producten []ZorgTechProduct
+	var producten []zorgtechproduct.ZorgTechProduct
 	zoekterm := c.Query("zoekterm")
 
 	// Zoek in database (full-text search zou beter zijn)
