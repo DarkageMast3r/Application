@@ -24,7 +24,7 @@ jobs:
       run: |
         cd implementatie/cmd/server
         env GOOS=windows go build -o ../../service_implementation.exe
-        env GOOS=linux GOARCH=arm go build -o app_service_implementation
+        env GOOS=linux GOARCH=arm go build -o ../../app_service_implementation
      
     - name: Build service discovery
       run: |
