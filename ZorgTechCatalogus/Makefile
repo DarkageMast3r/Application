@@ -9,11 +9,11 @@ build-docker:
 	docker compose build --no-cache
 
 run-local:
-	export POSTGRES_DB=ZorgTechCatalogus
+	export POSTGRES_DB=catalogus
 	export POSTGRES_HOST=postgresdb.arjanslab.nl
-	export POSTGRES_USER=ZorgTechCatalogus
-	export POSTGRES_PASSWORD=cfePWtexxxDE
-	export POSTGRES_PORT=5433
+	export POSTGRES_USER=postgres
+	export POSTGRES_PASSWORD=bw4f2LYrDbDzcSYk
+	export POSTGRES_PORT=5432
 	export MONGODB_USERNAME=mongodb
 	export MONGODB_PASSWORD=dESTS7HRtyp23rbm
 	export MONGODB_HOST=mongodb.arjanslab.nl

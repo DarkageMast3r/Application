@@ -2,10 +2,13 @@ package cache
 
 import (
 	"context"
+	"log"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/go-redis/redis/v8"
+	"github.com/joho/godotenv"
 )
 
 type Cache interface {
@@ -21,7 +24,11 @@ func NewRedisClient() *redis.Client {
 	host := os.Getenv("REDIS_HOST")
 	port := os.Getenv("REDIS_PORT")
 	password := os.Getenv("REDIS_PASSWORD")
-	database := os.Getenv("REDIS_DB")
+	databaseStr := os.Getenv("REDIS_DB")
+	database, err := strconv.Atoi(databaseStr)
+	if err != nil {
+		log.Fatalf("Invalid REDIS_DB value: %v", err)
+	}
 
 	addr := host + ":" + port
 
