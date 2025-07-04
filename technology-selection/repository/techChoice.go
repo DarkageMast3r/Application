@@ -2,8 +2,8 @@ package repository
 
 import (
 	"database/sql"
-	"fmt"
 	"service/models"
+	"service/service"
 )
 
 func techChoice_read(rows *sql.Rows) []models.TechChoice {
@@ -12,7 +12,7 @@ func techChoice_read(rows *sql.Rows) []models.TechChoice {
 	for rows.Next() {
 		var techChoice models.TechChoice
 		if err := rows.Scan(&techChoice.Id, &techChoice.TechId, &techChoice.CaseId, &techChoice.Status, &techChoice.Reasoning); err != nil {
-			fmt.Println(err)
+			service.LogError(err)
 			continue
 		}
 		techChoice.Tech = Tech_Get_By_Id(techChoice.TechId)
@@ -25,7 +25,7 @@ func TechChoice_Get_All() []models.TechChoice {
 	db := Database_Get()
 	rows, err := db.Query("SELECT `Id`, `TechId`, `CaseId`, `Status`, `Reasoning` FROM TechChoice")
 	if err != nil {
-		fmt.Println(err)
+		service.LogError(err)
 		return nil
 	}
 	defer rows.Close()
@@ -36,7 +36,7 @@ func TechChoice_Get_All_By_Case(caseId int) []models.TechChoice {
 	db := Database_Get()
 	rows, err := db.Query("SELECT `Id`, `TechId`, `CaseId`, `Status`, `Reasoning` FROM TechChoice where CaseId = ?", caseId)
 	if err != nil {
-		fmt.Println(err)
+		service.LogError(err)
 		return nil
 	}
 	defer rows.Close()
@@ -48,7 +48,7 @@ func TechChoice_Get_By_Id(id int) *models.TechChoice {
 	db := Database_Get()
 	rows, err := db.Query("SELECT `Id`, `TechId`, `CaseId`, `Status`, `Reasoning` FROM TechChoice WHERE Id = ?", id)
 	if err != nil {
-		fmt.Println(err)
+		service.LogError(err)
 		return nil
 	}
 	defer rows.Close()

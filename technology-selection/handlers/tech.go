@@ -2,10 +2,10 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"service/models"
 	"service/repository"
+	"service/service"
 	"service/viewModels"
 	"strconv"
 
@@ -52,7 +52,7 @@ func Tech_Update(w http.ResponseWriter, r *http.Request) {
 	}
 	err = repository.Tech_Save(&tech)
 	if err != nil {
-		fmt.Println(err)
+		service.LogError(err)
 	}
 	http.Redirect(w, r, "/View/Tech", http.StatusSeeOther)
 }
@@ -63,13 +63,15 @@ func Tech_Create(w http.ResponseWriter, r *http.Request) {
 	var tech models.Tech
 	err := decoder.Decode(&tech, r.Form)
 	if err != nil {
-		fmt.Println("Could not decode: ", err)
+		service.LogWarning("Could not decode: ", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	err = repository.Tech_Save(&tech)
 	if err != nil {
-		fmt.Println(err)
+		service.LogWarning(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 	http.Redirect(w, r, "/View/Tech", http.StatusSeeOther)
 }
@@ -104,7 +106,7 @@ func Tech_View_Update(w http.ResponseWriter, r *http.Request) {
 	view.Needs = repository.Need_Get_All()
 	err = Template_View(w, view, "tech/update", "templates/tech/update.gohtml")
 	if err != nil {
-		fmt.Println(err)
+		service.LogError(err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 }
@@ -123,15 +125,13 @@ func Tech_View_Create(w http.ResponseWriter, r *http.Request) {
 func Tech_Shortlist(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
-		fmt.Println(err)
+		service.LogError(err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	if repository.Tech_Get_By_Id(id) == nil {
-		fmt.Println("No such tech found!")
 		w.WriteHeader(http.StatusBadRequest)
 		return
-
 	}
 
 	r.ParseForm()
@@ -143,13 +143,13 @@ func Tech_Shortlist(w http.ResponseWriter, r *http.Request) {
 	techChoice.CaseId = selectForm.Case.Id
 	techChoice.Status = models.SelectionStatus_Shortlist
 	if err != nil {
-		fmt.Println(err)
+		service.LogError(err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	err = repository.TechChoice_Save(&techChoice)
 	if err != nil {
-		fmt.Println(err)
+		service.LogError(err)
 	}
 	Selection_View(w, r)
 }

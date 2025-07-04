@@ -1,10 +1,10 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"service/models"
 	"service/repository"
+	"service/service"
 	"service/viewModels"
 	"strconv"
 )
@@ -40,7 +40,7 @@ func Start_View(w http.ResponseWriter, r *http.Request) {
 
 	err := Template_View(w, view, "selection/start", "templates/selection/start.gohtml")
 	if err != nil {
-		fmt.Println(err)
+		service.LogError(err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 }
@@ -63,7 +63,7 @@ func Selection_View(w http.ResponseWriter, r *http.Request) {
 		r.ParseForm()
 		err := decoder.Decode(&view, r.Form)
 		if err != nil {
-			fmt.Println(err)
+			service.LogError(err)
 		}
 
 		clientCase := repository.Case_Get_By_Id(view.Case.Id)
@@ -92,7 +92,7 @@ func Selection_View(w http.ResponseWriter, r *http.Request) {
 
 	err := Template_View(w, view, "selection/select", "templates/selection/selectTechnology.gohtml")
 	if err != nil {
-		fmt.Println(err)
+		service.LogError(err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 }
@@ -103,7 +103,7 @@ func Shortlist_View(w http.ResponseWriter, r *http.Request) {
 		r.ParseForm()
 		err := decoder.Decode(&view, r.Form)
 		if err != nil {
-			fmt.Println(err)
+			service.LogError(err)
 		}
 		view.Case = repository.Case_Get_By_Id(view.Case.Id)
 		view.Choices = repository.TechChoice_Get_All_By_Case(view.Case.Id)
@@ -111,7 +111,7 @@ func Shortlist_View(w http.ResponseWriter, r *http.Request) {
 
 	err := Template_View(w, view, "selection/shortlist", "templates/selection/shortlist.gohtml")
 	if err != nil {
-		fmt.Println(err)
+		service.LogError(err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 }
