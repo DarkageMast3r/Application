@@ -1,11 +1,11 @@
 package api
 
 import (
-	"context"
-	"encoding/json"
 	"ZorgTechImplementatie/pkg/cache"
 	"ZorgTechImplementatie/pkg/database"
 	"ZorgTechImplementatie/pkg/models"
+	"context"
+	"encoding/json"
 	"net/http"
 	"time"
 
@@ -69,7 +69,6 @@ func (r *implementatieRepository) Healthcheck(c *gin.Context) {
 // @Router /implementatie/aanvraag [post]
 func (r *implementatieRepository) AanvraagProduct(c *gin.Context) {
 	var input models.AanvraagProductCommand
-
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -78,12 +77,12 @@ func (r *implementatieRepository) AanvraagProduct(c *gin.Context) {
 	// Maak nieuw implementatiedossier aan
 	dossier := models.ImplementatieDossier{
 		ImplementatieID: uuid.New(),
-		ClientID:       input.ClientID,
-		ZorgtechID:     input.ZorgtechID,
-		Status:         models.StatusBesteld,
+		ClientID:        input.ClientID,
+		ZorgtechID:      input.ZorgtechID,
+		Status:          models.StatusBesteld,
 		Logs: []models.ImplementatieLog{
 			{
-				Actie:         "Aanvraag geregistreerd",
+				Actie:          "Aanvraag geregistreerd",
 				UitgevoerdDoor: "Systeem",
 			},
 		},
@@ -132,7 +131,7 @@ func (r *implementatieRepository) OntvangProduct(c *gin.Context) {
 	dossier.Status = models.StatusGeleverd
 	dossier.Serienummer = input.Serienummer
 	dossier.Logs = append(dossier.Logs, models.ImplementatieLog{
-		Actie:         "Product ontvangen",
+		Actie:          "Product ontvangen",
 		UitgevoerdDoor: "Systeem",
 	})
 
@@ -189,7 +188,7 @@ func (r *implementatieRepository) InstalleerProduct(c *gin.Context) {
 	dossier.Status = models.StatusGeinstalleerd
 	dossier.InstallatieDatum = &now
 	dossier.Logs = append(dossier.Logs, models.ImplementatieLog{
-		Actie:         "Product geïnstalleerd",
+		Actie:          "Product geïnstalleerd",
 		UitgevoerdDoor: "Systeem",
 	})
 
@@ -245,7 +244,7 @@ func (r *implementatieRepository) PersonaliseerProduct(c *gin.Context) {
 	dossier.Status = models.StatusGepersonaliseerd
 	dossier.Personalisatie = &input.Instellingen
 	dossier.Logs = append(dossier.Logs, models.ImplementatieLog{
-		Actie:         "Product gepersonaliseerd",
+		Actie:          "Product gepersonaliseerd",
 		UitgevoerdDoor: "Systeem",
 	})
 
@@ -294,7 +293,7 @@ func (r *implementatieRepository) LeverProduct(c *gin.Context) {
 
 	// Update dossier logs
 	dossier.Logs = append(dossier.Logs, models.ImplementatieLog{
-		Actie:         "Product geleverd aan cliënt",
+		Actie:          "Product geleverd aan cliënt",
 		UitgevoerdDoor: "Systeem",
 	})
 
@@ -349,7 +348,7 @@ func (r *implementatieRepository) MarkeerAlsGeimplementeerd(c *gin.Context) {
 	// Update dossier status
 	dossier.Status = models.StatusVoltooid
 	dossier.Logs = append(dossier.Logs, models.ImplementatieLog{
-		Actie:         "Implementatie voltooid",
+		Actie:          "Implementatie voltooid",
 		UitgevoerdDoor: "Systeem",
 	})
 
@@ -467,8 +466,8 @@ func (r *implementatieRepository) GetInstallatieStatus(c *gin.Context) {
 	}
 
 	response := gin.H{
-		"status":            dossier.Status,
-		"installatieDatum":  dossier.InstallatieDatum,
+		"status":             dossier.Status,
+		"installatieDatum":   dossier.InstallatieDatum,
 		"isGepersonaliseerd": dossier.Status == models.StatusGepersonaliseerd || dossier.Status == models.StatusVoltooid,
 	}
 

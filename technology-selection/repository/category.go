@@ -2,8 +2,8 @@ package repository
 
 import (
 	"database/sql"
-	"fmt"
 	"service/models"
+	"service/service"
 )
 
 func category_read(rows *sql.Rows) []models.Category {
@@ -12,7 +12,7 @@ func category_read(rows *sql.Rows) []models.Category {
 	for rows.Next() {
 		var cat models.Category
 		if err := rows.Scan(&cat.Id, &cat.Name, &cat.Description); err != nil {
-			fmt.Println(err)
+			service.LogError(err)
 			continue
 		}
 		categories = append(categories, cat)
@@ -35,7 +35,7 @@ func Category_Get_By_Id(id int) *models.Category {
 	db := Database_Get()
 	rows, err := db.Query("SELECT `Id`, `Name`, `Description` FROM Category WHERE Id = ?", id)
 	if err != nil {
-		fmt.Println(err)
+		service.LogError(err)
 		return nil
 	}
 	defer rows.Close()

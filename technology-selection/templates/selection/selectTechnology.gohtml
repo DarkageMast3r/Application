@@ -55,7 +55,7 @@
 		<form class="page" action="/Selection/Select" method="POST">
 			<div class="search">
 				<input type="hidden" name="case.id" value="{{$model.Case.Id}}"/>
-				<h3 style="margin-top: 0;"><a href="/">&lt;</a>&nbsp;{{$model.Case.Name}}</h3>
+				<h3 style="margin-top: 0;"><a href="/Selection">&lt;</a>&nbsp;{{$model.Case.Name}}</h3>
 				{{template "common/checklist" .Needs}}
 				<p>{{$model.Case.Description}}</p>
 				<input style="margin-top: 1rem;" class="w-100 btn-primary" type="submit" value="Search"/>

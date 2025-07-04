@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"time"
 
+	"smartcare/global"
 	"smartcare/handlers"
 	"smartcare/service"
 
@@ -15,6 +16,7 @@ import (
 )
 
 func main() {
+	global.Init()
 	r := gin.Default()
 
 	r.SetFuncMap(template.FuncMap{
@@ -43,7 +45,6 @@ func main() {
 
 func setupRoutes(r *gin.Engine) {
 	r.GET("/", handlers.Dashboard)
-
 	api := r.Group("/api")
 	{
 		api.GET("/dashboard/stats", handlers.GetDashboardStats)

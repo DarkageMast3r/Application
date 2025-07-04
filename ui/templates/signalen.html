@@ -2,33 +2,7 @@
 <div class="card">
     <h3>📊 Openstaande Signalen</h3>
     <div class="client-list" id="signaalList">
-        <div class="client-card">
-            <div class="signal-header">
-                <strong>Cliënt #C003</strong>
-                <span class="status-badge status-nieuw">Nieuw</span>
-            </div>
-            <div>Valdetectie alarm - 3x in laatste week</div>
-            <div class="signal-timestamp">Geregistreerd: vandaag 14:30</div>
-            <button class="btn btn-secondary signal-btn">🔍 Beoordelen</button>
-        </div>
-        <div class="client-card">
-            <div class="signal-header">
-                <strong>Cliënt #C007</strong>
-                <span class="status-badge status-beoordeling">In Beoordeling</span>
-            </div>
-            <div>Bloeddruk afwijkingen - systolisch >180</div>
-            <div class="signal-timestamp">Geregistreerd: gisteren 09:15</div>
-            <button class="btn btn-secondary signal-btn">📋 Doorverwijzen</button>
-        </div>
-        <div class="client-card">
-            <div class="signal-header">
-                <strong>Cliënt #C012</strong>
-                <span class="status-badge status-nieuw">Nieuw</span>
-            </div>
-            <div>GPS locatie buiten veiligheidszone</div>
-            <div class="signal-timestamp">Geregistreerd: vandaag 11:20</div>
-            <button class="btn btn-secondary signal-btn">🔍 Beoordelen</button>
-        </div>
+        <a class="btn btn-primary" style="text-decoration: none;" href="/Selection">Openstaande signalen beheren</a>
     </div>
 </div>
 
@@ -41,15 +15,8 @@
                 <input type="text" name="client_id" placeholder="bijv. C001" required>
             </div>
             <div class="form-group">
-                <label>Signaal Type</label>
-                <select name="signal_type" required>
-                    <option value="">Selecteer type...</option>
-                    <option value="fall_detection">Valdetectie</option>
-                    <option value="blood_pressure">Bloeddruk afwijking</option>
-                    <option value="gps_alert">GPS locatie alert</option>
-                    <option value="medication_missed">Medicatie gemist</option>
-                    <option value="cognitive_decline">Cognitieve achteruitgang</option>
-                </select>
+                <label>Naam</label>
+                <input type="text" name="name" required>
             </div>
         </div>
         <div class="form-group">

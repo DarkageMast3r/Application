@@ -79,7 +79,7 @@
 								<textarea style="resize: vertical;" class="input-white" name="reasoning">{{.Reasoning.String}}</textarea>
 								<div style="display: flex; margin-top: 0.5rem;">
 									<button class="btn-danger" formaction="/Selection/TechChoice/{{$choice.Id}}/Reject">Reject</button>
-									<button style="margin-left: 0.5rem;" class="btn-primary" formaction=/Selection"/TechChoice/{{$choice.Id}}/Choose">Choose</button>
+									<button style="margin-left: 0.5rem;" class="btn-primary" formaction="/Selection/TechChoice/{{$choice.Id}}/Choose">Choose</button>
 								</div>
 							{{else}}
 								<p style="margin-top: 0.5rem;">{{.Reasoning.String}}</p>

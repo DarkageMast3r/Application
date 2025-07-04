@@ -1,13 +1,15 @@
 package handlers
 
 import (
-	"context"
+	"bytes"
+	"encoding/json"
 	"log"
 	"net/http"
-	"time"
+	"smartcare/global"
+	"smartcare/service"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
-	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 func failOnError(err error, msg string) {
@@ -28,38 +30,6 @@ func SignalenPage(c *gin.Context) {
 	} else {
 		c.HTML(http.StatusOK, "layout.html", data)
 	}
-
-	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
-	failOnError(err, "Failed to connect to RabbitMQ")
-	defer conn.Close()
-	ch, err := conn.Channel()
-	failOnError(err, "Failed to open a channel")
-	defer ch.Close()
-	q, err := ch.QueueDeclare(
-		"hello2", // name
-		false,    // durable
-		false,    // delete when unused
-		false,    // exclusive
-		false,    // no-wait
-		nil,      // arguments
-	)
-	failOnError(err, "Failed to declare a queue")
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	body := "Hello World!"
-	err = ch.PublishWithContext(ctx,
-		"",     // exchange
-		q.Name, // routing key
-		false,  // mandatory
-		false,  // immediate
-		amqp.Publishing{
-			ContentType: "text/plain",
-			Body:        []byte(body),
-		})
-	failOnError(err, "Failed to publish a message")
-	log.Printf(" [x] Sent %s\n", body)
 }
 
 func ZorgtechnologiePage(c *gin.Context) {
@@ -106,7 +76,22 @@ func RapportagePage(c *gin.Context) {
 
 // obama giving himself a medal.jpg
 func CreateSignal(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"success": true, "message": "Signaal geregistreerd"})
+	c.Request.ParseForm()
+	request := make(map[string]string)
+	request["name"] = c.Request.Form.Get("name")
+	request["client_id"] = c.Request.Form.Get("client_id")
+	request["description"] = c.Request.Form.Get("description")
+	requestJson, err := json.Marshal(request)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": ""})
+		return
+	}
+	url := "https://" + global.Config.Service_discovery_root + ":" + strconv.Itoa(global.Config.Service_discovery_port) + "/Selection/Case/Create"
+	_, err = http.Post(url, "text/json", bytes.NewReader(requestJson))
+	if err != nil {
+		service.LogWarning("Could not send message to URL", url, err)
+	}
+	c.Redirect(http.StatusSeeOther, "/App")
 }
 
 func RequestBudget(c *gin.Context) {

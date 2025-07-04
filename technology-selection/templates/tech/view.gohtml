@@ -27,7 +27,7 @@
 							<td>{{.Category.Name}}</td>
 							<td>{{.Cost}}</td>
 							<td>{{range .Needs}}{{.Description}},{{end}}</td>
-							<td><a href="/View/Tech/{{.Id}}/Update">Edit</a></td>
+							<td><a href="/Selection/View/Tech/{{.Id}}/Update">Edit</a></td>
 							<td><button type="submit" formmethod="POST" formaction="/Selection/Tech/{{.Id}}/Delete">Delete</a></td>
 						</tr>
 					{{end}}

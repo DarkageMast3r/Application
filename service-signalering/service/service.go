@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/tls"
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"math/rand"
@@ -23,12 +22,13 @@ type Config struct {
 	Service_discovery_root string `json:"service_discovery_root"`
 	Service_discovery_port int    `json:"service_discovery_port"`
 	Allow_insecure         bool   `json:"allow_insecure"`
+	RabbitMQ               string `json:"rabbitmq"`
 }
 
 func readConfig(path string) Config {
 	jsonFile, err := os.Open(path)
 	if err != nil {
-		fmt.Println(err)
+		LogError(err)
 	}
 	defer jsonFile.Close()
 
@@ -58,7 +58,7 @@ func get_rabbitmq_connection() (*amqp.Connection, error) {
 	if rabbitmq_connection != nil {
 		return rabbitmq_connection, nil
 	}
-	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+	conn, err := amqp.Dial(config.RabbitMQ)
 	if err != nil {
 		return nil, err
 	}
@@ -190,6 +190,15 @@ func Queue_Call(name string, body []byte, contentType string) (string, error) {
 	return corrId, err
 }
 
+func Queue_Call_Request(name string, request Request) (string, error) {
+	payload, err := json.Marshal(&request)
+	if err != nil {
+		return "", err
+	}
+
+	return Queue_Call(name, payload, "text/json")
+}
+
 func Queue_Listen(name string, handler func(amqp.Delivery)) error {
 	channel, err := get_rabbitmq_channel()
 	if err != nil {
@@ -239,93 +248,50 @@ func Init() {
 	services[service_discovery] = config.Service_discovery_root + ":" + strconv.Itoa(config.Service_discovery_port)
 }
 
+type Request struct {
+	Url    string
+	Method string
+	Body   []byte
+	Header http.Header
+}
+
+type Response struct {
+	MimeType string
+	Body     []byte
+}
+
 func Register(name string, handler func(http.ResponseWriter, *http.Request)) int {
-	err := Queue_Listen("selection", func(d amqp.Delivery) {
+	err := Queue_Listen(name, func(d amqp.Delivery) {
+		var messageRequest Request
+		err := json.Unmarshal(d.Body, &messageRequest)
+		if err != nil {
+			LogError(err)
+			return
+		}
 		writer := NewServiceResponseWriter()
 		request := new(http.Request)
+		request.Method = messageRequest.Method
 		request.URL = new(url.URL)
-		request.URL.Path = string(d.Body)
+		request.URL.Path = messageRequest.Url
+		request.Body = io.NopCloser(strings.NewReader(string(messageRequest.Body)))
+		request.Header = messageRequest.Header
 		handler(writer, request)
-		err := Queue_Respond(d, writer.body, "text/html")
+		messageResponse := Response{
+			MimeType: writer.Header().Get("content-type"),
+			Body:     writer.body,
+		}
+		body, err := json.Marshal(&messageResponse)
 		if err != nil {
-			fmt.Println(err)
+			LogError(err)
+			return
+		}
+		err = Queue_Respond(d, body, "text/html")
+		if err != nil {
+			LogError(err)
 		}
 	})
 	if err != nil {
 		log.Fatal(err)
 	}
 	return getLocalPort()
-}
-
-func Route(host string, routeValues ...string) string {
-	return fmt.Sprintf(
-		"https://%s/%s",
-		host,
-		strings.Join(routeValues, "/"),
-	)
-}
-
-func Get(route string) (string, error) {
-	resp, err := http.Get(route)
-	if err != nil {
-		fmt.Println("Failure to GET: ", err)
-		return "", err
-	}
-	body, err := io.ReadAll(resp.Body)
-	resp.Body.Close()
-	if err != nil {
-		fmt.Println("Failure to read all: ", err)
-		return "", err
-	}
-	return string(body), nil
-}
-
-func Post(route string, contentType string, data io.Reader) (string, error) {
-	resp, err := http.Post(route, contentType, data)
-	if err != nil {
-		fmt.Println("Failure to POST: ", err)
-		return "", err
-	}
-	body, err := io.ReadAll(resp.Body)
-	resp.Body.Close()
-	if err != nil {
-		fmt.Println("Failure to read all: ", err)
-		return "", err
-	}
-	return string(body), nil
-}
-
-func CallGet(service string, routeValues ...string) (string, error) {
-	return Get(Route(Get_Uri(service), routeValues...))
-}
-
-func CallPost(contentType string, body io.Reader, service string, routeValues ...string) (string, error) {
-	return Post(Route(Get_Uri(service), routeValues...), contentType, body)
-}
-
-func reload(name string) string {
-	uri, err := Get(Route(Get_Uri(service_discovery), name))
-	if err != nil {
-		fmt.Println("Could not get uri for service ", name)
-		log.Fatal(err)
-	} else {
-		services[name] = uri
-	}
-	return uri
-}
-
-func Get_Uri(name string) string {
-	uri, exists := services[name]
-	// Get service if not used before
-	if !exists {
-		uri = reload(name)
-	}
-
-	// Get new service is previous stopped
-	_, err := Get(Route(uri))
-	if err != nil {
-		uri = reload(name)
-	}
-
-	return uri
 }

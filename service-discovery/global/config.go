@@ -2,8 +2,8 @@ package global
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
+	"log"
 	"os"
 )
 
@@ -19,7 +19,7 @@ var Config Configuration = Configuration{}
 func ReadConfig(path string) Configuration {
 	jsonFile, err := os.Open(path)
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 	}
 	defer jsonFile.Close()
 
