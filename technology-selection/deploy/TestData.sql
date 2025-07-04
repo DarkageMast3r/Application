@@ -1,5 +1,5 @@
-create database if not exists technology_selection;
-use technology_selection;
+create database if not exists technology_selection_test;
+use technology_selection_test;
 
 drop table if exists TechNeed;
 drop table if exists Need;
@@ -27,7 +27,7 @@ create table Tech (
 	Id int primary key auto_increment,
     `Name` varchar(256),
     CategoryId int,
-    Cost decimal(16, 4),
+    Cost decimal(16, 6),
 	constraint fk_Category foreign key (CategoryId) references Category(Id)
 );
 
