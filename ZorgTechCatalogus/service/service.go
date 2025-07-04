@@ -23,6 +23,7 @@ type Config struct {
 	Service_discovery_root string `json:"service_discovery_root"`
 	Service_discovery_port int    `json:"service_discovery_port"`
 	Allow_insecure         bool   `json:"allow_insecure"`
+	RabbitMQ               string `json:"rabbitmq"`
 }
 
 func readConfig(path string) Config {
@@ -58,7 +59,7 @@ func get_rabbitmq_connection() (*amqp.Connection, error) {
 	if rabbitmq_connection != nil {
 		return rabbitmq_connection, nil
 	}
-	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+	conn, err := amqp.Dial(config.RabbitMQ)
 	if err != nil {
 		return nil, err
 	}
