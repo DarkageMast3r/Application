@@ -23,6 +23,5 @@ func AddDossier(wr http.ResponseWriter, rq *http.Request) {
 		fmt.Println("AddDossier: ", err)
 		wr.WriteHeader(http.StatusInternalServerError)
 	}
-	//return to homepage
 	HomePageHandler(wr, rq)
 }
