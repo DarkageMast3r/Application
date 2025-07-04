@@ -54,17 +54,17 @@ func NewRouter(logger *zap.Logger, mongoCollection *mongo.Collection, db databas
 		catalogus := v1.Group("/catalogus")
 		{
 			// Commands
-			catalogus.POST("/product", middleware.APIKeyAuth(), middleware.JWTAuth(), catalogusRepository.MaakZorgTechProduct)
-			catalogus.PUT("/product", middleware.APIKeyAuth(), middleware.JWTAuth(), catalogusRepository.WijzigZorgTechProduct)
-			catalogus.DELETE("/product", middleware.APIKeyAuth(), middleware.JWTAuth(), catalogusRepository.VerwijderZorgTechProduct)
-			catalogus.POST("/product/technisch-detail", middleware.APIKeyAuth(), middleware.JWTAuth(), catalogusRepository.VoegTechnischDetailToe)
-			catalogus.DELETE("/product/technisch-detail", middleware.APIKeyAuth(), middleware.JWTAuth(), catalogusRepository.VerwijderTechnischDetail)
+			catalogus.POST("/product", catalogusRepository.MaakZorgTechProduct)
+			catalogus.PUT("/product", catalogusRepository.WijzigZorgTechProduct)
+			catalogus.DELETE("/product", catalogusRepository.VerwijderZorgTechProduct)
+			catalogus.POST("/product/technisch-detail", catalogusRepository.VoegTechnischDetailToe)
+			catalogus.DELETE("/product/technisch-detail", catalogusRepository.VerwijderTechnischDetail)
 
 			// Queries
-			catalogus.GET("/product/:zorgtechId", middleware.APIKeyAuth(), catalogusRepository.GetProductById)
-			catalogus.GET("/categorie/:categorie", middleware.APIKeyAuth(), catalogusRepository.FindByCategorie)
-			catalogus.GET("/producten", middleware.APIKeyAuth(), catalogusRepository.ListAlleProducten)
-			catalogus.GET("/zoek", middleware.APIKeyAuth(), catalogusRepository.ZoekOpNaam)
+			catalogus.GET("/product/:zorgtechId", catalogusRepository.GetProductById)
+			catalogus.GET("/categorie/:categorie", catalogusRepository.FindByCategorie)
+			catalogus.GET("/producten", catalogusRepository.ListAlleProducten)
+			catalogus.GET("/zoek", catalogusRepository.ZoekOpNaam)
 		}
 	}
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
