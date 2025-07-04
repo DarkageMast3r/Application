@@ -6,6 +6,16 @@ drop table if exists Need;
 drop table if exists TechChoice;
 drop table if exists Tech;
 drop table if exists Category;
+drop table if exists `Case`;
+
+create table `Case` (
+	Id int auto_increment,
+	ClientId varchar(256),
+    `Name` varchar(256),
+	`Description` varchar(4096),
+    primary key (Id)
+);
+
 create table Category (
 	Id int auto_increment,
 	`Name` varchar(256),
@@ -60,4 +70,3 @@ insert into TechNeed (`TechId`, `NeedId`) values (1, 1);
 insert into TechNeed (`TechId`, `NeedId`) values (2, 1);
 insert into TechNeed (`TechId`, `NeedId`) values (1, 2);
 
-select * from TechChoice

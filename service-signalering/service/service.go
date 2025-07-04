@@ -190,6 +190,15 @@ func Queue_Call(name string, body []byte, contentType string) (string, error) {
 	return corrId, err
 }
 
+func Queue_Call_Request(name string, request Request) (string, error) {
+	payload, err := json.Marshal(&request)
+	if err != nil {
+		return "", err
+	}
+
+	return Queue_Call(name, payload, "text/json")
+}
+
 func Queue_Listen(name string, handler func(amqp.Delivery)) error {
 	channel, err := get_rabbitmq_channel()
 	if err != nil {
@@ -239,14 +248,44 @@ func Init() {
 	services[service_discovery] = config.Service_discovery_root + ":" + strconv.Itoa(config.Service_discovery_port)
 }
 
+type Request struct {
+	Url    string
+	Method string
+	Body   []byte
+	Header http.Header
+}
+
+type Response struct {
+	MimeType string
+	Body     []byte
+}
+
 func Register(name string, handler func(http.ResponseWriter, *http.Request)) int {
-	err := Queue_Listen("selection", func(d amqp.Delivery) {
+	err := Queue_Listen(name, func(d amqp.Delivery) {
+		var messageRequest Request
+		err := json.Unmarshal(d.Body, &messageRequest)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
 		writer := NewServiceResponseWriter()
 		request := new(http.Request)
+		request.Method = messageRequest.Method
 		request.URL = new(url.URL)
-		request.URL.Path = string(d.Body)
+		request.URL.Path = messageRequest.Url
+		request.Body = io.NopCloser(strings.NewReader(string(messageRequest.Body)))
+		request.Header = messageRequest.Header
 		handler(writer, request)
-		err := Queue_Respond(d, writer.body, "text/html")
+		messageResponse := Response{
+			MimeType: writer.Header().Get("content-type"),
+			Body:     writer.body,
+		}
+		body, err := json.Marshal(&messageResponse)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		err = Queue_Respond(d, body, "text/html")
 		if err != nil {
 			fmt.Println(err)
 		}

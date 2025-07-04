@@ -190,6 +190,15 @@ func Queue_Call(name string, body []byte, contentType string) (string, error) {
 	return corrId, err
 }
 
+func Queue_Call_Request(name string, request Request) (string, error) {
+	payload, err := json.Marshal(&request)
+	if err != nil {
+		return "", err
+	}
+
+	return Queue_Call(name, payload, "text/json")
+}
+
 func Queue_Listen(name string, handler func(amqp.Delivery)) error {
 	channel, err := get_rabbitmq_channel()
 	if err != nil {

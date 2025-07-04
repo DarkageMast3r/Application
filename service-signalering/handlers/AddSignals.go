@@ -46,7 +46,7 @@ func AddSignals(c *gin.Context) {
 	for _, signaal := range request.Signalen {
 		query := `
             INSERT INTO signals (client_id, type, waarde, tijdstip, bron) 
-            VALUES ($1, $2, $3, $4, $5)`
+            VALUES (?, ?, ?, ?, ?)`
 
 		_, err := database.DB.Exec(query, clientID, signaal.Type, signaal.Waarde, signaal.Tijdstip, signaal.Bron)
 		if err != nil {

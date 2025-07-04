@@ -14,6 +14,9 @@ func main() {
 	service.Init()
 
 	repository.Database_Get()
+
+	http.HandleFunc("/Case/Create", handlers.Case_Create)
+
 	http.HandleFunc("/Category", handlers.Category_Get_All)
 	http.HandleFunc("/Category/{id}", handlers.Category_Get_By_Id)
 	http.HandleFunc("/Category/{id}/Update", handlers.Category_Update)
