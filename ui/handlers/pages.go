@@ -1,7 +1,9 @@
 package handlers
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"log"
 	"net/http"
 	"time"
@@ -106,7 +108,19 @@ func RapportagePage(c *gin.Context) {
 
 // obama giving himself a medal.jpg
 func CreateSignal(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"success": true, "message": "Signaal geregistreerd"})
+	c.Request.ParseForm()
+	request := make(map[string]string)
+	request["name"] = c.Request.Form.Get("name")
+	request["client_id"] = c.Request.Form.Get("client_id")
+	request["description"] = c.Request.Form.Get("description")
+	requestJson, err := json.Marshal(request)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": ""})
+		return
+	}
+
+	http.Post("localhost/Selection/Case/Create", "text/json", bytes.NewReader(requestJson))
+	c.Redirect(http.StatusSeeOther, "/App")
 }
 
 func RequestBudget(c *gin.Context) {

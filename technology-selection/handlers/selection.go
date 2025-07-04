@@ -34,45 +34,9 @@ func tech_has_all_needs(tech *models.Tech, needs []models.CheckableOption) bool 
 	return true
 }
 
-var cases []models.Case = []models.Case{
-	{
-		Id:          1,
-		ClientId:    "AAAA-AAAA",
-		Name:        "John Smith",
-		Description: "Complete loss of mobility after getting involved in a car incident.",
-	},
-	{
-		Id:          2,
-		ClientId:    "AAAA-AAAB",
-		Name:        "Raphael Stones",
-		Description: "Paralised from the neck down after football incident",
-	},
-	{
-		Id:          3,
-		ClientId:    "AAAA-AAAC",
-		Name:        "Jordan Sanderson",
-		Description: "Cannot sit comfortably anymore",
-	},
-	{
-		Id:          4,
-		ClientId:    "AAAA-AAAD",
-		Name:        "Sarah Flowerfield",
-		Description: "Lost his left leg in a mountaineering incident, but wishes to continue",
-	},
-}
-
-func case_get_by_id(id int) *models.Case {
-	for _, clientCase := range cases {
-		if clientCase.Id == id {
-			return &clientCase
-		}
-	}
-	return nil
-}
-
 func Start_View(w http.ResponseWriter, r *http.Request) {
 	var view viewModels.Start
-	view.Cases = cases
+	view.Cases = repository.Case_Get_All()
 
 	err := Template_View(w, view, "selection/start", "templates/selection/start.gohtml")
 	if err != nil {
@@ -102,7 +66,7 @@ func Selection_View(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(err)
 		}
 
-		clientCase := case_get_by_id(view.Case.Id)
+		clientCase := repository.Case_Get_By_Id(view.Case.Id)
 		if clientCase != nil {
 			view.Case = *clientCase
 		}
@@ -141,7 +105,7 @@ func Shortlist_View(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			fmt.Println(err)
 		}
-		view.Case = case_get_by_id(view.Case.Id)
+		view.Case = repository.Case_Get_By_Id(view.Case.Id)
 		view.Choices = repository.TechChoice_Get_All_By_Case(view.Case.Id)
 	}
 
