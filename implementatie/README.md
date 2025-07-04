@@ -15,7 +15,7 @@
 1. Navigate to the directory
 
 ```bash
-cd ZorgTechImplementatie
+cd implementatie
 ```
 
 2. Build and run the Docker containers
