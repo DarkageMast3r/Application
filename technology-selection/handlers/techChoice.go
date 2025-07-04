@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -44,7 +45,7 @@ func TechChoice_Choose(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	techChoice := repository.TechChoice_Get_By_Id(id)
-	if techChoice == nil {
+	if techChoice == nil || techChoice.Status != models.SelectionStatus_Shortlist {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -54,9 +55,22 @@ func TechChoice_Choose(w http.ResponseWriter, r *http.Request) {
 	err = repository.TechChoice_Save(techChoice)
 	if err != nil {
 		fmt.Println(err)
+		return
 	}
 
 	Shortlist_View(w, r)
+
+	clientCase := repository.Case_Get_By_Id(techChoice.CaseId)
+	request := make(map[string]string)
+	request["clientId"] = clientCase.ClientId
+	request["zorgtechId"] = strconv.Itoa(techChoice.TechId)
+	jsonBody, err := json.Marshal(&request)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	http.Post("localhost/implementation/api/v1/imlementatie/aanvraag", "text/json", bytes.NewReader(jsonBody))
 }
 
 func TechChoice_Reject(w http.ResponseWriter, r *http.Request) {
@@ -67,7 +81,7 @@ func TechChoice_Reject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	techChoice := repository.TechChoice_Get_By_Id(id)
-	if techChoice == nil {
+	if techChoice == nil || techChoice.Status != models.SelectionStatus_Shortlist {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}

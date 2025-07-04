@@ -12,7 +12,8 @@ import (
 )
 
 type Config struct {
-	Connection_String string `json:"connection_string"`
+	Connection_String      string `json:"connection_string"`
+	Connection_String_Test string `json:"connection_string_test"`
 }
 
 func readConfig(path string) Config {
@@ -30,21 +31,31 @@ func readConfig(path string) Config {
 
 var database *sql.DB
 
+func Database_Init(config Config, useTest bool) *sql.DB {
+	connStr := config.Connection_String
+	if useTest {
+		connStr = config.Connection_String_Test
+	}
+	db, err := sql.Open("mysql", connStr)
+	if err != nil {
+		log.Fatal(err)
+	}
+	database = db
+	return db
+}
+
 func Database_Get() *sql.DB {
 	if database != nil {
 		return database
 	}
 
-	config := readConfig("config.json")
+	return Database_Init(readConfig("config.json"), false)
+}
 
-	db, err := sql.Open("mysql", config.Connection_String)
-	if err != nil {
-		log.Fatal(err)
+func Database_Get_Test() *sql.DB {
+	if database != nil {
+		return database
 	}
-	database = db
-	err = db.Ping()
-	if err != nil {
-		log.Fatal(err)
-	}
-	return db
+
+	return Database_Init(readConfig("config.json"), true)
 }
