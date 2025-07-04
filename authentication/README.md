@@ -1,5 +1,5 @@
 
-## Overview
+## Overview - Not done yet - please don't wase time on running/building this service.
 
 - RESTful API endpoints for CRUD operations.
 - JWT Authentication.
@@ -15,7 +15,7 @@
 1. Navigate to the directory
 
 ```bash
-cd ZorgTechAuthentication
+cd authentication
 ```
 
 2. Build and run the Docker containers
