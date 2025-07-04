@@ -86,3 +86,11 @@ func GetDossierbyID(ID int) m.FinancieringsDossier {
 		}
 	return Dossier
 }
+
+func InsertDossier(clientID int, ZorgTechID int) error {
+	db := Database_Get()
+	var Dossier m.FinancieringsDossier
+	Dossier.NieuwDossier(clientID, ZorgTechID)
+	_, err := db.Query("INSERT INTO financieringsdossier(ClientID, ZorgTechID) VALUES(?,?)", Dossier.ClientID, Dossier.ZorgTechID)
+	return err
+}

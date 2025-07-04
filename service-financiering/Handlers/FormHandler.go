@@ -4,16 +4,21 @@ import (
 	r "Financiering/Repositories"
 	"fmt"
 	"net/http"
+	"strconv"
 )
 
 func AddDossier(wr http.ResponseWriter, rq *http.Request) {
-	db := r.Database_Get()
-
 	rq.ParseForm()
-	clientid := rq.Form.Get("ClientID")
-	zorgtechid := rq.Form.Get("ZorgTechID")
+	clientid , err := strconv.Atoi(rq.Form.Get("ClientID"))
+	if err != nil {
+		fmt.Println("Failed to stringConvert: ", err)
+	}
+	zorgtechid, err := strconv.Atoi(rq.Form.Get("ZorgTechID"))
+	if err != nil {
+		fmt.Println("Failed to stringConvert: ", err)
+	}
 
-	_, err := db.Query("INSERT INTO financieringsdossier(ClientID, ZorgTechID) VALUES(?,?)", clientid, zorgtechid)
+	err = r.InsertDossier(clientid, zorgtechid)
 	if err != nil {
 		fmt.Println("AddDossier: ", err)
 		wr.WriteHeader(http.StatusInternalServerError)
