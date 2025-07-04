@@ -2,10 +2,13 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"service-signalering/handlers"
 	"service-signalering/pkg/auth"
 	"service-signalering/pkg/database"
+	"service-signalering/service"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -48,5 +51,10 @@ func main() {
 		v1.POST("/clients/:id/assess", handlers.AssessCondition)
 	}
 
-	r.Run(":8080")
+	service.Init()
+	port := service.Register("signaling", r.ServeHTTP)
+	err := http.ListenAndServeTLS(":"+strconv.Itoa(port), "../server.crt", "../server.key", r)
+	if err != nil {
+		log.Println(err)
+	}
 }

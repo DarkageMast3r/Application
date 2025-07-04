@@ -12,6 +12,7 @@ require (
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/schema v1.4.1 // indirect
 	github.com/microsoft/go-mssqldb v1.9.1 // indirect
+	github.com/rabbitmq/amqp091-go v1.10.0 // indirect
 	golang.org/x/crypto v0.38.0 // indirect
 	golang.org/x/text v0.25.0 // indirect
 )

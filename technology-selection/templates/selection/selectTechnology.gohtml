@@ -52,7 +52,7 @@
 		</style>
 	</head>
 	<body>
-		<form class="page" action="/Select" method="POST">
+		<form class="page" action="/Selection/Select" method="POST">
 			<div class="search">
 				<input type="hidden" name="case.id" value="{{$model.Case.Id}}"/>
 				<h3 style="margin-top: 0;"><a href="/">&lt;</a>&nbsp;{{$model.Case.Name}}</h3>
@@ -82,7 +82,7 @@
 										<li>{{.Description}}</li>
 									{{end}}
 								</ul>
-								<button class="btn-primary" formaction="/Tech/{{.Id}}/Shortlist">Shortlist</button>
+								<button class="btn-primary" formaction="/Selection/Tech/{{.Id}}/Shortlist">Shortlist</button>
 							{{end}}
 						</div>
 					</details>

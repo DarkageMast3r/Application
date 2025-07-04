@@ -4,9 +4,12 @@ import (
 	"fmt"
 	"html/template"
 	"log"
+	"net/http"
+	"strconv"
 	"time"
 
 	"smartcare/handlers"
+	"smartcare/service"
 
 	"github.com/gin-gonic/gin"
 )
@@ -25,8 +28,17 @@ func main() {
 
 	setupRoutes(r)
 
-	log.Println("SmartCare Assist server starting on :8080")
-	r.Run(":8080")
+	service.Init()
+	port := service.Register("app", func(w http.ResponseWriter, req *http.Request) {
+		r.ServeHTTP(w, req)
+	})
+	log.Println("SmartCare Assist server starting on :", port)
+	http.ListenAndServeTLS(
+		":"+strconv.Itoa(port),
+		"../server.crt",
+		"../server.key",
+		r,
+	)
 }
 
 func setupRoutes(r *gin.Engine) {

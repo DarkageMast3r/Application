@@ -75,7 +75,7 @@
 		</style>
 	</head>
 	<body>
-		<form class="page" action="/Select" method="POST">
+		<form class="page" action="/Selection/Select" method="POST">
 			<div class="search">
 				{{template "common/checklist" .Needs}}
 				<div style="margin-top: 1rem;">
@@ -89,7 +89,7 @@
 				</div>
 				<input style="margin-top: 1rem;" class="w-100 btn-primary" type="submit" value="Search"/>
 				<div style="flex-grow: 1"></div>
-				<a href="/View/Tech">Backoffice</a>
+				<a href="/Selection/View/Tech">Backoffice</a>
 			</div>
 			<div class="results">
 				{{range .Categories}}
@@ -113,7 +113,7 @@
 										<li>{{.Description}}</li>
 									{{end}}
 								</ul>
-								<button class="btn-primary" formaction="/Tech/{{.Id}}/Shortlist">Shortlist</button>
+								<button class="btn-primary" formaction="/Selection/Tech/{{.Id}}/Shortlist">Shortlist</button>
 							{{end}}
 						</div>
 					</details>

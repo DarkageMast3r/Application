@@ -54,7 +54,7 @@
 	<body>
 		<div class="page">
 			<div class="search">
-				<h3 style="margin-top: 0;"><a href="/">&lt;</a>&nbsp;{{.Case.Name}}</h3>
+				<h3 style="margin-top: 0;"><a href="/Selection/">&lt;</a>&nbsp;{{.Case.Name}}</h3>
 				<p>{{.Case.Description}}</p>
 			</div>
 			<div class="results">
@@ -78,8 +78,8 @@
 							{{if eq .Status 0}}
 								<textarea style="resize: vertical;" class="input-white" name="reasoning">{{.Reasoning.String}}</textarea>
 								<div style="display: flex; margin-top: 0.5rem;">
-									<button class="btn-danger" formaction="/TechChoice/{{$choice.Id}}/Reject">Reject</button>
-									<button style="margin-left: 0.5rem;" class="btn-primary" formaction="/TechChoice/{{$choice.Id}}/Choose">Choose</button>
+									<button class="btn-danger" formaction="/Selection/TechChoice/{{$choice.Id}}/Reject">Reject</button>
+									<button style="margin-left: 0.5rem;" class="btn-primary" formaction=/Selection"/TechChoice/{{$choice.Id}}/Choose">Choose</button>
 								</div>
 							{{else}}
 								<p style="margin-top: 0.5rem;">{{.Reasoning.String}}</p>

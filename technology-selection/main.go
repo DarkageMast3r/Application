@@ -12,6 +12,7 @@ import (
 
 func main() {
 	service.Init()
+
 	repository.Database_Get()
 	http.HandleFunc("/Category", handlers.Category_Get_All)
 	http.HandleFunc("/Category/{id}", handlers.Category_Get_By_Id)
@@ -51,15 +52,9 @@ func main() {
 	http.HandleFunc("/Select", handlers.Selection_View)
 	http.HandleFunc("/Shortlist", handlers.Shortlist_View)
 
-	port := service.Register("technology-selection")
-
+	port := service.Register("selection", http.DefaultServeMux.ServeHTTP)
 	fmt.Printf("Listening on %s\n", ":"+strconv.Itoa(port))
-	err := http.ListenAndServeTLS(
-		":"+strconv.Itoa(port),
-		"../server.crt",
-		"../server.key",
-		nil,
-	)
+	err := http.ListenAndServeTLS(":"+strconv.Itoa(port), "../server.crt", "../server.key", nil)
 	if err != nil {
 		log.Println(err)
 	}

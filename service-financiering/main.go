@@ -3,15 +3,14 @@ package main
 import (
 	h "Financiering/Handlers"
 	r "Financiering/Repositories"
+	"Financiering/service"
 	"fmt"
+	"log"
 	"net/http"
+	"strconv"
 )
 
 func main() {
-	s := &http.Server{
-		Addr:    ":8080",
-		Handler: http.DefaultServeMux,
-	}
 	r.Database_Get()
 
 	http.HandleFunc("GET /Finance", h.HomePageHandler)
@@ -21,5 +20,14 @@ func main() {
 	http.HandleFunc("POST /Finance/Add", h.AddDossier)
 
 	fmt.Println("o7")
-	s.ListenAndServe()
+
+	service.Init()
+	port := service.Register("financing", http.DefaultServeMux.ServeHTTP)
+	log.Println("Listening on port", port)
+	http.ListenAndServeTLS(
+		":"+strconv.Itoa(port),
+		"../server.crt",
+		"../server.key",
+		nil,
+	)
 }
