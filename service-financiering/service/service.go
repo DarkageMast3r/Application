@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/tls"
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"math/rand"
@@ -29,7 +28,7 @@ type Config struct {
 func readConfig(path string) Config {
 	jsonFile, err := os.Open(path)
 	if err != nil {
-		fmt.Println(err)
+		LogError(err)
 	}
 	defer jsonFile.Close()
 
@@ -266,7 +265,7 @@ func Register(name string, handler func(http.ResponseWriter, *http.Request)) int
 		var messageRequest Request
 		err := json.Unmarshal(d.Body, &messageRequest)
 		if err != nil {
-			fmt.Println(err)
+			LogError(err)
 			return
 		}
 		writer := NewServiceResponseWriter()
@@ -283,89 +282,16 @@ func Register(name string, handler func(http.ResponseWriter, *http.Request)) int
 		}
 		body, err := json.Marshal(&messageResponse)
 		if err != nil {
-			fmt.Println(err)
+			LogError(err)
 			return
 		}
 		err = Queue_Respond(d, body, "text/html")
 		if err != nil {
-			fmt.Println(err)
+			LogError(err)
 		}
 	})
 	if err != nil {
 		log.Fatal(err)
 	}
 	return getLocalPort()
-}
-
-func Route(host string, routeValues ...string) string {
-	return fmt.Sprintf(
-		"https://%s/%s",
-		host,
-		strings.Join(routeValues, "/"),
-	)
-}
-
-func Get(route string) (string, error) {
-	resp, err := http.Get(route)
-	if err != nil {
-		fmt.Println("Failure to GET: ", err)
-		return "", err
-	}
-	body, err := io.ReadAll(resp.Body)
-	resp.Body.Close()
-	if err != nil {
-		fmt.Println("Failure to read all: ", err)
-		return "", err
-	}
-	return string(body), nil
-}
-
-func Post(route string, contentType string, data io.Reader) (string, error) {
-	resp, err := http.Post(route, contentType, data)
-	if err != nil {
-		fmt.Println("Failure to POST: ", err)
-		return "", err
-	}
-	body, err := io.ReadAll(resp.Body)
-	resp.Body.Close()
-	if err != nil {
-		fmt.Println("Failure to read all: ", err)
-		return "", err
-	}
-	return string(body), nil
-}
-
-func CallGet(service string, routeValues ...string) (string, error) {
-	return Get(Route(Get_Uri(service), routeValues...))
-}
-
-func CallPost(contentType string, body io.Reader, service string, routeValues ...string) (string, error) {
-	return Post(Route(Get_Uri(service), routeValues...), contentType, body)
-}
-
-func reload(name string) string {
-	uri, err := Get(Route(Get_Uri(service_discovery), name))
-	if err != nil {
-		fmt.Println("Could not get uri for service ", name)
-		log.Fatal(err)
-	} else {
-		services[name] = uri
-	}
-	return uri
-}
-
-func Get_Uri(name string) string {
-	uri, exists := services[name]
-	// Get service if not used before
-	if !exists {
-		uri = reload(name)
-	}
-
-	// Get new service is previous stopped
-	_, err := Get(Route(uri))
-	if err != nil {
-		uri = reload(name)
-	}
-
-	return uri
 }

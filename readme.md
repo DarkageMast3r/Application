@@ -26,11 +26,11 @@ Kies het domein waarop je server gaat draaien, en stel dan de volgende twee inst
     "service_discovery_root": "localhost",
     "service_discovery_port": 443,
     "rabbitmq": "amqp://guest:guest@localhost:5672/",
-Ten slotte hebben alle servers 
+Ten slotte hebben alle servers een allow_insecure optie. Door deze op true te zetten controleert de server niet of andermans certificaat geldig is, inclusief zelf-ondertekende certificaten. In de absentie van een geldig certificaat kan deze op true worden gezet om de server alsnog te laten werken.
     "allow_insecure": false
 
 4) Server starten
-Alle uitvoerbare bestanden kunnen nu op de achtergrond worden uitgevoerd,
+Alle uitvoerbare bestanden kunnen nu op de achtergrond worden uitgevoerd.
 
 # Werk bijdrage
 - Implementatie: Arjan

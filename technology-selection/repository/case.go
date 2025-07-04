@@ -2,8 +2,8 @@ package repository
 
 import (
 	"database/sql"
-	"fmt"
 	"service/models"
+	"service/service"
 )
 
 func case_read(rows *sql.Rows) []models.Case {
@@ -11,8 +11,14 @@ func case_read(rows *sql.Rows) []models.Case {
 
 	for rows.Next() {
 		var clientCase models.Case
-		if err := rows.Scan(&clientCase.Id, &clientCase.Name, &clientCase.Description, &clientCase.ClientId); err != nil {
-			fmt.Println(err)
+		if err := rows.Scan(
+			&clientCase.Id,
+			&clientCase.Name,
+			&clientCase.Description,
+			&clientCase.ClientId,
+			&clientCase.IsClosed,
+		); err != nil {
+			service.LogError(err)
 			continue
 		}
 		cases = append(cases, clientCase)
@@ -22,7 +28,7 @@ func case_read(rows *sql.Rows) []models.Case {
 
 func Case_Get_All() []models.Case {
 	db := Database_Get()
-	rows, err := db.Query("SELECT `Id`, `Name`, `Description`, `ClientId` FROM `Case`")
+	rows, err := db.Query("SELECT `Id`, `Name`, `Description`, `ClientId`, `IsClosed` FROM `Case` WHERE `IsClosed` = 0")
 	if err != nil {
 		return nil
 	}
@@ -33,9 +39,9 @@ func Case_Get_All() []models.Case {
 
 func Case_Get_By_Id(id int) *models.Case {
 	db := Database_Get()
-	rows, err := db.Query("SELECT `Id`, `Name`, `Description`, `ClientId` FROM `Case` WHERE Id = ?", id)
+	rows, err := db.Query("SELECT `Id`, `Name`, `Description`, `ClientId`, `IsClosed` FROM `Case` WHERE Id = ?", id)
 	if err != nil {
-		fmt.Println(err)
+		service.LogError(err)
 		return nil
 	}
 	defer rows.Close()
@@ -60,9 +66,10 @@ func Case_Save(clientCase *models.Case) error {
 		clientCase.Id = int(id)
 	}
 	_, err := db.Exec(
-		"update `Case` set `Name` = ?, `Description` = ? where `Id` = ? ",
+		"update `Case` set `Name` = ?, `Description` = ?, `IsClosed` = ? where `Id` = ? ",
 		clientCase.Name,
 		clientCase.Description,
+		clientCase.IsClosed,
 		clientCase.Id,
 	)
 	return err

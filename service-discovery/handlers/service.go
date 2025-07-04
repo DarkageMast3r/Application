@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"slices"
@@ -38,7 +37,7 @@ func Send_Message(w http.ResponseWriter, r *http.Request) {
 		Header: r.Header,
 	})
 	if err != nil {
-		fmt.Println(err)
+		service.LogError(err)
 		http.NotFound(w, r)
 		return
 	}
@@ -51,7 +50,7 @@ func Send_Message(w http.ResponseWriter, r *http.Request) {
 	var response service.Response
 	err = json.Unmarshal(responseBody, &response)
 	if err != nil {
-		fmt.Println(err)
+		service.LogError(err)
 		http.NotFound(w, r)
 		return
 	}

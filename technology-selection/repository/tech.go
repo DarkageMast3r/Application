@@ -2,8 +2,8 @@ package repository
 
 import (
 	"database/sql"
-	"fmt"
 	"service/models"
+	"service/service"
 )
 
 func tech_read(rows *sql.Rows) []models.Tech {
@@ -12,7 +12,7 @@ func tech_read(rows *sql.Rows) []models.Tech {
 	for rows.Next() {
 		var tech models.Tech
 		if err := rows.Scan(&tech.Id, &tech.CategoryId, &tech.Name, &tech.Cost); err != nil {
-			fmt.Println(err)
+			service.LogError(err)
 			continue
 		}
 		tech.Category = Category_Get_By_Id(tech.CategoryId)
@@ -37,7 +37,7 @@ func Tech_Get_By_Id(id int) *models.Tech {
 	db := Database_Get()
 	rows, err := db.Query("SELECT `Id`, `CategoryId`, `Name`, `Cost` FROM Tech WHERE Id = ?", id)
 	if err != nil {
-		fmt.Println(err)
+		service.LogError(err)
 		return nil
 	}
 	defer rows.Close()
@@ -52,7 +52,7 @@ func Tech_Get_All_By_Category(id int) []models.Tech {
 	db := Database_Get()
 	rows, err := db.Query("SELECT `Id`, `CategoryId`, `Name`, `Cost` FROM Tech WHERE CategoryId = ?", id)
 	if err != nil {
-		fmt.Println(err)
+		service.LogError(err)
 		return nil
 	}
 	defer rows.Close()

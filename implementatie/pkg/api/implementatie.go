@@ -6,7 +6,6 @@ import (
 	"ZorgTechImplementatie/pkg/models"
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -70,7 +69,6 @@ func (r *implementatieRepository) Healthcheck(c *gin.Context) {
 // @Router /implementatie/aanvraag [post]
 func (r *implementatieRepository) AanvraagProduct(c *gin.Context) {
 	var input models.AanvraagProductCommand
-	fmt.Println("Received request")
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -90,13 +88,11 @@ func (r *implementatieRepository) AanvraagProduct(c *gin.Context) {
 		},
 	}
 
-	fmt.Println("Received request 2")
 	// Sla op in database
 	if err := r.DB.Create(&dossier).Error(); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Kon dossier niet aanmaken"})
 		return
 	}
-	fmt.Println("Received request 3")
 
 	// TODO: Roep ReserveerBudget aan bij BC Financiëring
 

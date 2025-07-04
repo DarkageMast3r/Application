@@ -13,6 +13,7 @@ create table `Case` (
 	ClientId varchar(256),
     `Name` varchar(256),
 	`Description` varchar(4096),
+    IsClosed int,
     primary key (Id)
 );
 

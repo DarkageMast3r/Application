@@ -2,10 +2,10 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"service/models"
 	"service/repository"
+	"service/service"
 	"service/viewModels"
 	"strconv"
 )
@@ -48,7 +48,7 @@ func Need_Update(w http.ResponseWriter, r *http.Request) {
 	}
 	err = repository.Need_Save(&need)
 	if err != nil {
-		fmt.Println(err)
+		service.LogError(err)
 	}
 	http.Redirect(w, r, "/View/Need", http.StatusSeeOther)
 }
@@ -64,7 +64,7 @@ func Need_Create(w http.ResponseWriter, r *http.Request) {
 	}
 	err = repository.Need_Save(&need)
 	if err != nil {
-		fmt.Println(err)
+		service.LogError(err)
 	}
 	http.Redirect(w, r, "/View/Need", http.StatusSeeOther)
 }

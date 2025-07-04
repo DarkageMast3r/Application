@@ -3,10 +3,10 @@ package repository
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"os"
+	"service/service"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -19,7 +19,7 @@ type Config struct {
 func readConfig(path string) Config {
 	jsonFile, err := os.Open(path)
 	if err != nil {
-		fmt.Println(err)
+		service.LogError(err)
 	}
 	defer jsonFile.Close()
 

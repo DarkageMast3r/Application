@@ -2,8 +2,8 @@ package repository
 
 import (
 	"database/sql"
-	"fmt"
 	"service/models"
+	"service/service"
 )
 
 func need_read(rows *sql.Rows) []models.Need {
@@ -12,7 +12,7 @@ func need_read(rows *sql.Rows) []models.Need {
 	for rows.Next() {
 		var need models.Need
 		if err := rows.Scan(&need.Id, &need.Description); err != nil {
-			fmt.Println(err)
+			service.LogError(err)
 			continue
 		}
 		needs = append(needs, need)
@@ -35,7 +35,7 @@ func Need_Get_By_Id(id int) *models.Need {
 	db := Database_Get()
 	rows, err := db.Query("SELECT `Id`, `Description` FROM Need WHERE Id = ?", id)
 	if err != nil {
-		fmt.Println(err)
+		service.LogError(err)
 		return nil
 	}
 	defer rows.Close()
@@ -50,7 +50,7 @@ func Need_Get_All_By_TechId(id int) []models.Need {
 	db := Database_Get()
 	rows, err := db.Query("select `Id`, `Description` from Need where Id in (select NeedId from TechNeed where TechId = ?)", id)
 	if err != nil {
-		fmt.Println(err)
+		service.LogError(err)
 		return nil
 	}
 	defer rows.Close()
