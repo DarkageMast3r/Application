@@ -58,3 +58,39 @@ func GetDossiers() []m.FinancieringsDossier {
 	}
 	return Dossiers
 }
+
+//Only works when it has a budget, perhaps add functionality for when there isnt a budget
+func GetDossierbyID(ID int) m.FinancieringsDossier {
+	var Dossier m.FinancieringsDossier
+	db := Database_Get()
+	innerJoin, err := db.Query("SELECT financieringsdossier.DossierID, financieringsdossier.ClientID, financieringsdossier.ZorgTechID, financieringsdossier.AanvraagDatum, budget.ID, budget.MaxBedrag, budget.BeschikbaarBedrag, budget.GebruiktBedrag, budget.BudgetStatus FROM financieringsdossier INNER JOIN budget on financieringsdossier.BudgetID=budget.ID WHERE financieringsdossier.DossierID = ?;", ID)
+	if err != nil {
+		fmt.Println(err)
+		return Dossier
+	}
+	innerJoin.Next()
+		err = innerJoin.Scan(
+			&Dossier.DossierID,
+			&Dossier.ClientID,
+			&Dossier.ZorgTechID,
+			&Dossier.AanvraagDatum,
+			&Dossier.Budget.ID,
+			&Dossier.Budget.MaxBedrag,
+			&Dossier.Budget.BeschikbaarBedrag,
+			&Dossier.Budget.GebruiktBedrag,
+			&Dossier.Budget.BudgetStatus,
+		)
+		if err != nil {
+			fmt.Println(err)
+			return Dossier
+		}
+	return Dossier
+}
+
+func InsertDossier(clientID int, ZorgTechID int) error {
+	db := Database_Get()
+	var Dossier m.FinancieringsDossier
+	Dossier.NieuwDossier(clientID, ZorgTechID)
+	_, err := db.Query("INSERT INTO financieringsdossier(ClientID, ZorgTechID) VALUES(?,?)", Dossier.ClientID, Dossier.ZorgTechID)
+	return err
+}
