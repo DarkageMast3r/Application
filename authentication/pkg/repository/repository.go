@@ -44,7 +44,6 @@ type EndpointRepository interface {
 // AuthTokenRepository defines the interface for authentication token operations
 type AuthTokenRepository interface {
 	Create(ctx context.Context, token *models.RefreshToken) error
-	FindByRefreshToken(ctx context.Context, token string) (*models.RefreshToken, error)
 	DeleteByID(ctx context.Context, id uuid.UUID) error
 	DeleteExpiredTokens(ctx context.Context) error
 	DeleteUserTokens(ctx context.Context, userID uuid.UUID) error // Voor logout all devices
@@ -54,6 +53,22 @@ type AuthTokenRepository interface {
 	AddBlacklistedAccessToken(ctx context.Context, token string, expiresAt time.Time) error
 	IsAccessTokenBlacklisted(ctx context.Context, token string) (bool, error)
 	CleanExpiredBlacklistedTokens(ctx context.Context) error
+	SaveRefreshToken(ctx context.Context, token *models.RefreshToken) error
+	FindByRefreshToken(ctx context.Context, token string) (*models.RefreshToken, error)
+	DeleteRefreshToken(ctx context.Context, id uuid.UUID) error
+	DeleteRefreshTokensByUserID(ctx context.Context, userID uuid.UUID) error
+	DeleteExpiredRefreshTokens(ctx context.Context) error
+
+	// Password Reset Token operations
+	SavePasswordResetToken(ctx context.Context, token *models.PasswordResetToken) error
+	FindValidPasswordResetToken(ctx context.Context, token string) (*models.PasswordResetToken, error)
+	MarkPasswordResetTokenUsed(ctx context.Context, token *models.PasswordResetToken) error
+	DeleteExpiredPasswordResetTokens(ctx context.Context) error
+
+	// Blacklisted Token operations
+	AddBlacklistedToken(ctx context.Context, token *BlacklistedToken) error
+	IsTokenBlacklisted(ctx context.Context, token string) (bool, error)
+	DeleteExpiredBlacklistedTokens(ctx context.Context) error
 }
 
 // CacheRepository defines the interface for caching operations

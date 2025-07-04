@@ -8,20 +8,17 @@ import (
 	"log"
 	"time"
 
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
-// generateTokens is an internal helper for authService
-func (s *authService) generateTokens(ctx context.Context, user models.User) (string, string, error) {
-	// ... (your existing generateTokens implementation) ...
-	// Ensure calls like s.userRepo.LoadUserRoles and s.roleRepo.LoadRolePermissions use `ctx`
-	// Example:
+func (s *authApplicationService) generateTokens(ctx context.Context, user models.User) (string, string, error) {
 	err := s.userRepo.LoadUserRoles(ctx, &user)
 	if err != nil {
 		return "", "", fmt.Errorf("failed to load user roles for token generation: %w", err)
 	}
+
 	for i := range user.Roles {
 		err := s.roleRepo.LoadRolePermissions(ctx, &user.Roles[i])
 		if err != nil {
@@ -36,36 +33,30 @@ func (s *authService) generateTokens(ctx context.Context, user models.User) (str
 		}
 	}
 
-	accessClaims := JWTClaims{
+	accessClaims := jwt.JWTClaims{
 		UserID:      user.ID,
 		Username:    user.Username,
-		Roles:       s.getRoleNames(user.Roles),
 		Permissions: permissions,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(15 * time.Minute).Unix(),
-			Issuer:    "auth-service",
-		},
+		ExpiresAt:   time.Now().Add(15 * time.Minute).Unix(),
+		IssuedAt:    time.Now().Unix(),
+		Issuer:      "auth-service",
+		Subject:     user.ID.String(),
 	}
 
-	// Assuming jwt.NewWithClaims and accessToken.SignedString are correctly handled by a JWT utility
-	// or directly imported from a JWT library.
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, accessClaims)
-	accessTokenString, err := token.SignedString(s.jwtSecret)
+	accessTokenString, err := jwt.GenerateJWT(accessClaims, s.jwtSecret)
 	if err != nil {
-		return "", "", fmt.Errorf("failed to sign access token: %w", err)
+		return "", "", fmt.Errorf("failed to generate access token: %w", err)
 	}
 
 	refreshTokenString := uuid.New().String()
-	refreshExpiry := time.Now().Add(24 * time.Hour * 7)
-
-	authToken := models.AuthToken{
+	refreshToken := &models.RefreshToken{
 		ID:        uuid.New(),
 		Token:     refreshTokenString,
 		UserID:    user.ID,
-		ExpiresAt: refreshExpiry,
+		ExpiresAt: time.Now().Add(24 * time.Hour * 7),
 	}
 
-	if err := s.authTokenRepo.Create(ctx, &authToken); err != nil { // Use ctx here
+	if err := s.authTokenRepo.Save(ctx, refreshToken); err != nil {
 		return "", "", fmt.Errorf("failed to save refresh token: %w", err)
 	}
 

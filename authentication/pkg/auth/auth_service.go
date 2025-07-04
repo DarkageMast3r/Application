@@ -1,8 +1,11 @@
 package auth
 
 import (
+	middleware "authentication/pkg/middleware"
 	"authentication/pkg/models"
-	"authentication/pkg/repository"
+	repository "authentication/pkg/repository"
+
+	"github.com/golang-jwt/jwt/v5"
 
 	"context"
 	"errors"
@@ -118,7 +121,7 @@ type AuthService interface {
 	UpdateEndpointPermissions(ctx context.Context, endpointID uuid.UUID, roleNames []string) (*models.APIEndpoint, error)
 	GetAllEndpoints(ctx context.Context) ([]models.APIEndpoint, error)
 
-	ValidateAccessToken(ctx context.Context, token string) (*jwt.JWTClaims, error)
+	ValidateAccessToken(ctx context.Context, token string) (*models.JWTClaims, error)
 	AuthorizeRequest(ctx context.Context, query AuthorizationQuery) (bool, error)
 }
 
@@ -140,6 +143,7 @@ type authApplicationService struct {
 	authTokenRepo  repository.AuthTokenRepository
 	cacheRepo      repository.CacheRepository
 	eventPublisher repository.EventPublisher
+	jwtSecret      []byte
 }
 
 func NewAuthService(
@@ -149,6 +153,7 @@ func NewAuthService(
 	authTokenRepo repository.AuthTokenRepository,
 	cacheRepo repository.CacheRepository,
 	eventPublisher repository.EventPublisher,
+	jwtSecret []byte,
 ) AuthService {
 	return &authApplicationService{
 		userRepo:       userRepo,
@@ -157,11 +162,11 @@ func NewAuthService(
 		authTokenRepo:  authTokenRepo,
 		cacheRepo:      cacheRepo,
 		eventPublisher: eventPublisher,
+		jwtSecret:      jwtSecret,
 	}
 }
-
 func (s *authApplicationService) RegisterUser(ctx context.Context, cmd RegisterUserCommand) (*models.User, error) {
-	existingUser, err := s.userRepo.FindByUsernameOrEmail(ctx, cmd.Username, cmd.Email)
+	existingUser, err := s.repository.FindByUsernameOrEmail(ctx, cmd.Username, cmd.Email)
 	if err != nil {
 		return nil, fmt.Errorf("failed to check existing user: %w", err)
 	}
@@ -200,7 +205,6 @@ func (s *authApplicationService) RegisterUser(ctx context.Context, cmd RegisterU
 
 	return user, nil
 }
-
 func (s *authApplicationService) LoginUser(ctx context.Context, cmd LoginCommand, ipAddress, userAgent string) (accessToken string, refreshToken string, expiresIn int, err error) {
 	key := fmt.Sprintf("login_fail:%s", cmd.Username)
 	attempts, err := s.cacheRepo.Increment(ctx, key)
@@ -213,18 +217,16 @@ func (s *authApplicationService) LoginUser(ctx context.Context, cmd LoginCommand
 		return "", "", 0, errors.New("too many login attempts, please try again later")
 	}
 
-	user, err := s.userRepo.FindByUsernameOrEmail(ctx, cmd.Username, cmd.Username) // Zoek op username, email hoeft niet voor login
+	user, err := s.userRepo.FindByUsernameOrEmail(ctx, cmd.Username, cmd.Username)
 	if err != nil {
 		return "", "", 0, fmt.Errorf("failed to find user: %w", err)
 	}
 	if user == nil {
-		return "", "", 0, errors.New("invalid credentials") // Geef generieke fout
+		return "", "", 0, errors.New("invalid credentials")
 	}
 
-	passwordVO, err := models.NewPassword(cmd.Password) // Maak Password VO van input
+	passwordVO, err := models.NewPassword(cmd.Password)
 	if err != nil {
-		// Dit kan duiden op een foutieve wachtwoord input, maar voor consistentie met
-		// 'invalid credentials' bij niet matchen, kun je hier ook een generieke fout geven.
 		return "", "", 0, errors.New("invalid credentials")
 	}
 	match, err := passwordVO.MatchesHash(user.PasswordHash)
@@ -232,35 +234,9 @@ func (s *authApplicationService) LoginUser(ctx context.Context, cmd LoginCommand
 		return "", "", 0, errors.New("invalid credentials")
 	}
 
-	// Laad rollen en permissies voor JWT
-	if err := s.userRepo.LoadUserRoles(ctx, user); err != nil {
-		return "", "", 0, fmt.Errorf("failed to load user roles: %w", err)
-	}
-	var permissions []string
-	var roles []string
-	for _, role := range user.Roles {
-		roles = append(roles, role.Name)
-		if err := s.userRepo.LoadRolePermissions(ctx, &role); err != nil {
-			return "", "", 0, fmt.Errorf("failed to load role permissions: %w", err)
-		}
-		for _, perm := range role.Permissions {
-			permissions = append(permissions, perm.Resource+":"+perm.Action)
-		}
-	}
-
-	accessToken, err = jwt.GenerateJWT(user.ID, user.Username, roles, permissions)
+	accessToken, refreshToken, err = s.generateTokens(ctx, *user)
 	if err != nil {
-		return "", "", 0, fmt.Errorf("could not generate access token: %w", err)
-	}
-
-	newRefreshToken := &models.RefreshToken{
-		ID:        uuid.New(),
-		UserID:    user.ID,
-		Token:     uuid.New().String(),
-		ExpiresAt: time.Now().Add(7 * 24 * time.Hour), // 1 week
-	}
-	if err := s.authTokenRepo.SaveRefreshToken(ctx, newRefreshToken); err != nil {
-		return "", "", 0, fmt.Errorf("could not save refresh token: %w", err)
+		return "", "", 0, fmt.Errorf("could not generate tokens: %w", err)
 	}
 
 	s.userRepo.UpdateLastLogin(ctx, user) // Update last login, fire and forget
@@ -274,11 +250,10 @@ func (s *authApplicationService) LoginUser(ctx context.Context, cmd LoginCommand
 
 	s.cacheRepo.Set(ctx, key, 0, 0) // Reset login attempts on success
 
-	return accessToken, newRefreshToken.Token, 15 * 60, nil // 15 minutes
+	return accessToken, refreshToken, 15 * 60, nil // 15 minutes
 }
-
 func (s *authApplicationService) RefreshToken(ctx context.Context, oldRefreshToken string) (accessToken string, newRefreshToken string, expiresIn int, err error) {
-	token, err := s.authTokenRepo.FindRefreshToken(ctx, oldRefreshToken)
+	token, err := s.authTokenRepo.FindByRefreshToken(ctx, oldRefreshToken)
 	if err != nil {
 		return "", "", 0, errors.New("invalid refresh token")
 	}
@@ -294,48 +269,21 @@ func (s *authApplicationService) RefreshToken(ctx context.Context, oldRefreshTok
 		return "", "", 0, errors.New("user not found for refresh token")
 	}
 
-	// Laad rollen en permissies voor JWT
-	if err := s.userRepo.LoadUserRoles(ctx, user); err != nil {
-		return "", "", 0, fmt.Errorf("failed to load user roles: %w", err)
-	}
-	var permissions []string
-	var roles []string
-	for _, role := range user.Roles {
-		roles = append(roles, role.Name)
-		if err := s.userRepo.LoadRolePermissions(ctx, &role); err != nil {
-			return "", "", 0, fmt.Errorf("failed to load role permissions: %w", err)
-		}
-		for _, perm := range role.Permissions {
-			permissions = append(permissions, perm.Resource+":"+perm.Action)
-		}
-	}
-
-	accessToken, err = jwt.GenerateJWT(user.ID, user.Username, roles, permissions)
+	accessToken, newRefreshToken, err = s.generateTokens(ctx, *user)
 	if err != nil {
-		return "", "", 0, fmt.Errorf("could not generate access token: %w", err)
-	}
-
-	newToken := &models.RefreshToken{
-		ID:        uuid.New(),
-		UserID:    user.ID,
-		Token:     uuid.New().String(),
-		ExpiresAt: time.Now().Add(7 * 24 * time.Hour), // 1 week
-	}
-	if err := s.authTokenRepo.SaveRefreshToken(ctx, newToken); err != nil {
-		return "", "", 0, fmt.Errorf("could not save new refresh token: %w", err)
+		return "", "", 0, fmt.Errorf("could not generate tokens: %w", err)
 	}
 
 	// Delete old refresh token
-	if err := s.authTokenRepo.DeleteRefreshTokensByUserID(ctx, token.UserID); err != nil {
+	if err := s.repository.DeleteUserTokens(ctx, token.UserID); err != nil {
 		// Log this, but don't fail the refresh if deletion fails
 		fmt.Printf("Warning: failed to delete old refresh token for user %s: %v\n", token.UserID, err)
 	}
 
-	return accessToken, newToken.Token, 15 * 60, nil
+	return accessToken, newRefreshToken, 15 * 60, nil
 }
-
 func (s *authApplicationService) LogoutUser(ctx context.Context, userID uuid.UUID, accessToken string) error {
-	claims, err := jwt.ValidateJWT(accessToken) // Valideer de access token om expiration te krijgen
+	claims, err := middleware.ValidateJWT(accessToken)
 	if err != nil {
 		return fmt.Errorf("invalid access token for logout: %w", err)
 	}
@@ -345,19 +293,19 @@ func (s *authApplicationService) LogoutUser(ctx context.Context, userID uuid.UUI
 		Token:     accessToken,
 		ExpiresAt: time.Unix(claims.ExpiresAt, 0),
 	}
-	if err := s.authTokenRepo.AddToBlacklist(ctx, blacklisted); err != nil {
+	if err := repository.AddBlacklistedAccessToken(ctx, blacklisted); err != nil {
 		return fmt.Errorf("could not blacklist token: %w", err)
 	}
 
 	// Verwijder refresh token
-	if err := s.authTokenRepo.DeleteRefreshTokensByUserID(ctx, userID); err != nil {
+	if err := repository.DeleteRefreshTokensByUserID(ctx, userID); err != nil {
 		return fmt.Errorf("could not delete refresh token: %w", err)
 	}
 	return nil
 }
 
 func (s *authApplicationService) RequestPasswordReset(ctx context.Context, cmd RequestPasswordResetCommand) error {
-	user, err := s.userRepo.FindByUsernameOrEmail(ctx, cmd.Email, cmd.Email)
+	user, err := repository.FindByUsernameOrEmail(ctx, cmd.Email, cmd.Email)
 	if err != nil {
 		return fmt.Errorf("failed to check user for password reset: %w", err)
 	}
@@ -375,7 +323,7 @@ func (s *authApplicationService) RequestPasswordReset(ctx context.Context, cmd R
 		Used:      false,
 	}
 
-	if err := s.authTokenRepo.SavePasswordResetToken(ctx, resetToken); err != nil {
+	if err := repository.SavePasswordResetToken(ctx, resetToken); err != nil {
 		return fmt.Errorf("could not create reset token: %w", err)
 	}
 
@@ -387,7 +335,7 @@ func (s *authApplicationService) RequestPasswordReset(ctx context.Context, cmd R
 }
 
 func (s *authApplicationService) ResetPassword(ctx context.Context, cmd ResetPasswordCommand) error {
-	resetToken, err := s.authTokenRepo.FindValidPasswordResetToken(ctx, cmd.Token)
+	resetToken, err := repository.FindValidPasswordResetToken(ctx, cmd.Token)
 	if err != nil {
 		return fmt.Errorf("failed to find reset token: %w", err)
 	}
@@ -417,12 +365,12 @@ func (s *authApplicationService) ResetPassword(ctx context.Context, cmd ResetPas
 		return fmt.Errorf("could not update password: %w", err)
 	}
 
-	if err := s.authTokenRepo.MarkPasswordResetTokenUsed(ctx, resetToken); err != nil {
+	if err := repository.MarkPasswordResetTokenUsed(ctx, resetToken); err != nil {
 		fmt.Printf("Warning: failed to mark password reset token used: %v\n", err) // Log but don't fail
 	}
 
 	// Invalidate all sessions for this user
-	if err := s.authTokenRepo.DeleteRefreshTokensByUserID(ctx, user.ID); err != nil {
+	if err := s.repository.DeleteRefreshTokensByUserID(ctx, user.ID); err != nil {
 		fmt.Printf("Warning: failed to invalidate old refresh tokens after password reset: %v\n", err) // Log but don't fail
 	}
 
@@ -430,7 +378,7 @@ func (s *authApplicationService) ResetPassword(ctx context.Context, cmd ResetPas
 }
 
 func (s *authApplicationService) CreateRole(ctx context.Context, cmd CreateRoleCommand) (*models.Role, error) {
-	existingRole, err := s.roleRepo.FindByName(ctx, cmd.Name)
+	existingRole, err := s.repository.FindByName(ctx, cmd.Name)
 	if err != nil {
 		return nil, fmt.Errorf("failed to check existing role: %w", err)
 	}
@@ -440,12 +388,7 @@ func (s *authApplicationService) CreateRole(ctx context.Context, cmd CreateRoleC
 
 	// Fetch permissions by IDs
 	var permissions []models.Permission
-	// Dit vereist een PermissionRepository, of een methode op de RoleRepository die dit afhandelt
-	// Voor nu een placeholder, in een echte app zou je hiervoor een `PermissionRepository` hebben.
-	// if err := s.permissionRepo.FindByIds(ctx, cmd.Permissions).Find(&permissions).Error(); err != nil {
-	// 	return nil, errors.New("invalid permission IDs")
-	// }
-	// Tijdelijke mock voor permissies:
+
 	for _, id := range cmd.Permissions {
 		permissions = append(permissions, models.Permission{ID: id})
 	}
@@ -462,8 +405,8 @@ func (s *authApplicationService) CreateRole(ctx context.Context, cmd CreateRoleC
 		return nil, fmt.Errorf("could not create role: %w", err)
 	}
 
-	s.eventPublisher.Publish(ctx, RoleAssignedEvent{ // Evenement kan beter RoleCreatedEvent heten
-		// Details van het event
+	s.eventPublisher.Publish(ctx, RoleAssignedEvent{
+		// ?
 	})
 
 	return role, nil
@@ -511,7 +454,7 @@ func (s *authApplicationService) GetUserRoles(ctx context.Context, userID uuid.U
 		return nil, fmt.Errorf("failed to fetch user roles: %w", err)
 	}
 
-	// Laad permissies voor elke rol (kan in de repository geoptimaliseerd worden met Preload)
+	// Laad permissies voor elke rol
 	for i := range roles {
 		if err := s.userRepo.LoadRolePermissions(ctx, &roles[i]); err != nil {
 			return nil, fmt.Errorf("failed to load permissions for role %s: %w", roles[i].Name, err)
@@ -522,7 +465,7 @@ func (s *authApplicationService) GetUserRoles(ctx context.Context, userID uuid.U
 }
 
 func (s *authApplicationService) RegisterAPIEndpoint(ctx context.Context, cmd RegisterAPIEndpointCommand) (*models.APIEndpoint, error) {
-	roles, err := s.roleRepo.FindAll(ctx) // In dit geval, filter op namen, niet alle ophalen
+	roles, err := s.repository.FindAll(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch all roles: %w", err)
 	}
@@ -560,7 +503,7 @@ func (s *authApplicationService) RegisterAPIEndpoint(ctx context.Context, cmd Re
 		Path:         endpoint.Path,
 		Method:       endpoint.Method,
 		Service:      endpoint.ServiceName,
-		RegisteredBy: uuid.Nil, // AdminID hier toevoegen indien relevant
+		RegisteredBy: uuid.Nil,
 		Timestamp:    time.Now(),
 	})
 
@@ -576,7 +519,7 @@ func (s *authApplicationService) UpdateEndpointPermissions(ctx context.Context, 
 		return nil, errors.New("endpoint not found")
 	}
 
-	roles, err := s.roleRepo.FindAll(ctx) // Idem als hierboven, filter op namen
+	roles, err := s.roleRepo.FindAll(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch all roles: %w", err)
 	}
@@ -620,7 +563,7 @@ func (s *authApplicationService) GetAllEndpoints(ctx context.Context) ([]models.
 	return endpoints, nil
 }
 
-func (s *authApplicationService) ValidateAccessToken(ctx context.Context, token string) (*jwt.JWTClaims, error) {
+func (s *authApplicationService) ValidateAccessToken(ctx context.Context, token string) (*models.JWTClaims, error) {
 	if blacklisted, err := s.authTokenRepo.IsBlacklisted(ctx, token); err != nil {
 		return nil, fmt.Errorf("failed to check token blacklist: %w", err)
 	} else if blacklisted {

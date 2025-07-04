@@ -31,23 +31,15 @@ type AuthRepository interface {
 	GetAllEndpoints(c *gin.Context)
 	ValidateToken(c *gin.Context)
 	Authorize(c *gin.Context)
-
-	// Helper functions - usually not exposed in interface if only used internally
-	// generateTokens(user models.User) (string, string, error)
-	// validateToken(token string) (*models.JWTClaims, error)
 }
 
 // authRepository implements AuthRepository using specific domain repositories
 type authRepository struct {
-	// Remove direct DB and RedisClient access here.
-	// Instead, inject the specific repository interfaces.
 	UserRepo      repository.UserRepository
 	RoleRepo      repository.RoleRepository
 	EndpointRepo  repository.EndpointRepository
 	AuthTokenRepo repository.AuthTokenRepository
-	CacheRepo     repository.CacheRepository // Use CacheRepository for Redis interactions
-	// Ctx is typically passed per request, not stored in the repository struct.
-	// We'll remove *context.Context from the struct and pass it explicitly in each method call.
+	CacheRepo     repository.CacheRepository
 }
 
 // NewAuthRepository creates a new AuthRepository instance
@@ -57,7 +49,7 @@ func NewAuthRepository(
 	endpointRepo repository.EndpointRepository,
 	authTokenRepo repository.AuthTokenRepository,
 	cacheRepo repository.CacheRepository,
-) AuthRepository { // Return the interface, not the concrete struct
+) AuthRepository {
 	return &authRepository{
 		UserRepo:      userRepo,
 		RoleRepo:      roleRepo,
@@ -387,19 +379,7 @@ func (r *authRepository) CreateRole(c *gin.Context) {
 		return
 	}
 
-	// Find permissions using RoleRepository (if permissions are separate entities)
-	// NOTE: This assumes models.Permission also has a FindByID or similar
-	// For simplicity, I'm assuming you'll fetch permissions by ID from the DB if needed.
-	// If input.Permissions are IDs, you'd need a PermissionRepository or direct DB query here.
-	// For now, let's assume `input.Permissions` are names or IDs, and we need to fetch the actual Permission objects.
 	var permissions []models.Permission
-	// Example: if input.Permissions is []uuid.UUID
-	// if err := r.PermRepo.FindByIds(c.Request.Context(), input.Permissions).Find(&permissions).Error(); err != nil {
-	// 	c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid permission IDs"})
-	// 	return
-	// }
-	// For now, if input.Permissions are just UUIDs, you'd fetch them here
-	// Assuming permissions are already valid or will be validated when role is saved.
 
 	// Create role
 	role := models.Role{
@@ -414,11 +394,6 @@ func (r *authRepository) CreateRole(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "Could not create role: " + err.Error()})
 		return
 	}
-
-	// After creating the role, set the associations (if input.Permissions were IDs/names)
-	// This would involve fetching permissions by their IDs/names and then calling RoleRepo.Save with the updated role.
-	// If permissions are directly embedded in input and auto-created, then this might not be needed.
-	// For now, assuming direct creation handles it or permissions are verified elsewhere.
 
 	// Publish event (placeholder)
 	// eventPublisher.Publish(models.RoleCreatedEvent{...})

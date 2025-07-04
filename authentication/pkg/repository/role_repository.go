@@ -67,8 +67,7 @@ func (r *GormRoleRepository) Delete(ctx context.Context, id uuid.UUID) error {
 }
 
 func (r *GormRoleRepository) LoadRolePermissions(ctx context.Context, role *models.Role) error {
-	// Let op: Hier is de type assertion nodig als je database.Database geen specifieke
-	// LoadAssociations methode heeft. Anders moet je die toevoegen aan je Database interface.
+
 	gormDB := r.db.(*database.GormDatabase).DB.WithContext(ctx) // Aanpassing nodig als GormDatabase anders is genoemd
 	err := gormDB.Model(role).Association("Permissions").Find(&role.Permissions)
 	return err

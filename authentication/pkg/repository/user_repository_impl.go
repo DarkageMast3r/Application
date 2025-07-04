@@ -56,11 +56,7 @@ func (r *GormUserRepository) UpdateLastLogin(ctx context.Context, user *models.U
 }
 
 func (r *GormUserRepository) LoadUserRoles(ctx context.Context, user *models.User) error {
-	// GORM's Association method returns *gorm.Association, wat niet onze custom interface is.
-	// Dit is een van de weinige plekken waar je de "escape hatch" naar de onderliggende GORM DB kunt overwegen,
-	// of een specifieke methode in je Database interface hiervoor.
-	// Voor nu, gaan we ervan uit dat Association direct op de *gorm.DB werkt
-	// en we pakken de fout afhandeling op.
+
 	gormDB := r.db.(*database.GormDatabase).DB.WithContext(ctx) // Type assertion naar de onderliggende GORM DB
 	err := gormDB.Model(user).Association("Roles").Find(&user.Roles)
 	return err
@@ -71,5 +67,3 @@ func (r *GormUserRepository) LoadRolePermissions(ctx context.Context, role *mode
 	err := gormDB.Model(role).Association("Permissions").Find(&role.Permissions)
 	return err
 }
-
-// ... Implementeer ook RoleRepository, EndpointRepository, AuthTokenRepository, CacheRepository (bijv. Redis) hier

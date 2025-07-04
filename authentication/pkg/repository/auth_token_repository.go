@@ -57,8 +57,6 @@ func (r *GormAuthTokenRepository) Save(ctx context.Context, token *models.Refres
 	return result.Error()
 }
 
-// Voor blacklisted access tokens is Redis vaak efficiënter dan een relationele DB
-// We implementeren deze methoden in de RedisCacheRepository.
 func (r *GormAuthTokenRepository) AddBlacklistedAccessToken(ctx context.Context, token string, expiresAt time.Time) error {
 	// Niet ideaal voor GORM, zie Redis implementatie
 	return errors.New("AddBlacklistedAccessToken not implemented in GormAuthTokenRepository; use CacheRepository instead")

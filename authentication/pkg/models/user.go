@@ -5,7 +5,8 @@ import (
 	"time"
 	"unicode"
 
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v5"
+
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -141,7 +142,8 @@ type JWTClaims struct {
 	Username    string    `json:"username"`
 	Roles       []string  `json:"roles"`
 	Permissions []string  `json:"permissions"` // Flattened permissions from all roles
-	jwt.StandardClaims
+
+	jwt.RegisteredClaims
 }
 
 // UserRole links users to roles (join table with additional fields)
@@ -150,4 +152,12 @@ type UserRole struct {
 	RoleID     uuid.UUID `json:"roleId" gorm:"primaryKey;type:uuid"`
 	AssignedBy uuid.UUID `json:"assignedBy" gorm:"type:uuid"`
 	AssignedAt time.Time `json:"assignedAt" gorm:"autoCreateTime"`
+}
+
+type BlacklistedToken struct {
+	ID        uuid.UUID `gorm:"type:uuid;primary_key"`
+	Token     string    `gorm:"uniqueIndex;size:255"`
+	UserID    uuid.UUID `gorm:"type:uuid;index"` // Optioneel: als je wilt bijhouden welke gebruiker
+	ExpiresAt time.Time `gorm:"index"`
+	CreatedAt time.Time
 }

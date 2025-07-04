@@ -38,3 +38,8 @@ type RegisterAPIEndpointCommand struct {
 	Version     string   `json:"version" validate:"required"`
 	RoleNames   []string `json:"roleNames"` // Which roles can access this
 }
+
+type LoginUser struct {
+	Username string `json:"username" validate:"required"`
+	Password string `json:"password" validate:"required"`
+}

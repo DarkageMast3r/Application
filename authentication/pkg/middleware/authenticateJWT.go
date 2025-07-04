@@ -3,23 +3,38 @@ package middleware
 import (
 	"authentication/pkg/models"
 	"errors"
+	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 )
 
-var jwtSecret []byte // Should be loaded from environment variables or a secure secret manager
+/*
+var jwtSecret []byte
 
 func InitJWT(secret string) {
 	jwtSecret = []byte(secret)
 }
+*/
+
+// JWTWrapper handles JWT operations with  encapsulation
+type JWTWrapper struct {
+	SecretKey []byte
+}
+
+// NewJWTWrapper creates a new JWT wrapper instance
+func NewJWTWrapper(secret string) *JWTWrapper {
+	return &JWTWrapper{
+		SecretKey: []byte(secret),
+	}
+}
 
 // GenerateJWT generates a new JWT token
-func GenerateJWT(userID uuid.UUID, username string, roles, permissions []string) (string, error) {
-	if jwtSecret == nil {
+func (j *JWTWrapper) GenerateJWT(userID uuid.UUID, username string, roles, permissions []string) (string, error) {
+	if len(j.SecretKey) == 0 {
 		return "", errors.New("JWT secret not initialized")
 	}
 
@@ -28,49 +43,44 @@ func GenerateJWT(userID uuid.UUID, username string, roles, permissions []string)
 		Username:    username,
 		Roles:       roles,
 		Permissions: permissions,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Minute * 15).Unix(), // Access token valid for 15 minutes
-			IssuedAt:  time.Now().Unix(),
-			Issuer:    "nietgrappig",
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(15 * time.Minute)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			Issuer:    "auth-service",
 			Subject:   userID.String(),
 		},
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString(jwtSecret)
-	if err != nil {
-		return "", errors.New("failed to sign token")
-	}
-	return tokenString, nil
+	return token.SignedString(j.SecretKey)
 }
 
 // ValidateJWT validates a JWT token and returns its claims
-func ValidateJWT(tokenString string) (*models.JWTClaims, error) {
-	if jwtSecret == nil {
+func (j *JWTWrapper) ValidateJWT(tokenString string) (*models.JWTClaims, error) {
+	if len(j.SecretKey) == 0 {
 		return nil, errors.New("JWT secret not initialized")
 	}
 
 	token, err := jwt.ParseWithClaims(tokenString, &models.JWTClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, errors.New("unexpected signing method")
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return jwtSecret, nil
+		return j.SecretKey, nil
 	})
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to parse token: %w", err)
 	}
 
 	if claims, ok := token.Claims.(*models.JWTClaims); ok && token.Valid {
 		return claims, nil
 	}
 
-	return nil, errors.New("invalid token")
+	return nil, errors.New("invalid token claims")
 }
 
 // AuthMiddleware is a Gin middleware to validate JWT tokens
-func AuthMiddleware(jwtSecret string) gin.HandlerFunc {
-	InitJWT(jwtSecret) // Initialize secret for this middleware instance
+func (j *JWTWrapper) AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
@@ -88,19 +98,19 @@ func AuthMiddleware(jwtSecret string) gin.HandlerFunc {
 			return
 		}
 
-		claims, err := ValidateJWT(tokenString)
+		claims, err := j.ValidateJWT(tokenString)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired token: " + err.Error()})
 			c.Abort()
 			return
 		}
 
-		// Zet de claims in de context voor verdere handlers
+		// Set claims in context for downstream handlers
 		c.Set("userID", claims.UserID)
 		c.Set("username", claims.Username)
 		c.Set("userRoles", claims.Roles)
 		c.Set("userPermissions", claims.Permissions)
-		c.Set("jwtClaims", claims) // Optioneel: de volledige claims struct
+		c.Set("jwtClaims", claims)
 
 		c.Next()
 	}

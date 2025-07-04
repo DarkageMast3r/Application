@@ -15,7 +15,7 @@ type Claims interface {
 // Structured version of Claims Section, as referenced at
 // https://tools.ietf.org/html/rfc7519#section-4.1
 // See examples for how to use this with your own claim types
-type StandardClaims struct {
+type RegisteredClaims struct {
 	Audience  string `json:"aud,omitempty"`
 	ExpiresAt int64  `json:"exp,omitempty"`
 	Id        string `json:"jti,omitempty"`
@@ -29,7 +29,7 @@ type StandardClaims struct {
 // There is no accounting for clock skew.
 // As well, if any of the above claims are not in the token, it will still
 // be considered a valid claim.
-func (c StandardClaims) Valid() error {
+func (c RegisteredClaims) Valid() error {
 	vErr := new(ValidationError)
 	now := TimeFunc().Unix()
 
@@ -60,31 +60,31 @@ func (c StandardClaims) Valid() error {
 
 // Compares the aud claim against cmp.
 // If required is false, this method will return true if the value matches or is unset
-func (c *StandardClaims) VerifyAudience(cmp string, req bool) bool {
+func (c *RegisteredClaims) VerifyAudience(cmp string, req bool) bool {
 	return verifyAud([]string{c.Audience}, cmp, req)
 }
 
 // Compares the exp claim against cmp.
 // If required is false, this method will return true if the value matches or is unset
-func (c *StandardClaims) VerifyExpiresAt(cmp int64, req bool) bool {
+func (c *RegisteredClaims) VerifyExpiresAt(cmp int64, req bool) bool {
 	return verifyExp(c.ExpiresAt, cmp, req)
 }
 
 // Compares the iat claim against cmp.
 // If required is false, this method will return true if the value matches or is unset
-func (c *StandardClaims) VerifyIssuedAt(cmp int64, req bool) bool {
+func (c *RegisteredClaims) VerifyIssuedAt(cmp int64, req bool) bool {
 	return verifyIat(c.IssuedAt, cmp, req)
 }
 
 // Compares the iss claim against cmp.
 // If required is false, this method will return true if the value matches or is unset
-func (c *StandardClaims) VerifyIssuer(cmp string, req bool) bool {
+func (c *RegisteredClaims) VerifyIssuer(cmp string, req bool) bool {
 	return verifyIss(c.Issuer, cmp, req)
 }
 
 // Compares the nbf claim against cmp.
 // If required is false, this method will return true if the value matches or is unset
-func (c *StandardClaims) VerifyNotBefore(cmp int64, req bool) bool {
+func (c *RegisteredClaims) VerifyNotBefore(cmp int64, req bool) bool {
 	return verifyNbf(c.NotBefore, cmp, req)
 }
 

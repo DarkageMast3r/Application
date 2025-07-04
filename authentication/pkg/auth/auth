@@ -6,14 +6,14 @@ import (
 	"os"
 	"time"
 
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 )
 
 // Claims struct to be encoded to JWT
 type Claims struct {
 	Username string `json:"username"`
-	jwt.StandardClaims
+	jwt.RegisteredClaims
 }
 
 var JwtKey = []byte(os.Getenv("JWT_SECRET_KEY"))
@@ -28,7 +28,7 @@ func GenerateToken(username string) (string, error) {
 	expirationTime := time.Now().Add(5 * time.Minute).Unix()
 
 	// Create the JWT claims, which includes the username and expiration time
-	claims := &jwt.StandardClaims{
+	claims := &jwt.RegisteredClaims{
 		// In JWT, the expiry time is expressed as unix milliseconds
 		ExpiresAt: expirationTime,
 		Issuer:    username,
