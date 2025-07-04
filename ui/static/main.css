@@ -397,3 +397,23 @@ body {
         grid-template-columns: 1fr;
     }
 }
+/* === Custom Utility Styles === */
+.section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.card-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #4a5568;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.text-center {
+    text-align: center;
+}

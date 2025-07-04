@@ -106,7 +106,6 @@ func RapportagePage(c *gin.Context) {
 	}
 }
 
-// obama giving himself a medal.jpg
 func CreateSignal(c *gin.Context) {
 	c.Request.ParseForm()
 	request := make(map[string]string)

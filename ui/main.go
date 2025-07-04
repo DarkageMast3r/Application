@@ -9,36 +9,30 @@ import (
 	"time"
 
 	"smartcare/handlers"
-	"smartcare/service"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	r := gin.Default()
-
 	r.SetFuncMap(template.FuncMap{
 		"formatCurrency": formatCurrency,
 		"formatTimeAgo":  formatTimeAgo,
 	})
-
 	r.LoadHTMLGlob("templates/*.html")
-
 	r.Static("/static", "./static")
-
 	setupRoutes(r)
 
-	service.Init()
-	port := service.Register("app", func(w http.ResponseWriter, req *http.Request) {
-		r.ServeHTTP(w, req)
-	})
+	// Comment out these lines:
+	// service.Init()
+	// port := service.Register("app", func(w http.ResponseWriter, req *http.Request) {
+	//     r.ServeHTTP(w, req)
+	// })
+
+	// Use a fixed port:
+	port := 8080
 	log.Println("SmartCare Assist server starting on :", port)
-	http.ListenAndServeTLS(
-		":"+strconv.Itoa(port),
-		"../server.crt",
-		"../server.key",
-		r,
-	)
+	http.ListenAndServe(":"+strconv.Itoa(port), r)
 }
 
 func setupRoutes(r *gin.Engine) {

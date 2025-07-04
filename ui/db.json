@@ -1,0 +1,104 @@
+{
+  "dashboardStats": {
+    "activeClients": 104,
+    "pendingSignals": 38,
+    "activeTech": 17,
+    "budgetUsed": "\u20ac234.000"
+  },
+  "recentActivities": [
+    {
+      "timestamp": "2025-07-04T10:00:00Z",
+      "activity": "Nieuw signaal ontvangen"
+    },
+    {
+      "timestamp": "2025-07-03T14:20:00Z",
+      "activity": "Budget aangepast voor Zorginstelling A"
+    }
+  ],
+  "signaalStats": {
+    "total": 92,
+    "newToday": 5,
+    "inProgress": 43,
+    "closed": 64
+  },
+  "recentCases": [
+    {
+      "id": 1,
+      "client": "Jan Jansen",
+      "status": "Bezig"
+    },
+    {
+      "id": 2,
+      "client": "Piet Pietersen",
+      "status": "Afgerond"
+    }
+  ],
+  "activeTechList": [
+    {
+      "name": "Slimme Matras",
+      "status": "Actief"
+    },
+    {
+      "name": "Valdetectie App",
+      "status": "Actief"
+    }
+  ],
+  "availableTechGrid": [
+    {
+      "zorgtechId": "uuid-001",
+      "naam": "Slimme Valdetectie",
+      "beschrijving": "Detecteert valincidenten via bewegingssensoren.",
+      "categorie": "Veiligheid",
+      "prijs": 299.99,
+      "leverancier": "ZorgTech BV",
+      "isActief": true
+    },
+    {
+      "zorgtechId": "uuid-002",
+      "naam": "Medicatie Dispenser",
+      "beschrijving": "Automatische pillendispenser met alarm.",
+      "categorie": "Medicatie",
+      "prijs": 149.99,
+      "leverancier": "MediCare",
+      "isActief": true
+    }
+  ],
+  "budgetStats": {
+    "totalBudget": "\u20ac500.000",
+    "usedBudget": "\u20ac234.000",
+    "remaining": "\u20ac266.000"
+  },
+  "financieringOverview": [
+    {
+      "DossierID": 101,
+      "ClientID": 201,
+      "ZorgTechID": 301,
+      "AanvraagDatum": "2025-07-01",
+      "Budget": {
+        "MaxBedrag": 40000,
+        "BeschikbaarBedrag": 12000,
+        "GebruiktBedrag": 28000,
+        "BudgetStatus": "Goedgekeurd"
+      },
+      "Facturen": []
+    },
+    {
+      "DossierID": 102,
+      "ClientID": 202,
+      "ZorgTechID": 302,
+      "AanvraagDatum": "2025-06-15",
+      "Budget": {
+        "MaxBedrag": 25000,
+        "BeschikbaarBedrag": 5000,
+        "GebruiktBedrag": 20000,
+        "BudgetStatus": "In Behandeling"
+      },
+      "Facturen": []
+    }
+  ],
+  "rapportageMaand": {
+    "signalenHandled": 87,
+    "techDeployments": 14,
+    "budgetChange": "-5%"
+  }
+}

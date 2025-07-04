@@ -1,32 +1,27 @@
 {{define "dashboard.html"}}
-<div class="stats-grid">
+<div class="stats-grid" id="dashboardStats">
     <div class="stat-card">
-        <div class="stat-number">{{.Stats.ActiveClients}}</div>
-        <div class="stat-label">Actieve Cliënten</div>
+        <div class="stat-number" data-stat="activeClients">-</div>
+        <div class="stat-label">Actieve Cases</div>
     </div>
     <div class="stat-card">
-        <div class="stat-number">{{.Stats.PendingSignals}}</div>
-        <div class="stat-label">Openstaande Signalen</div>
+        <div class="stat-number" data-stat="pendingSignals">-</div>
+        <div class="stat-label">In Behandeling</div>
     </div>
     <div class="stat-card">
-        <div class="stat-number">{{.Stats.ActiveTech}}</div>
-        <div class="stat-label">Actieve Technologieën</div>
+        <div class="stat-number" data-stat="activeTech">-</div>
+        <div class="stat-label">Beschikbare Technologieën</div>
     </div>
     <div class="stat-card">
-        <div class="stat-number">{{formatCurrency .Stats.BudgetUsed}}</div>
+        <div class="stat-number" data-stat="budgetUsed">-</div>
         <div class="stat-label">Budget Gebruikt</div>
     </div>
 </div>
 
 <div class="card">
     <h3>📋 Recente Activiteiten</h3>
-    <div class="timeline">
-        {{range .Activities}}
-        <div class="timeline-item">
-            <strong>{{if .ClientID}}Cliënt #{{.ClientID}}{{else}}Systeem{{end}}</strong> - {{.Description}}
-            <div class="signal-timestamp">{{formatTimeAgo .Timestamp}}</div>
-        </div>
-        {{end}}
+    <div class="timeline" id="recentActivities">
+        <div class="loading">Activiteiten laden...</div>
     </div>
 </div>
 {{end}}
