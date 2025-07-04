@@ -4,7 +4,6 @@ import (
 	h "Financiering/Handlers"
 	r "Financiering/Repositories"
 	"Financiering/service"
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -18,8 +17,6 @@ func main() {
 	http.HandleFunc("GET /Finance/{dossierID}", h.DossierPageHandler) //non existed handler(for now)
 
 	http.HandleFunc("POST /Finance/Add", h.AddDossier)
-
-	fmt.Println("o7")
 
 	service.Init()
 	port := service.Register("financing", http.DefaultServeMux.ServeHTTP)
