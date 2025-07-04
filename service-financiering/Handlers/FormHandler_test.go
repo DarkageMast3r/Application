@@ -10,13 +10,13 @@ import (
 )
 
 // TestAddDossierMissingParams tests the case where parameters are missing
-func Test_AddDossierMissingParams(t *testing.T) {
+func Test_AddDossierWithMissingParams(t *testing.T) {
+	// Setup
 	err := U.FindDir()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// Setup
 	req := httptest.NewRequest(http.MethodPost, "/add-dossier", nil)
 	rr := httptest.NewRecorder()
 
@@ -24,7 +24,8 @@ func Test_AddDossierMissingParams(t *testing.T) {
 	h.AddDossier(rr, req)
 
 	// Assert
-	if status := rr.Code; status != http.StatusInternalServerError {
-		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusInternalServerError)
+	statusCode := rr.Code
+	if statusCode != http.StatusInternalServerError {
+		t.Errorf("handler returned wrong status code: got %v want %v", statusCode, http.StatusInternalServerError)
 	}
 }
