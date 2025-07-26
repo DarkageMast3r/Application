@@ -92,3 +92,9 @@ func InsertDossier(clientID int, zorgTechID int) error {
 	_, err := db.Query("INSERT INTO financieringsdossier(ClientID, ZorgTechID) VALUES(?,?)", clientID, zorgTechID)
 	return err
 }
+
+func RemoveDossier(dossierID int) error {
+	db := Database_Get()
+	_, err := db.Query("DELETE FROM financieringsdossier WHERE DossierID = ?", dossierID)
+	return err
+}
