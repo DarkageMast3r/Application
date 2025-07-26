@@ -59,7 +59,7 @@ func GetDossiers() []m.FinancieringsDossier {
 	return Dossiers
 }
 
-//Only works when it has a budget, perhaps add functionality for when there isnt a budget
+// Only works when it has a budget, perhaps add functionality for when there isnt a budget
 func GetDossierbyID(ID int) m.FinancieringsDossier {
 	var Dossier m.FinancieringsDossier
 	db := Database_Get()
@@ -69,28 +69,26 @@ func GetDossierbyID(ID int) m.FinancieringsDossier {
 		return Dossier
 	}
 	innerJoin.Next()
-		err = innerJoin.Scan(
-			&Dossier.DossierID,
-			&Dossier.ClientID,
-			&Dossier.ZorgTechID,
-			&Dossier.AanvraagDatum,
-			&Dossier.Budget.ID,
-			&Dossier.Budget.MaxBedrag,
-			&Dossier.Budget.BeschikbaarBedrag,
-			&Dossier.Budget.GebruiktBedrag,
-			&Dossier.Budget.BudgetStatus,
-		)
-		if err != nil {
-			fmt.Println(err)
-			return Dossier
-		}
+	err = innerJoin.Scan(
+		&Dossier.DossierID,
+		&Dossier.ClientID,
+		&Dossier.ZorgTechID,
+		&Dossier.AanvraagDatum,
+		&Dossier.Budget.ID,
+		&Dossier.Budget.MaxBedrag,
+		&Dossier.Budget.BeschikbaarBedrag,
+		&Dossier.Budget.GebruiktBedrag,
+		&Dossier.Budget.BudgetStatus,
+	)
+	if err != nil {
+		fmt.Println(err)
+		return Dossier
+	}
 	return Dossier
 }
 
-func InsertDossier(clientID int, ZorgTechID int) error {
+func InsertDossier(clientID int, zorgTechID int) error {
 	db := Database_Get()
-	var Dossier m.FinancieringsDossier
-	Dossier.NieuwDossier(clientID, ZorgTechID)
-	_, err := db.Query("INSERT INTO financieringsdossier(ClientID, ZorgTechID) VALUES(?,?)", Dossier.ClientID, Dossier.ZorgTechID)
+	_, err := db.Query("INSERT INTO financieringsdossier(ClientID, ZorgTechID) VALUES(?,?)", clientID, zorgTechID)
 	return err
 }
