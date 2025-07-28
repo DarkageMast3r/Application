@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	r "Financiering/Repositories"
 	"fmt"
 	"log"
 	"net/http"
@@ -19,7 +18,8 @@ func AddDossier(wr http.ResponseWriter, rq *http.Request) {
 		fmt.Println("Failed to stringConvert: ", err)
 	}
 
-	err = r.InsertDossier(clientid, zorgtechid)
+	var dossier m.financieringsdossier
+	err = dossier.NieuwDossier(clientid, zorgtechid)
 	if err != nil {
 		log.Println("AddDossier: ", err)
 		wr.WriteHeader(http.StatusInternalServerError)

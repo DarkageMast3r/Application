@@ -1,7 +1,8 @@
 package models
 
 import (
-	"fmt"
+	"log"
+	r "repositories"
 	"strconv"
 	"time"
 )
@@ -18,6 +19,8 @@ type FinancieringsDossier struct {
 func (f *FinancieringsDossier) NieuwDossier(clientID int, zorgtechID int) {
 	f.ClientID = clientID
 	f.ZorgTechID = zorgtechID
+	err := r.InsertDossier(f.ClientID, f.ZorgTechID)
+	log.Println(err)
 }
 
 func (f *FinancieringsDossier) VraagBudgetAan(bedrag float64) {
@@ -25,6 +28,8 @@ func (f *FinancieringsDossier) VraagBudgetAan(bedrag float64) {
 	t := new(time.Time)
 	year, month, day := t.Date()
 	f.AanvraagDatum = strconv.Itoa(year) + "-" + strconv.Itoa(int(month)) + "-" + strconv.Itoa(day)
+	err := r.ConnectDossier(f.Budget.ID, f.DossierID) //unknown if those variables are known at this point, otherwise im gonna have to manually retrieve those
+	log.Println(err)
 }
 
 func (f *FinancieringsDossier) VerwerkGoedkeuring(Goedgekeurd bool) {
@@ -40,8 +45,7 @@ func (f *FinancieringsDossier) ReserveerBudget() {
 }
 
 func (f *FinancieringsDossier) VerwerkFactuur(factuur Factuur) {
-	f.Budget.UpdateBudget(factuur.Bedrag)
-	f.Budget.BudgetStatus = "Gefactureerd"
-	fmt.Println(factuur)
-	fmt.Println(f.Facturen)
+	err := f.Budget.UpdateBudget(factuur.Bedrag)
+	log.Println(err)
+	// not sure what to do with this error :KumiThink:
 }

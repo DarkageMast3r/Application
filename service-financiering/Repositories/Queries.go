@@ -98,3 +98,21 @@ func RemoveDossier(dossierID int) error {
 	_, err := db.Query("DELETE FROM financieringsdossier WHERE DossierID = ?", dossierID)
 	return err
 }
+
+func NewBudget(MaxBedrag float64, BeschikbaarBedrag float64, GebruiktBedrag float64, BudgetStatus string) error {
+	db := Database_Get()
+	_, err := db.Query("INSERT INTO budget(MaxBedrag, BeschikbaarBedrag, GebruiktBedrag, BudgetStatus) VALUES(?,?,?,?)", MaxBedrag, BeschikbaarBedrag, GebruiktBedrag, BudgetStatus) // create new budget
+	return err
+}
+
+func ConnectDossier(BudgetID int, DossierID int) error {
+	db := Database_Get()
+	_, err := db.Query("UPDATE financieringsdossier SET budgetID = ? WHERE ID = ?", BudgetID, DossierID)
+	return err
+}
+
+func ProcessPayment(Gebruikt float64, Beschikbaar float64, Status, ID int) error {
+	db := Database_Get()
+	_, err := db.Query("UPDATE budget SET GebruiktBedrag = ?, BeschikbaarBedrag = ?, BudgetStatus = ? WHERE ID = ?;", Gebruikt, Beschikbaar, Status, ID)
+	return err
+}
