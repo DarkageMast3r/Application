@@ -2,9 +2,9 @@ package handlers
 
 import (
 	r "Financiering/Repositories"
+	"fmt"
 	"net/http"
 	"strconv"
-	"fmt"
 )
 
 func HomePageHandler(wr http.ResponseWriter, rq *http.Request) {
