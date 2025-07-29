@@ -111,7 +111,7 @@ func ConnectDossier(BudgetID int, DossierID int) error {
 	return err
 }
 
-func ProcessPayment(Gebruikt float64, Beschikbaar float64, Status, ID int) error {
+func ProcessPayment(Gebruikt float64, Beschikbaar float64, Status string, ID int) error {
 	db := Database_Get()
 	_, err := db.Query("UPDATE budget SET GebruiktBedrag = ?, BeschikbaarBedrag = ?, BudgetStatus = ? WHERE ID = ?;", Gebruikt, Beschikbaar, Status, ID)
 	return err
