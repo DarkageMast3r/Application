@@ -1,8 +1,0 @@
-{
-    "service_discovery_root": "localhost",
-    "service_discovery_port": 443,
-    "rabbitmq": "amqp://guest:guest@localhost:5672/",
-    "allow_insecure": false,
-    "connection_string": "Juggernaught5920:DaploDav15@tcp(127.0.0.1:3306)/financiering?charset=utf8mb4&parseTime=True&loc=Local"
-}
-
