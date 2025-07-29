@@ -4,19 +4,23 @@ import (
 	h "Financiering/Handlers"
 	r "Financiering/Repositories"
 	"Financiering/service"
+	"fmt"
 	"net/http"
 )
 
 func main() {
+	service.Init()
 	r.Database_Get()
 
-	http.HandleFunc("GET /Finance", h.HomePageHandler)
-	http.HandleFunc("GET /Finance/Add", h.AddorRemovePageHandler)
-	http.HandleFunc("GET /Finance/{dossierID}", h.DossierPageHandler)
+	http.HandleFunc("GET /", h.HomePageHandler)
+	http.HandleFunc("GET /Add", h.AddorRemovePageHandler)
+	http.HandleFunc("GET /{dossierID}", h.DossierPageHandler)
 
-	http.HandleFunc("POST /Finance/Add", h.AddDossier)
+	http.HandleFunc("POST /Add", h.AddDossier)
 
-	service.Init()
+	service.Register("financing", http.DefaultServeMux.ServeHTTP)
+
+	fmt.Println("Service financing started")
 	forever := make(chan struct{})
 	<-forever
 }
