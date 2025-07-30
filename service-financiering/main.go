@@ -15,6 +15,7 @@ func main() {
 	http.HandleFunc("GET /", h.HomePageHandler)
 	http.HandleFunc("GET /Add", h.AddorRemovePageHandler)
 	http.HandleFunc("GET /{dossierID}", h.DossierPageHandler)
+	http.HandleFunc("Get /{dossierID}/Remove", h.RemoveDossier)
 
 	http.HandleFunc("POST /Add", h.AddDossier)
 

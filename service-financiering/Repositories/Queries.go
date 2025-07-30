@@ -3,6 +3,7 @@ package repositories
 import (
 	m "Financiering/Models"
 	"fmt"
+	"log"
 )
 
 func GetDossiers() []m.FinancieringsDossier {
@@ -10,7 +11,7 @@ func GetDossiers() []m.FinancieringsDossier {
 	db := Database_Get()
 	innerJoins, err := db.Query("SELECT financieringsdossier.DossierID, financieringsdossier.ClientID, financieringsdossier.ZorgTechID, financieringsdossier.AanvraagDatum, budget.ID, budget.MaxBedrag, budget.BeschikbaarBedrag, budget.GebruiktBedrag, budget.BudgetStatus FROM financieringsdossier INNER JOIN budget on financieringsdossier.BudgetID=budget.ID;")
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("Innerjoin: ", err)
 		return Dossiers
 	}
 	for innerJoins.Next() {
@@ -27,15 +28,16 @@ func GetDossiers() []m.FinancieringsDossier {
 			&Dossier.Budget.BudgetStatus,
 		)
 		if err != nil {
-			fmt.Println(err)
+		fmt.Println("GetDossiers/Scan1: ", err)
 			continue
 		}
 		Dossiers = append(Dossiers, Dossier)
 	}
+	innerJoins.Close()
 
 	remaining, err := db.Query("SELECT financieringsdossier.DossierID, financieringsdossier.ClientID, financieringsdossier.ZorgTechID FROM financieringsdossier WHERE BudgetID is null;")
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("Remaining: ", err)
 		return Dossiers
 	}
 	for remaining.Next() {
@@ -46,11 +48,13 @@ func GetDossiers() []m.FinancieringsDossier {
 			&Dossier.ZorgTechID,
 		)
 		if err != nil {
-			fmt.Println(err)
+		fmt.Println("GetDossiers/Scan2: ", err)
 			continue
 		}
 		Dossiers = append(Dossiers, Dossier)
 	}
+	remaining.Close()
+
 	for i, val := range Dossiers {
 		if val.Budget.BudgetStatus == "" {
 			Dossiers[i].Budget.BudgetStatus = "Niet aangevraagd"
@@ -63,12 +67,14 @@ func GetDossiers() []m.FinancieringsDossier {
 func GetDossierbyID(ID int) m.FinancieringsDossier {
 	var Dossier m.FinancieringsDossier
 	db := Database_Get()
-	innerJoin, err := db.Query("SELECT financieringsdossier.DossierID, financieringsdossier.ClientID, financieringsdossier.ZorgTechID, financieringsdossier.AanvraagDatum, budget.ID, budget.MaxBedrag, budget.BeschikbaarBedrag, budget.GebruiktBedrag, budget.BudgetStatus FROM financieringsdossier INNER JOIN budget on financieringsdossier.BudgetID=budget.ID WHERE financieringsdossier.DossierID = ?;", ID)
+	innerJoin, err := db.Query("SELECT financieringsdossier.DossierID, financieringsdossier.ClientID, financieringsdossier.ZorgTechID, financieringsdossier.AanvraagDatum, budget.ID, budget.MaxBedrag, budget.BeschikbaarBedrag, budget.GebruiktBedrag, budget.BudgetStatus FROM financieringsdossier INNER JOIN budget on financieringsdossier.BudgetID=budget.ID WHERE DossierID = ?;", ID)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("Innerjoin: ", err)
 		return Dossier
 	}
+
 	innerJoin.Next()
+	defer innerJoin.Close()
 	err = innerJoin.Scan(
 		&Dossier.DossierID,
 		&Dossier.ClientID,
@@ -81,8 +87,21 @@ func GetDossierbyID(ID int) m.FinancieringsDossier {
 		&Dossier.Budget.BudgetStatus,
 	)
 	if err != nil {
-		fmt.Println(err)
-		return Dossier
+		remaining, err := db.Query("SELECT financieringsdossier.DossierID, financieringsdossier.ClientID, financieringsdossier.ZorgTechID FROM financieringsdossier WHERE BudgetID is null AND DossierID = ?;", ID)
+		defer remaining.Close()
+		if err != nil {
+			fmt.Println("GetDossierbyID/Remaining: ", err)
+			return Dossier
+		}
+		remaining.Next()
+		err = remaining.Scan(
+			&Dossier.DossierID,
+			&Dossier.ClientID,
+			&Dossier.ZorgTechID,
+		)
+		if err != nil {
+			log.Println("GetDossierbyID/Scan: ", err)
+		}
 	}
 	return Dossier
 }

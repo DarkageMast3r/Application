@@ -12,7 +12,7 @@
     <p>putting data here i guess</p>
     {{ range . }}
     <ul>
-        <a href="/Finance/{{.DossierID}}"> DossierID: {{ .DossierID}} </a> 
+        <a href="/financing/{{.DossierID}}"> DossierID: {{ .DossierID}} </a> 
         <li> ClientID: {{ .ClientID}} </li>
         <li> ZorgTechID: {{ .ZorgTechID}} </li>
         <li> AanvraagDatum: {{ .AanvraagDatum}} </li>
@@ -24,7 +24,7 @@
             <li>    Gebruikt: {{ .Budget.GebruiktBedrag}} </li>
             <li>    Status: {{ .Budget.BudgetStatus}} </li>
         </ul>
-        <p></p>
+        <br><br>
     </ul>
     {{ end }}
 </body>

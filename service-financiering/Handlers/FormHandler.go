@@ -32,13 +32,13 @@ func AddDossier(wr http.ResponseWriter, rq *http.Request) {
 func RemoveDossier(wr http.ResponseWriter, rq *http.Request) {
 	DossierID, err := strconv.Atoi(rq.PathValue("dossierID"))
 	if err != nil {
-		log.Println("AddDossier: ", err)
+		log.Println("RemoveDossier: ", err)
 		wr.WriteHeader(http.StatusInternalServerError)
 	}
 	err = r.RemoveDossier(DossierID)
 	if err != nil {
-		log.Println("AddDossier: ", err)
+		log.Println("RemoveDossier: ", err)
 		wr.WriteHeader(http.StatusInternalServerError)
 	}
-	AddorRemovePageHandler(wr, rq)
+	HomePageHandler(wr, rq)
 }
