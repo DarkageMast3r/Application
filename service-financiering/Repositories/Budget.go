@@ -9,7 +9,8 @@ func NieuwBudget(b *m.Budget, max float64) error {
 	b.BeschikbaarBedrag = max
 	b.GebruiktBedrag = 0
 	b.BudgetStatus = "Aangevraagd"
-	return NewBudget(b.MaxBedrag, b.BeschikbaarBedrag, b.GebruiktBedrag, b.BudgetStatus)
+	// return NewBudget(b.MaxBedrag, b.BeschikbaarBedrag, b.GebruiktBedrag, b.BudgetStatus)
+	return nil //unfinished method
 }
 
 func UpdateBudget(b *m.Budget, bedrag float64) error {
