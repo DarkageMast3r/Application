@@ -11,17 +11,16 @@ import (
 
 func AddDossier(wr http.ResponseWriter, rq *http.Request) {
 	rq.ParseForm()
-	clientid, err := strconv.Atoi(rq.Form.Get("ClientID"))
+	clientID, err := strconv.Atoi(rq.Form.Get("ClientID"))
 	if err != nil {
 		fmt.Println("Failed to stringConvert: ", err)
 	}
-	zorgtechid, err := strconv.Atoi(rq.Form.Get("ZorgTechID"))
+	zorgTechID, err := strconv.Atoi(rq.Form.Get("ZorgTechID"))
 	if err != nil {
 		fmt.Println("Failed to stringConvert: ", err)
 	}
-
-	var dossier m.FinancieringsDossier
-	err = r.NieuwDossier(&dossier, clientid, zorgtechid)
+	
+	err = r.InsertDossier(clientID, zorgTechID)
 	if err != nil {
 		log.Println("AddDossier: ", err)
 		wr.WriteHeader(http.StatusInternalServerError)
@@ -44,24 +43,22 @@ func RemoveDossier(wr http.ResponseWriter, rq *http.Request) {
 }
 
 func AddBudget(wr http.ResponseWriter, rq *http.Request) {
+	var Budget m.Budget
 	rq.ParseForm()
-	MaxBedrag, err := strconv.Atoi(rq.Form.Get("MaxBedrag"))
+	maxBedrag, err := strconv.Atoi(rq.Form.Get("MaxBedrag"))
 	if err != nil {
 		log.Println("AddBudget(strconv): ", err)
 		wr.WriteHeader(http.StatusInternalServerError)
 	}
+	Budget.MaxBedrag = float64(maxBedrag)
 	DossierID, err := strconv.Atoi(rq.PathValue("dossierID"))
 	if err != nil {
 		log.Println("AddBudget(strconv)2: ", err)
 		wr.WriteHeader(http.StatusInternalServerError)
 	}
 
-	BudgetID, err := r.NewBudget(float64(MaxBedrag), float64(MaxBedrag), 0, "Aangevraagd")
-	if err != nil {
-		log.Println("AddBudgetHandler: ", err)
-		wr.WriteHeader(http.StatusInternalServerError)
-	}
-	err = r.ConnectDossier(BudgetID, DossierID)
+	Budget.NewBudget()
+	err = r.ConnectDossier(Budget.ID, DossierID)
 	if err != nil {
 		log.Println("ConnectDossier failed: ", err)
 	}

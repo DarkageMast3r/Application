@@ -1,14 +1,14 @@
 package handlers
 
 import (
-	r "Financiering/Repositories"
+	m "Financiering/Models"
 	"fmt"
 	"net/http"
 	"strconv"
 )
 
 func HomePageHandler(wr http.ResponseWriter, rq *http.Request) {
-	LoadTemplate(wr, "Templates/Home.gohtml", r.GetDossiers())
+	LoadTemplate(wr, "Templates/Home.gohtml", m.GetAllDossiers())
 }
 
 func AddorRemovePageHandler(wr http.ResponseWriter, rq *http.Request) {
@@ -21,5 +21,5 @@ func DossierPageHandler(wr http.ResponseWriter, rq *http.Request) {
 		fmt.Println("DossierPageHandler", err)
 		return
 	}
-	LoadTemplate(wr, "Templates/DetailDossier.gohtml", r.GetDossierbyID(DossierID))
+	LoadTemplate(wr, "Templates/DetailDossier.gohtml", m.GetDossierbyID(DossierID))
 }
