@@ -22,8 +22,17 @@
             <li>    Gebruikt: {{ .Budget.GebruiktBedrag}} </li>
             <li>    Status: {{ .Budget.BudgetStatus}} </li>
         </ul>
-        <br><br>
     </ul>
+    <br>
+    <p>Vraag een budget aan</p>
+    <form action="/financing/AddBudget/{{.DossierID}}" method="post">
+        <label>
+            <input type="number" name="MaxBedrag">
+        </label>
+        <br>
+        <input type="submit">
+    </form>
+    <br><br>
      <a href="/financing/{{.DossierID}}/Remove"> Remove Dossier </a> 
 </body>
 </html>

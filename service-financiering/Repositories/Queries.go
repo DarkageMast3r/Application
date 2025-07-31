@@ -4,6 +4,7 @@ import (
 	m "Financiering/Models"
 	"fmt"
 	"log"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 func GetDossiers() []m.FinancieringsDossier {
@@ -94,6 +95,7 @@ func GetDossierbyID(ID int) m.FinancieringsDossier {
 			return Dossier
 		}
 		remaining.Next()
+		defer remaining.Close()
 		err = remaining.Scan(
 			&Dossier.DossierID,
 			&Dossier.ClientID,
@@ -118,18 +120,30 @@ func RemoveDossier(dossierID int) error {
 	return err
 }
 
-func NewBudget(MaxBedrag float64, BeschikbaarBedrag float64, GebruiktBedrag float64, BudgetStatus string) error {
+// func GetBudgetByID()
+
+func NewBudget(MaxBedrag float64, BeschikbaarBedrag float64, GebruiktBedrag float64, BudgetStatus string) (int, error) {
 	db := Database_Get()
-	_, err := db.Query("INSERT INTO budget(MaxBedrag, BeschikbaarBedrag, GebruiktBedrag, BudgetStatus) VALUES(?,?,?,?)", MaxBedrag, BeschikbaarBedrag, GebruiktBedrag, BudgetStatus) // create new budget
-	return err
+	val, err := db.Exec("INSERT INTO budget(MaxBedrag, BeschikbaarBedrag, GebruiktBedrag, BudgetStatus) VALUES(?,?,?,?);", MaxBedrag, BeschikbaarBedrag, GebruiktBedrag, BudgetStatus) // create new budget
+	var lastid int
+	if err == nil {
+		value, err := val.LastInsertId()
+		if err != nil {
+			log.Println("lastinsertid: ", err)
+			return 0, err
+		}
+		lastid = int(value)
+	}
+	return lastid, err
 }
 
 func ConnectDossier(BudgetID int, DossierID int) error {
 	db := Database_Get()
-	_, err := db.Query("UPDATE financieringsdossier SET budgetID = ? WHERE ID = ?", BudgetID, DossierID)
+	_, err := db.Exec("UPDATE financieringsdossier SET budgetID = ?, Aanvraagdatum = CURRENT_DATE() WHERE DossierID = ?", BudgetID, DossierID)
 	return err
 }
 
+// shouldn't even be called if there is no budget
 func ProcessPayment(Gebruikt float64, Beschikbaar float64, Status string, ID int) error {
 	db := Database_Get()
 	_, err := db.Query("UPDATE budget SET GebruiktBedrag = ?, BeschikbaarBedrag = ?, BudgetStatus = ? WHERE ID = ?;", Gebruikt, Beschikbaar, Status, ID)

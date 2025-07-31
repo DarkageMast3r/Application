@@ -42,3 +42,28 @@ func RemoveDossier(wr http.ResponseWriter, rq *http.Request) {
 	}
 	HomePageHandler(wr, rq)
 }
+
+func AddBudget(wr http.ResponseWriter, rq *http.Request) {
+	rq.ParseForm()
+	MaxBedrag, err := strconv.Atoi(rq.Form.Get("MaxBedrag"))
+	if err != nil {
+		log.Println("AddBudget(strconv): ", err)
+		wr.WriteHeader(http.StatusInternalServerError)
+	}
+	DossierID, err := strconv.Atoi(rq.PathValue("dossierID"))
+	if err != nil {
+		log.Println("AddBudget(strconv)2: ", err)
+		wr.WriteHeader(http.StatusInternalServerError)
+	}
+
+	BudgetID, err := r.NewBudget(float64(MaxBedrag), float64(MaxBedrag), 0, "Aangevraagd")
+	if err != nil {
+		log.Println("AddBudgetHandler: ", err)
+		wr.WriteHeader(http.StatusInternalServerError)
+	}
+	err = r.ConnectDossier(BudgetID, DossierID)
+	if err != nil {
+		log.Println("ConnectDossier failed: ", err)
+	}
+	HomePageHandler(wr, rq)
+}

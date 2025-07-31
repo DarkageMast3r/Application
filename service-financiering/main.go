@@ -18,6 +18,7 @@ func main() {
 	http.HandleFunc("Get /{dossierID}/Remove", h.RemoveDossier)
 
 	http.HandleFunc("POST /Add", h.AddDossier)
+	http.HandleFunc("POST /AddBudget/{dossierID}", h.AddBudget)
 
 	service.Register("financing", http.DefaultServeMux.ServeHTTP)
 
