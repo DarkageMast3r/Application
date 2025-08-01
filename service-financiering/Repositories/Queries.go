@@ -15,22 +15,22 @@ func GetDossiers() (*sql.Rows, *sql.Rows, error, error) {
 	return innerJoins, remaining, err1, err2
 }
 
-func GetDossierbyID(ID int) (*sql.Rows, error, bool) {
+func GetDossierbyID(ID int, BudgetPresent bool) (*sql.Rows, error) {
 	db := Database_Get()
+	if BudgetPresent == true {
 	innerJoin, err := db.Query("SELECT financieringsdossier.DossierID, financieringsdossier.ClientID, financieringsdossier.ZorgTechID, financieringsdossier.AanvraagDatum, budget.ID, budget.MaxBedrag, budget.BeschikbaarBedrag, budget.GebruiktBedrag, budget.BudgetStatus FROM financieringsdossier INNER JOIN budget on financieringsdossier.BudgetID=budget.ID WHERE DossierID = ?;", ID)
-	if err != nil {
-		remaining, err := db.Query("SELECT financieringsdossier.DossierID, financieringsdossier.ClientID, financieringsdossier.ZorgTechID FROM financieringsdossier WHERE BudgetID is null and DossierID = ?;", ID)
-		return remaining, err, false
+	return innerJoin, err
 	} else {
-		return innerJoin, err, true
+		remaining, err := db.Query("SELECT financieringsdossier.DossierID, financieringsdossier.ClientID, financieringsdossier.ZorgTechID FROM financieringsdossier WHERE BudgetID is null and DossierID = ?;", ID)
+		return remaining, err
 	}
 }
 
 
-func InsertDossier(clientID int, zorgTechID int) error {
+func InsertDossier(clientID int, zorgTechID int) (sql.Result, error) {
 	db := Database_Get()
-	_, err := db.Query("INSERT INTO financieringsdossier(ClientID, ZorgTechID) VALUES(?,?)", clientID, zorgTechID)
-	return err
+	res, err := db.Exec("INSERT INTO financieringsdossier(ClientID, ZorgTechID) VALUES(?,?)", clientID, zorgTechID)
+	return res, err
 }
 
 // shouldn't even be called if there is no budget

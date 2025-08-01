@@ -70,15 +70,15 @@ func GetAllDossiers() []FinancieringsDossier {
 // Only works when it has a budget, perhaps add functionality for when there isnt a budget
 func GetDossierbyID(ID int) FinancieringsDossier {
 	var Dossier FinancieringsDossier
-	Result, err, budgetPresent := r.GetDossierbyID(ID)
+	Result, err := r.GetDossierbyID(ID, true)
 	if err != nil {
 		fmt.Println("Result: ", err)
 	}
-
-	if budgetPresent == true {
-	Result.Next()
+	nextable := Result.Next()
 	defer Result.Close()
-	Result.Scan(
+	if nextable == true {
+		fmt.Println("Nextable works")
+		Result.Scan(
 		&Dossier.DossierID,
 		&Dossier.ClientID,
 		&Dossier.ZorgTechID,
@@ -90,16 +90,41 @@ func GetDossierbyID(ID int) FinancieringsDossier {
 		&Dossier.Budget.BudgetStatus,
 	)
 	} else {
-		Result.Next()
-		defer Result.Close()
-		err = Result.Scan(
-			&Dossier.DossierID,
-			&Dossier.ClientID,
-			&Dossier.ZorgTechID,
-		)
-		if err != nil {
-			fmt.Println("GetDossierbyID/Scan: ", err)
+		Result, err = r.GetDossierbyID(ID, false)	
+		nextable = Result.Next()
+		if nextable == true {
+			err = Result.Scan(
+				&Dossier.DossierID,
+				&Dossier.ClientID,
+				&Dossier.ZorgTechID,
+			)
+			if err != nil {
+				fmt.Println("GetDossierbyID/Scan: ", err)
+			}
+		} else {
+			fmt.Println("Unable to input data")
 		}
 	}
 	return Dossier
 }
+
+// wip
+// func VerwerkGoedkeuring(f *m.FinancieringsDossier, Goedgekeurd bool) {
+// 	// if Goedgekeurd {
+// 	// 	f.Budget.BudgetStatus = "Goedgekeurd"
+// 	// } else {
+// 	// 	f.Budget.BudgetStatus = "Afgewezen"
+// 	// }
+// }
+
+// // wip
+// func ReserveerBudget(f *m.FinancieringsDossier) {
+// 	// f.Budget.BudgetStatus = "Gereserveerd"
+// }
+
+// //wip
+// func VerwerkFactuur(f *m.FinancieringsDossier, factuur m.Factuur) {
+// 	// err := UpdateBudget(&f.Budget, factuur.Bedrag)
+// 	// log.Println(err)
+// 	// not sure what to do with this error :KumiThink:
+// }
