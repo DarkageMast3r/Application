@@ -17,47 +17,48 @@ type FinancieringsDossier struct {
 func GetAllDossiers() []FinancieringsDossier {
 	var Dossiers []FinancieringsDossier
 	innerJoins, remaining, err1, err2 := r.GetDossiers()
-	if err1 != nil {
-		fmt.Println("Innerjoin: ", err1)
-		return Dossiers
-	} else if err2 != nil {
-		fmt.Println("Innerjoin: ", err2)
-		return Dossiers
-	}
-	for innerJoins.Next() {
-		var Dossier FinancieringsDossier
-		err := innerJoins.Scan(
+	if err1 == nil {
+		for innerJoins.Next() {
+			var Dossier FinancieringsDossier
+			err := innerJoins.Scan(
 			&Dossier.DossierID,
-			&Dossier.ClientID,
-			&Dossier.ZorgTechID,
-			&Dossier.AanvraagDatum,
-			&Dossier.Budget.ID,
-			&Dossier.Budget.MaxBedrag,
-			&Dossier.Budget.BeschikbaarBedrag,
-			&Dossier.Budget.GebruiktBedrag,
-			&Dossier.Budget.BudgetStatus,
-		)
-		if err != nil {
-		fmt.Println("GetDossiers/Scan1: ", err)
-			continue
+				&Dossier.ClientID,
+				&Dossier.ZorgTechID,
+				&Dossier.AanvraagDatum,
+				&Dossier.Budget.ID,
+				&Dossier.Budget.MaxBedrag,
+				&Dossier.Budget.BeschikbaarBedrag,
+				&Dossier.Budget.GebruiktBedrag,
+				&Dossier.Budget.BudgetStatus,
+			)
+			if err != nil {
+			fmt.Println("GetDossiers/Scan1: ", err)
+				continue
+			}
+			Dossiers = append(Dossiers, Dossier)
 		}
-		Dossiers = append(Dossiers, Dossier)
-	}
-	innerJoins.Close()
-	for remaining.Next() {
-		var Dossier FinancieringsDossier
-		err := remaining.Scan(
-			&Dossier.DossierID,
-			&Dossier.ClientID,
-			&Dossier.ZorgTechID,
-		)
-		if err != nil {
-		fmt.Println("GetDossiers/Scan2: ", err)
-			continue
+		innerJoins.Close()
+	} else if err2 == nil {
+		for remaining.Next() {
+			var Dossier FinancieringsDossier
+			err := remaining.Scan(
+				&Dossier.DossierID,
+				&Dossier.ClientID,
+				&Dossier.ZorgTechID,
+			)
+			if err != nil {
+			fmt.Println("GetDossiers/Scan2: ", err)
+				continue
+			}
+			Dossiers = append(Dossiers, Dossier)
 		}
-		Dossiers = append(Dossiers, Dossier)
-	}
-	remaining.Close()
+		remaining.Close()
+	} else {
+		fmt.Println(err1)
+		fmt.Println("")
+		fmt.Println(err2)
+	}	
+	
 	for i, val := range Dossiers {
 		if val.Budget.BudgetStatus == "" {
 			Dossiers[i].Budget.BudgetStatus = "Niet aangevraagd"
