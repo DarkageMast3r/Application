@@ -15,14 +15,12 @@ type Budget struct {
 
 func (b *Budget) NewBudget() {
 	res, err := r.InsertBudget(b.MaxBedrag, b.BeschikbaarBedrag, b.GebruiktBedrag, b.BudgetStatus)
-	var lastid int
 	if err == nil {
 		val, err := res.LastInsertId()
 		if err != nil {
 			log.Println("lastinsertid: ", err)
 		} else {
-			lastid = int(val)
-			b.ID = lastid
+			b.ID = int(val)
 		}
 	}
 }
