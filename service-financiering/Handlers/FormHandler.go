@@ -20,7 +20,7 @@ func AddDossier(wr http.ResponseWriter, rq *http.Request) {
 		fmt.Println("Failed to stringConvert: ", err)
 	}
 	
-	err = r.InsertDossier(clientID, zorgTechID)
+	_, err = r.InsertDossier(clientID, zorgTechID)
 	if err != nil {
 		log.Println("AddDossier: ", err)
 		wr.WriteHeader(http.StatusInternalServerError)

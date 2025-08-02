@@ -33,6 +33,18 @@ func InsertDossier(clientID int, zorgTechID int) (sql.Result, error) {
 	return res, err
 }
 
+func RemoveDossier(dossierID int) error {
+	db := Database_Get()
+	_, err := db.Query("DELETE FROM financieringsdossier WHERE DossierID = ?", dossierID)
+	return err
+}
+
+func ConnectDossier(BudgetID int, DossierID int) error {
+	db := Database_Get()
+	_, err := db.Exec("UPDATE financieringsdossier SET budgetID = ?, Aanvraagdatum = CURRENT_DATE() WHERE DossierID = ?", BudgetID, DossierID)
+	return err
+}
+
 // shouldn't even be called if there is no budget
 func ProcessPayment(Gebruikt float64, Beschikbaar float64, Status string, ID int) error {
 	db := Database_Get()
@@ -46,14 +58,3 @@ func InsertBudget(MaxBedrag float64, BeschikbaarBedrag float64, GebruiktBedrag f
 	return res, err
 }
 
-func RemoveDossier(dossierID int) error {
-	db := Database_Get()
-	_, err := db.Query("DELETE FROM financieringsdossier WHERE DossierID = ?", dossierID)
-	return err
-}
-
-func ConnectDossier(BudgetID int, DossierID int) error {
-	db := Database_Get()
-	_, err := db.Exec("UPDATE financieringsdossier SET budgetID = ?, Aanvraagdatum = CURRENT_DATE() WHERE DossierID = ?", BudgetID, DossierID)
-	return err
-}
