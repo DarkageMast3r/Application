@@ -78,7 +78,6 @@ func GetDossierbyID(ID int) FinancieringsDossier {
 	nextable := Result.Next()
 	defer Result.Close()
 	if nextable == true {
-		fmt.Println("Nextable works")
 		Result.Scan(
 		&Dossier.DossierID,
 		&Dossier.ClientID,
