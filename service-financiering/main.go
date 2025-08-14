@@ -15,7 +15,8 @@ func main() {
 	http.HandleFunc("GET /", h.HomePageHandler)
 	http.HandleFunc("GET /Add", h.AddorRemovePageHandler)
 	http.HandleFunc("GET /{dossierID}", h.DossierPageHandler)
-	http.HandleFunc("Get /{dossierID}/Remove", h.RemoveDossier)
+	http.HandleFunc("Get /Remove/{dossierID}", h.RemoveDossier)
+	http.HandleFunc("Get /GetBudget/{ClientID}", h.ViewBudgetPage)
 
 	http.HandleFunc("POST /Add", h.AddDossier)
 	http.HandleFunc("POST /AddBudget/{dossierID}", h.AddBudget)

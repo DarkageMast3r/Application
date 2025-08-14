@@ -26,6 +26,12 @@ func GetDossierbyID(ID int, BudgetPresent bool) (*sql.Rows, error) {
 	}
 }
 
+func GetBudgetbyClientID(ClientID int) (*sql.Rows, error) {
+	db := Database_Get()
+	innerJoin, err := db.Query("SELECT budget.ID, budget.MaxBedrag, budget.BeschikbaarBedrag, budget.GebruiktBedrag, budget.BudgetStatus FROM financieringsdossier INNER JOIN budget on financieringsdossier.BudgetID=budget.ID WHERE ClientID = ?;", ClientID)
+	return innerJoin, err
+}
+
 
 func InsertDossier(clientID int, zorgTechID int) (sql.Result, error) {
 	db := Database_Get()
@@ -52,9 +58,10 @@ func ProcessPayment(Gebruikt float64, Beschikbaar float64, Status string, ID int
 	return err
 }
 
+// create new budget
 func InsertBudget(MaxBedrag float64, BeschikbaarBedrag float64, GebruiktBedrag float64, BudgetStatus string) (sql.Result, error) {
 	db := Database_Get()
-	res, err := db.Exec("INSERT INTO budget(MaxBedrag, BeschikbaarBedrag, GebruiktBedrag, BudgetStatus) VALUES(?,?,?,?);", MaxBedrag, BeschikbaarBedrag, GebruiktBedrag, BudgetStatus) // create new budget
+	res, err := db.Exec("INSERT INTO budget(MaxBedrag, BeschikbaarBedrag, GebruiktBedrag, BudgetStatus) VALUES(?,?,?,?);", MaxBedrag, BeschikbaarBedrag, GebruiktBedrag, BudgetStatus) 
 	return res, err
 }
 

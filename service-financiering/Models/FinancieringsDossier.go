@@ -108,6 +108,27 @@ func GetDossierbyID(ID int) FinancieringsDossier {
 	return Dossier
 }
 
+func GetClientBudget(clientID int) Budget {
+	var Budget Budget
+	Result, err := r.GetBudgetbyClientID(clientID)
+	if err != nil {
+		fmt.Println("GetClientBudget: ", err)
+		return Budget
+	}
+	nextable := Result.Next()
+	defer Result.Close()
+	if nextable == true {
+		Result.Scan(
+		&Budget.ID,
+		&Budget.MaxBedrag,
+		&Budget.BeschikbaarBedrag,
+		&Budget.GebruiktBedrag,
+		&Budget.BudgetStatus,
+	)
+	}
+	return Budget
+}
+
 // wip
 // func VerwerkGoedkeuring(f *m.FinancieringsDossier, Goedgekeurd bool) {
 // 	// if Goedgekeurd {

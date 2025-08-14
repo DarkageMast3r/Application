@@ -23,3 +23,13 @@ func DossierPageHandler(wr http.ResponseWriter, rq *http.Request) {
 	}
 	LoadTemplate(wr, "Templates/DetailDossier.gohtml", m.GetDossierbyID(DossierID))
 }
+
+func ViewBudgetPage(wr http.ResponseWriter, rq *http.Request) {
+	ClientID, err := strconv.Atoi(rq.PathValue("ClientID"))
+	if err != nil {
+		fmt.Println("ViewBudgetPage: ", err)
+		HomePageHandler(wr, rq)
+		return
+	}
+	LoadTemplate(wr, "Templates/ViewClientBudget.gohtml", m.GetClientBudget(ClientID))
+}
