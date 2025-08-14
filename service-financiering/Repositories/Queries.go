@@ -52,9 +52,9 @@ func ConnectDossier(BudgetID int, DossierID int) error {
 }
 
 // shouldn't even be called if there is no budget
-func ProcessPayment(Gebruikt float64, Beschikbaar float64, Status string, ID int) error {
+func ProcessPayment(GebruiktBedrag float64, BeschikbaarBedrag float64, ID int) error {
 	db := Database_Get()
-	_, err := db.Query("UPDATE budget SET GebruiktBedrag = ?, BeschikbaarBedrag = ?, BudgetStatus = ? WHERE ID = ?;", Gebruikt, Beschikbaar, Status, ID)
+	_, err := db.Query("UPDATE budget SET GebruiktBedrag = ?, BeschikbaarBedrag = ? WHERE ID = ?;", GebruiktBedrag, BeschikbaarBedrag, ID)
 	return err
 }
 

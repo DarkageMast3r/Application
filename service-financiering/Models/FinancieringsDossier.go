@@ -143,9 +143,12 @@ func GetClientBudget(clientID int) Budget {
 // 	// f.Budget.BudgetStatus = "Gereserveerd"
 // }
 
-// //wip
-// func VerwerkFactuur(f *m.FinancieringsDossier, factuur m.Factuur) {
-// 	// err := UpdateBudget(&f.Budget, factuur.Bedrag)
-// 	// log.Println(err)
-// 	// not sure what to do with this error :KumiThink:
-// }
+//i think this one is called after the payment is made?
+func (f *m.FinancieringsDossier) VerwerkFactuur(factuurID int) {
+	_, val := range f.Facturen {
+		if val.FactuurID = factuurID {
+			f.Budget.VerwerkBetaling(val.Bedrag)
+			val.Betaald = true
+		}
+	}
+}

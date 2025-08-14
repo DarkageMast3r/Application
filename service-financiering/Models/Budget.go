@@ -24,3 +24,12 @@ func (b *Budget) NewBudget() {
 		}
 	}
 }
+
+func (b *Budget) VerwerkBetaling(Bedrag int) {
+	b.BeschikbaarBedrag -= Bedrag
+	b.GebruiktBedrag += Bedrag
+	err := r.ProcessPayment(b.GebruiktBedrag, b.BeschikbaarBedrag, b.ID)
+	if err =! nil {
+		log.Println("VerwerkFactuur: ", err)
+	}
+}
