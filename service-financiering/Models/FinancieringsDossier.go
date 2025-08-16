@@ -108,27 +108,6 @@ func GetDossierbyID(ID int) FinancieringsDossier {
 	return Dossier
 }
 
-func GetClientBudget(clientID int) Budget {
-	var Budget Budget
-	Result, err := r.GetBudgetbyClientID(clientID)
-	if err != nil {
-		fmt.Println("GetClientBudget: ", err)
-		return Budget
-	}
-	nextable := Result.Next()
-	defer Result.Close()
-	if nextable == true {
-		Result.Scan(
-		&Budget.ID,
-		&Budget.MaxBedrag,
-		&Budget.BeschikbaarBedrag,
-		&Budget.GebruiktBedrag,
-		&Budget.BudgetStatus,
-	)
-	}
-	return Budget
-}
-
 // wip
 // func VerwerkGoedkeuring(f *m.FinancieringsDossier, Goedgekeurd bool) {
 // 	// if Goedgekeurd {
@@ -144,10 +123,10 @@ func GetClientBudget(clientID int) Budget {
 // }
 
 //i think this one is called after the payment is made?
-func (f *m.FinancieringsDossier) VerwerkFactuur(factuurID int) {
-	_, val := range f.Facturen {
-		if val.FactuurID = factuurID {
-			f.Budget.VerwerkBetaling(val.Bedrag)
+func (f *FinancieringsDossier) VerwerkFactuur(factuurID int) {
+	for _, val := range f.Facturen {
+		if val.FactuurID == factuurID {
+			f.Budget.VerwerkBetaling(int(val.Bedrag))
 			val.Betaald = true
 		}
 	}

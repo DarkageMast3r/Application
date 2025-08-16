@@ -10,7 +10,11 @@
 <body>
     <h1>ViewClientBudget</h1>
 
-    {{ . }}
+    <p>ID: {{ .ID }}</p>
+    <p>MaxBedrag: {{ .MaxBedrag }}</p>
+    <p>BeschikbaarBedrag: {{ .BeschikbaarBedrag }}</p>
+    <p>GebruiktBedrag: {{ .GebruiktBedrag }}</p>
+    <p>BudgetStatus: {{ .BudgetStatus }}</p>
 </body>
 
 {{ end }}

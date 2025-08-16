@@ -26,10 +26,31 @@ func (b *Budget) NewBudget() {
 }
 
 func (b *Budget) VerwerkBetaling(Bedrag int) {
-	b.BeschikbaarBedrag -= Bedrag
-	b.GebruiktBedrag += Bedrag
+	b.BeschikbaarBedrag -= float64(Bedrag)
+	b.GebruiktBedrag += float64(Bedrag)
 	err := r.ProcessPayment(b.GebruiktBedrag, b.BeschikbaarBedrag, b.ID)
-	if err =! nil {
+	if err != nil {
 		log.Println("VerwerkFactuur: ", err)
 	}
+}
+
+func GetClientBudget(clientID int) Budget {
+	var Budget Budget
+	Result, err := r.GetBudgetbyClientID(clientID)
+	if err != nil {
+		log.Println("GetClientBudget: ", err)
+		return Budget
+	}
+	nextable := Result.Next()
+	defer Result.Close()
+	if nextable == true {
+		Result.Scan(
+		&Budget.ID,
+		&Budget.MaxBedrag,
+		&Budget.BeschikbaarBedrag,
+		&Budget.GebruiktBedrag,
+		&Budget.BudgetStatus,
+	)
+	}
+	return Budget
 }
