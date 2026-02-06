@@ -74,7 +74,7 @@ func NewDatabase() *gorm.DB {
 
 	// AutoMigrate voor alle modellen
 	database.AutoMigrate(
-		&models.User{},
+		//&models.User{},
 		&models.ImplementatieDossier{},
 		&models.ZorgTechProduct{},
 	)

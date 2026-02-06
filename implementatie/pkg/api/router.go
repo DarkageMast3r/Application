@@ -48,18 +48,18 @@ func NewRouter(logger *zap.Logger, mongoCollection *mongo.Collection, db databas
 		implementatie := v1.Group("/implementatie")
 		{
 			// Commands
-			implementatie.POST("/aanvraag", middleware.APIKeyAuth(), middleware.JWTAuth(), implementatieRepository.AanvraagProduct)
-			implementatie.POST("/ontvang", middleware.APIKeyAuth(), middleware.JWTAuth(), implementatieRepository.OntvangProduct)
-			implementatie.POST("/installeer", middleware.APIKeyAuth(), middleware.JWTAuth(), implementatieRepository.InstalleerProduct)
-			implementatie.POST("/personaliseer", middleware.APIKeyAuth(), middleware.JWTAuth(), implementatieRepository.PersonaliseerProduct)
-			implementatie.POST("/lever", middleware.APIKeyAuth(), middleware.JWTAuth(), implementatieRepository.LeverProduct)
-			implementatie.POST("/voltooi", middleware.APIKeyAuth(), middleware.JWTAuth(), implementatieRepository.MarkeerAlsGeimplementeerd)
+			implementatie.POST("/aanvraag", implementatieRepository.AanvraagProduct)
+			implementatie.POST("/ontvang", implementatieRepository.OntvangProduct)
+			implementatie.POST("/installeer", implementatieRepository.InstalleerProduct)
+			implementatie.POST("/personaliseer", implementatieRepository.PersonaliseerProduct)
+			implementatie.POST("/lever", implementatieRepository.LeverProduct)
+			implementatie.POST("/voltooi", implementatieRepository.MarkeerAlsGeimplementeerd)
 
 			// Queries
-			implementatie.GET("/product/:zorgtechId", middleware.APIKeyAuth(), implementatieRepository.GetProductInformatie)
-			implementatie.GET("/status/:clientId", middleware.APIKeyAuth(), implementatieRepository.GetImplementatieStatus)
-			implementatie.GET("/installatie-status/:clientId", middleware.APIKeyAuth(), implementatieRepository.GetInstallatieStatus)
-			implementatie.GET("/instellingen/:clientId", middleware.APIKeyAuth(), implementatieRepository.GetPersoonlijkeInstellingen)
+			implementatie.GET("/product/:zorgtechId", implementatieRepository.GetProductInformatie)
+			implementatie.GET("/status/:clientId", implementatieRepository.GetImplementatieStatus)
+			implementatie.GET("/installatie-status/:clientId", implementatieRepository.GetInstallatieStatus)
+			implementatie.GET("/instellingen/:clientId", implementatieRepository.GetPersoonlijkeInstellingen)
 		}
 	}
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
